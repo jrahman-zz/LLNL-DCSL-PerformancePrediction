@@ -19,4 +19,4 @@ example: example.o identity.o
 	 cp $@ $(BINDIR)/
 
 clean:
-	rm example *.o
+	rm -f example *.o

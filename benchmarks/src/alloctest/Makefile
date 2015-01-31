@@ -15,4 +15,4 @@ alloctest: alloctest.o
 	cp $@ $(BINDIR)/
 
 clean:
-	rm alloctest *.o
+	rm -f alloctest *.o

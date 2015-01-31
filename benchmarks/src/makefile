@@ -21,7 +21,7 @@ copy: build
 	cp hog/hog bin
 
 clean:
-	rm bin/*
+	rm -f bin/{alloctest,filetest,hog,example,td,tsp}
 	cd hog && make clean
 	cd alloctest && make clean
 	cd filetest && make clean

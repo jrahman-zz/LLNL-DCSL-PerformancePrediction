@@ -8,12 +8,13 @@ build:
 	cd alloctest && make
 	cd filetest && make 
 	cd marc && make
-	cd SparseLib++/1.7 && make
+	cd SparseLib++/1.7 && make all
 
 .PHONY: copy
 copy: build
-	cp SparseLib++/1.7/testing/{td,tsp} bin
 	cp SparseLib++/1.7/testing/*.txt bin
+	cp SparseLib++/1.7/testing/tsp bin
+	cp SparseLib++/1.7/testing/td bin
 	cp marc/example bin
 	cp alloctest/alloctest bin
 	cp filetest/filetest bin

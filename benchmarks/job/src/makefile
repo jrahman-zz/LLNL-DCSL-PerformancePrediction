@@ -1,5 +1,3 @@
-
-
 all: copy
 
 .PHONY: build
@@ -21,7 +19,7 @@ copy: build
 	cp hog/hog bin
 
 clean:
-	rm -f bin/{alloctest,filetest,hog,example,td,tsp}
+	rm -f bin/*
 	cd hog && make clean
 	cd alloctest && make clean
 	cd filetest && make clean

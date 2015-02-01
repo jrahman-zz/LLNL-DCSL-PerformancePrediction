@@ -123,12 +123,17 @@ extern void tuned_STREAM_Triad(double scalar);
 extern int omp_get_num_threads();
 #endif
 int
-main()
+main(int argc, char **argv)
     {
     int			quantum, checktick();
     int			BytesPerWord;
     register int	j, k;
     double		scalar, t, times[4][NTIMES];
+    int operation = 0;
+
+    if (argc == 2) {
+        operation = atoi(argv[1]);
+    }
 
     /* --- SETUP --- determine precision and check timing --- */
 
@@ -212,7 +217,8 @@ main()
     scalar = 3.0;
     for (k=0; k<NTIMES; k++)
 	{
-	times[0][k] = mysecond();
+	if (operation == 0 || operation == 1) {
+    times[0][k] = mysecond();
 #ifdef TUNED
         tuned_STREAM_Copy();
 #else
@@ -221,7 +227,9 @@ main()
 	    c[j] = a[j];
 #endif
 	times[0][k] = mysecond() - times[0][k];
+    } // Copy
 	
+    if (operation == 0 || operation == 2) {
 	times[1][k] = mysecond();
 #ifdef TUNED
         tuned_STREAM_Scale(scalar);
@@ -231,7 +239,9 @@ main()
 	    b[j] = scalar*c[j];
 #endif
 	times[1][k] = mysecond() - times[1][k];
-	
+    } // Scale
+
+    if (operation == 0 || operation == 3) {    
 	times[2][k] = mysecond();
 #ifdef TUNED
         tuned_STREAM_Add();
@@ -241,7 +251,9 @@ main()
 	    c[j] = a[j]+b[j];
 #endif
 	times[2][k] = mysecond() - times[2][k];
-	
+    } // Add
+
+    if (operation == 0 || operation == 4) {
 	times[3][k] = mysecond();
 #ifdef TUNED
         tuned_STREAM_Triad(scalar);
@@ -251,6 +263,7 @@ main()
 	    a[j] = b[j]+scalar*c[j];
 #endif
 	times[3][k] = mysecond() - times[3][k];
+    } // Triad
 	}
 
     /*	--- SUMMARY --- */
@@ -259,21 +272,25 @@ main()
 	{
 	for (j=0; j<4; j++)
 	    {
-	    avgtime[j] = avgtime[j] + times[j][k];
-	    mintime[j] = MIN(mintime[j], times[j][k]);
-	    maxtime[j] = MAX(maxtime[j], times[j][k]);
-	    }
+	        if (operation == 0 || operation == j + 1) {
+                avgtime[j] = avgtime[j] + times[j][k];
+	            mintime[j] = MIN(mintime[j], times[j][k]);
+	            maxtime[j] = MAX(maxtime[j], times[j][k]);
+	        }
+        }
 	}
     
     printf("Function      Rate (MB/s)   Avg time     Min time     Max time\n");
     for (j=0; j<4; j++) {
-	avgtime[j] = avgtime[j]/(double)(NTIMES-1);
+	    if (operation == 0 || operation == j + 1) {
+            avgtime[j] = avgtime[j]/(double)(NTIMES-1);
 
-	printf("%s%11.4f  %11.4f  %11.4f  %11.4f\n", label[j],
-	       1.0E-06 * bytes[j]/mintime[j],
-	       avgtime[j],
-	       mintime[j],
-	       maxtime[j]);
+	        printf("%s%11.4f  %11.4f  %11.4f  %11.4f\n", label[j],
+	                1.0E-06 * bytes[j]/mintime[j],
+	                avgtime[j],
+	                mintime[j],
+	                maxtime[j]);
+        }
     }
     printf(HLINE);
 

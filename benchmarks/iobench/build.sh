@@ -4,7 +4,7 @@
 
 function build() {
 	[ -d build ] || mkdir build
-	javac -d build ../src/*.java
+	javac -d build src/*.java
 	( cd build && jar -cf ../iobench.jar * )
 }
 function clean() {

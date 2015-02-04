@@ -1,8 +1,9 @@
 
-import gevent.greenlet as greenlet
-import gevent.subprocess as subprocess
+import logging
+from gevent import Greenlet
+from gevent import subprocess
 
-class InterferenceThread(greenlet.Greenlet):
+class InterferenceThread(Greenlet):
 
     def __init__(self, cores=[0]):
         Greenlet.__init__(self)
@@ -22,20 +23,30 @@ class InterferenceThread(greenlet.Greenlet):
         super(InterferenceThread, self).join()
 
     def _stop(self):
+        logging.debug('Stopping %s', self._name)
         if self._process is not None:
             self._process.kill()
-        else:
-            self._keep_running = False
+        self._keep_running = False
         self._process = None
 
 
     def _run(self):
-        cores = ','.join(map(cores, lambda x: str(x)))
+        try:
+            from subprocess import DEVNULL # py3
+        except ImportError:
+            import os
+            DEVNULL = open(os.devnull, 'wb')
+
+        cores = ','.join(map(lambda x: str(x), self._cores))
         args = ['taskset', '-c', cores, self._cmd] + self._params
+        prog = args[3].split('/')[-1]
         while self._keep_running:
-            self._process = subprocess.Popen(args)
+            logging.info('Starting new %s process...', prog)
+            self._process = subprocess.Popen(args, stdout=DEVNULL, stderr=subprocess.STDOUT)
             return_code = self._process.wait()
-            if not return_code == 0:
+            logging.info('Interference process %s exited with return code %d', prog, return_code)
+            # Return code of -9 means SIGKILL, this is OK!
+            if not (return_code == 0 or return_code == -9):
                 self._keep_running = False
                 raise Exception('Process failure')
 

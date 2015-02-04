@@ -37,7 +37,7 @@ class StreamInterfere(InterferenceThread):
         InterferenceThread.__init__(self, cores)
         self._operation = operation
         self._params = [str(self._operation)]
-        self._cmd = './stream'
+        self._cmd = './stream_interfere'
         self._name = 'stream_' + self._bmark.lower()
 
 class StreamCopy(StreamBenchmark):
@@ -46,9 +46,10 @@ class StreamCopy(StreamBenchmark):
         StreamBenchmark.__init__(self, 1, cores)
         self._bmark = 'Copy'
 
-class StreamCopyInterfere(InterferenceThread):
+class StreamCopyInterfere(StreamInterfere):
     
     def __init__(self, cores=[0]):
+        self._bmark = 'Copy'
         StreamInterfere.__init__(self, 1, cores)
 
 class StreamScale(StreamBenchmark):
@@ -60,6 +61,7 @@ class StreamScale(StreamBenchmark):
 class StreamScaleInterfere(StreamInterfere):
 
     def __init__(self, cores=[0]):
+        self._bmark = 'Scale'
         StreamInterfere.__init__(self, 2, cores)
 
 class StreamAdd(StreamBenchmark):
@@ -70,7 +72,8 @@ class StreamAdd(StreamBenchmark):
 
 class StreamAddInterfere(StreamInterfere):
 
-    def __init__(self, cores=[0]):
+    def __init__(self, cores=[0]): 
+        self._bmark = 'Add'
         StreamInterfere.__init__(self, 3, cores)
 
 class StreamTriad(StreamBenchmark):
@@ -82,7 +85,8 @@ class StreamTriad(StreamBenchmark):
 class StreamTriadInterfere(StreamInterfere):
 
     def __init__(self, cores=[0]):
-        StreamIntefere.__init__(self, 4, cores)
+        self._bmark = 'Triad'
+        StreamInterfere.__init__(self, 4, cores)
 
 # Basic parsing unit test
 if __name__ == "__main__":
@@ -132,5 +136,4 @@ Failed Validation on array a[]
 
     if not output['max_time'] == 0.0107:
         exit(4)
-
     exit(0)

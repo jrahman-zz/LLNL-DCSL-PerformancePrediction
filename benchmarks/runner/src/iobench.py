@@ -63,7 +63,7 @@ class IOBenchRead1K(IOBenchmark):
     def __init__(self, cores=[0]):
         IOBenchmark.__init__(self, 5, True, '1K', cores)
 
-class IOBenchInterfereRead1K(IOBenchInterfere):
+class IOBenchRead1KInterfere(IOBenchInterfere):
     def __init__(self, cores=[0]):
         IOBenchInterfere.__init__(self, 30, True, '1K', cores)
 
@@ -71,7 +71,7 @@ class IOBenchRead1M(IOBenchmark):
     def __init__(self, cores=[0]):
         IOBenchmark.__init__(self, 10, True, '1M', cores)
 
-class IOBenchInterfereRead1M(IOBenchInterfere):
+class IOBenchRead1MInterfere(IOBenchInterfere):
     def __init__(self, cores=[0]):
         IOBenchInterfere.__init__(self, 30, True, '1M', cores)
 
@@ -79,7 +79,7 @@ class IOBenchRead1G(IOBenchmark):
     def __init__(self, cores=[0]):
         IOBenchmark.__init__(self, 20, True, '1G', cores)
 
-class IOBenchInterfereRead1G(IOBenchInterfere):
+class IOBenchRead1GInterfere(IOBenchInterfere):
     def __init__(self, cores=[0]):
         IOBenchInterfere.__init__(self, 30, True, '1G', cores)
 
@@ -87,7 +87,7 @@ class IOBenchWrite1K(IOBenchmark):
     def __init__(self, cores=[0]):
         IOBenchmark.__init__(self, 5, False, '1K', cores)
 
-class IOBenchInterfereWrite1K(IOBenchInterfere):
+class IOBenchWrite1KInterfere(IOBenchInterfere):
     def __init__(self, cores=[0]):
         IOBenchInterfere.__init__(self, 30, False, '1K', cores)
 
@@ -95,7 +95,7 @@ class IOBenchWrite1M(IOBenchmark):
     def __init__(self, cores=[0]):
         IOBenchmark.__init__(self, 10, False, '1M', cores)
 
-class IOBenchInterfereWrite1M(IOBenchInterfere):
+class IOBenchWrite1MInterfre(IOBenchInterfere):
     def __init__(self, cores=[0]):
         IOBenchInterfere.__init__(self, 30, False, '1M', cores)
 
@@ -103,7 +103,7 @@ class IOBenchWrite1G(IOBenchmark):
     def __init__(self, cores=[0]):
         IOBenchmark.__init__(self, 20, False, '1G', cores)
 
-class IOBenchInterfereWrite1G(IOBenchInterfere):
+class IOBenchWrite1GInterfere(IOBenchInterfere):
     def __init__(self, cores=[0]):
         IOBenchInterfere.__init__(self, 30, False, '1G', cores)
 

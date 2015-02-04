@@ -9,7 +9,7 @@ copy: build
 	mkdir -p bin/iobench
 	cd iobench && cp iobench.jar ../bin/iobench
 	mkdir -p bin/memory
-	cd job/bin && cp example ../bin/memory
+	cd job/bin && cp example ../../bin/memory
 
 .PHONY: build
 build:

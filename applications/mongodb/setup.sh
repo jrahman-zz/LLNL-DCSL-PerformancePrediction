@@ -50,13 +50,34 @@ fi
 PID_FILE=${4}
 
 
+# Delete old datadir
+if [ -d "${DATA_DIR}/mongodb_data" ]; then
+    echo "Setup: Deleting old data directory at ${DATA_DIR}/cassandra_data..."
+    rm -rf "${DATA_DIR}/mongodb_data"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to delete ${DATA_DIR}/cassandra_data"
+        exit 1
+    fi
+    echo "Setup: Deleted old data directory"
+fi
+
+# Create new, empty data directory on target drive
+echo "Setup: Creating new data directory at ${DATA_DIR}/mongodb_data..."
+mkdir -p "${DATA_DIR}/mongodb_data"
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to create data directory"
+    exit 1
+fi
+echo "Setup: Created data directory"
+
 # Tweak the config file...
-echo "Customizing configuration..."
+echo "Setup: Customizing configuration..."
 cp "config.yaml" "config.yaml.custom"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to copy config"
     exit 1
 fi
+
 DBLOCATION="${DATA_DIR}/mongodb_data/"
 sed -e -i "s,<SYSTEMLOG>,${DBLOCATION},g" "config.yaml.custom"
 if [ $? -ne 0 ]; then
@@ -68,14 +89,36 @@ if [ $? -ne 0 ]; then
     echo "Error: Failed to customize config file"
     exit 1
 fi
-echo "Customized configuration file"
+echo "Setup: Customized configuration file"
 
 
-echo "Starting server..."
+echo "Setup: Starting server..."
 ${MONGODB_DIR}/bin/mongod --pidfilepath "${PIDFILE}" --fork --config "config.yaml.custom"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start mongodb"
     exit 1
 fi
+
+# Give MongoDB time to catch it's breath
+echo "Setup: Waiting for MongoDB to start..."
+sleep 10
+echo "Setup: Waking up from deep sleep"
+
+# Create our database
+echo "Setup: Creating database..."
+${MONGODB_DIR}/bin/mongo setup.js
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to setup database"
+    exit 1
+fi
+
+# Load the data as needed
+echo "Setup: Loading data into MongoDB"
+${YCSB_DIR}/bin/ycsb run mongodb -P "${YCSB_DIR}/workloads/workloada" -threads 4
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to load data into MongoDB"
+    exit 1
+fi
+echo "Setup: Loaded data into MongoDB"
 
 exit 0

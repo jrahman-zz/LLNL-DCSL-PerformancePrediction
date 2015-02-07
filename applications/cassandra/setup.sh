@@ -50,26 +50,26 @@ PID_FILE=${4}
 
 # Delete old datadir
 if [ -d "${DATA_DIR}/cassandra_data" ]; then
-    echo "Deleting old data directory at ${DATA_DIR}/cassandra_data..."
-    rm -rf "${DATA_DIRECTORY}"
+    echo "Setup: Deleting old data directory at ${DATA_DIR}/cassandra_data..."
+    rm -rf "${DATA_DIR}/cassandra_data"
     if [ $? -ne 0 ]; then
         echo "Error: Failed to delete ${DATA_DIR}/cassandra_data"
         exit 1
     fi
-    echo "Deleted old data directory"
+    echo "Setup: Deleted old data directory"
 fi
 
 # Create new, empty data directory on target drive
-echo "Creating new data directory at ${DATA_DIR}/cassandra_data..."
+echo "Setup: Creating new data directory at ${DATA_DIR}/cassandra_data..."
 mkdir -p "${DATA_DIR}/cassandra_data"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to create data directory"
     exit 1
 fi
-echo "Created data directory"
+echo "Setup: Created data directory"
 
 # Start the server in the background
-echo "Starting server"
+echo "Setup: Starting server"
 ${CASSANDRA_DIR}/bin/cassandra -p "${PID_FILE}"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start server"
@@ -77,28 +77,27 @@ if [ $? -ne 0 ]; then
 fi
 
 # Need to give the server a couple seconds to catch it's breath...
-echo "Sleeping to give Cassandra time to start..."
+echo "Setup: Sleeping to give Cassandra time to start..."
 sleep 10
-echo "Woke up, time to prepare data..."
+echo "Setup: Woke up, time to prepare data..."
 
 # Ok, lets build the tables
-echo "Creating tables..."
+echo "Setup: Creating tables..."
 cassandra-cli -h 127.0.0.1 -f setup.cql
 if [ $? -ne 0 ]; then
     echo "Error: Failed to create table"
     exit 1
 fi
-echo "Tables created"
+echo "Setup: Tables created"
 
 
 # And now we load the benchmark data
-echo "Loading data..."
+echo "Setup: Loading data..."
 ${YCSBDIR}/bin/ycsb load cassandra-10 -threads 4 -P "${YCSB_DIR}/workload/workloada" -p hosts="127.0.0.1"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to load test data"
     exit 1
 fi
-echo "Data loaded"
-
+echo "Setup: Data loaded"
 
 exit 0

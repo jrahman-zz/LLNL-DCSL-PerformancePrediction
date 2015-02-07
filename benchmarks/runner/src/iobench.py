@@ -35,12 +35,12 @@ class IOBenchmark(Program):
 
         features = {
                 'mean': float(result.group(1)),
-                '10th': float(result.group(2)),
-                '50th': float(result.group(3)),
-                '90th': float(result.group(4)),
-                '99th': float(result.group(5)),
-                'min': float(result.group(6)),
-                'max': float(result.group(7))
+                #'p10': float(result.group(2)),
+                'p50': float(result.group(3)),
+                'p90': float(result.group(4)),
+                #'p99': float(result.group(5)),
+                #'min': float(result.group(6)),
+                #'max': float(result.group(7))
             }
         return features
 

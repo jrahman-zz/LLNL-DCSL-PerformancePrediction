@@ -20,10 +20,10 @@ boot.stat=function(data, indices) {
 
 library(caret)
 # factors are evil
-d=read.csv('colo6.colo7.131229.csv.gz', head=F, sep=' ', stringsAsFactors=F)
+d=read.csv('../data/colo6.colo7.131229.csv.gz', head=F, sep=' ', stringsAsFactors=F)
 names(d)=c('measure','x1','x2','y','i')
-single.env=read.csv("colo6.train.131229.csv.gz", head=T, sep=" ", stringsAsFactors=F)
-triple.env=read.csv("colo7.test.131229.csv.gz", head=T, sep=" ", stringsAsFactors=F)
+single.env=read.csv("../data/colo6.train.131229.csv.gz", head=T, sep=" ", stringsAsFactors=F)
+triple.env=read.csv("../data/colo7.test.131229.csv.gz", head=T, sep=" ", stringsAsFactors=F)
 
 xNames=c("fs_create_1000", "fs_delete_1000", "memory_random_1e3",
          "memory_random_1e6", "memory_random_1e9", "memory_stream_1e3",

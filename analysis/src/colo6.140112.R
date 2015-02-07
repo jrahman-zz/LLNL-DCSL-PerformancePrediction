@@ -26,18 +26,18 @@ yNames=c("cassandra.sh_10000", "mongodb.sh_10000", "voldemort.sh_10000",
          "spec.perlbench", "spec.povray", "spec.sjeng", "spec.soplex", "spec.sphinx3",
          "spec.tonto", "spec.wrf", "spec.xalancbmk", "spec.zeusmp")
 
-# TODO, what does train represent?
-train=read.csv("colo6.test.131229.csv.gz", head=T, sep=" ")
+# Training set
+train=read.csv("../data/colo6.test.131229.csv.gz", head=T, sep=" ")
 
-# TODO, what does test represent?
-test=read.csv("colo7.test.131229.csv.gz", head=T, sep=" ")
+# Testing set
+test=read.csv("../data/colo7.test.131229.csv.gz", head=T, sep=" ")
 
 match.rows = function(test.col, train.data) {
   grep(unlist(strsplit(test.col, ":"))[1], train.data$INTERF)
 }
 
 compute.error = function(y0, y1) {
-  abs(y1 - y0)/y0
+  abs(y1[[1]][[1]] - y0)/y0
 }
 
 # do.predict = function(y, xNames, train.set, test.set) {
@@ -76,7 +76,7 @@ model.error = list()
 for (y in yNames) {
   # Sweep over all the levels
   for (i in levels(test$INTERF)) {
-    # TODO, what is test.set???
+
     test.set = test[test$INTERF == i,]
     test.set = test.set[test.set[,y]>0,]
     if (nrow(test.set) == 0)
@@ -87,17 +87,18 @@ for (y in yNames) {
                         match.rows, train)
     train.set = train[unlist(train.rows),]
     train.set = train.set[train.set[,y]>0,]
-    # TODO, why?
+    print(train.set)
+
     if (nrow(train.set) == 0)
       next
     
     xNames2 = xNames[colSums(train.set[,xNames])>0]
-    
+
     model.formula[[y]][[i]] = as.formula(paste(y,"~",paste(xNames2,collapse="+"),sep=""))
     
     # Compute the linear model for pairing of interference i and app y
     model.fit[[y]][[i]] = lm(model.formula[[y]][[i]], data = train.set)
-    model.error[[y]][[i]] = compute.error(test.set[,y], predict(fit, test.set))
+    model.error[[y]][[i]] = compute.error(test.set[,y], predict(model.fit, test.set))
   }
 }
 

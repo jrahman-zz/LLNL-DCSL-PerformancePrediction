@@ -16,9 +16,9 @@ boot.pred=function(data, indices, model) {
 library(caret)
 
 # Pull in data from compressed csv file
-d=read.csv('colo6.colo7.131229.csv.gz', sep=' ', head=F)
+d=read.csv('../data/colo6.colo7.131229.csv.gz', sep=' ', head=F)
 
-# TODO, What is the names function ???
+# Set data frame names appropriately
 names(d)=c('measure','x1','x2','y')
 
 # Ok, these are the benchmark types
@@ -31,7 +31,7 @@ xNames=c("fs_create_1000", "fs_delete_1000", "memory_random_1e3",
 # Use different models
 modelNames=c('lm')
 
-# TODO, what is this??
+
 formula=as.formula('y~.')
 ci=list()
 for (measurement in xNames) {

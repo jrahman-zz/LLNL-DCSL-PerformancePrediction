@@ -1,0 +1,9 @@
+
+
+systemLog:
+    destination: file
+    path: testing/this/thing/out
+
+storage:
+    dbPath: <DBPATH>
+

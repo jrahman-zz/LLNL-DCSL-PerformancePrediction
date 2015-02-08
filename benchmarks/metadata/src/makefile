@@ -9,4 +9,4 @@ metadata: metadata.cpp
 
 .PHONY: clean
 clean:
-	rm metadata.o
+	rm metadata

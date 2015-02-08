@@ -54,7 +54,7 @@ std::string decimalFormat(long number, long base)
     return decimalString.str();
 }
 
-void printTimespec(struct timespec& ts_start, struct timespec& ts_stop, char* app)
+double printTimespec(struct timespec& ts_start, struct timespec& ts_stop, char* app)
 {
     struct duo* timeDuo = duoDiff((long) ts_stop.tv_sec, ts_stop.tv_nsec,
                                 (long) ts_start.tv_sec, ts_start.tv_nsec,
@@ -64,8 +64,15 @@ void printTimespec(struct timespec& ts_start, struct timespec& ts_stop, char* ap
 
     std::cout << "Time " << app << ": "
               << elapsed_sec << decimalFormat(elapsed_nsec, 1000000000) << std::endl;
+    return (double)elapsed_sec + (double)elapsed_nsec/1000000000.0;
 }
 
+// Comparision function for sorting arrays of doubles
+int compare_double(const void* a, const void* b) {
+    if (*(double*)a < *(double*)b) return -1;
+    if (*(double*)a > *(double*)b) return 1;
+    return 0;
+}
 
 int run_instance() {
 
@@ -126,34 +133,44 @@ cleanup:
     return ret;
 }
 
-
 int run_benchmark(char *basedir, int repetitions) {
 
     int ret, len;
-
+    double *results = NULL;
+    
     if (repetitions <= 0 || !basedir) {
         std::cout << "Bad arguments" << std::endl;
-        return -1;
+        ret = -1;
+        goto cleanup;
     }
 
     len = strlen(basedir);
     if (len <= 0) {
         std::cout << "Base directory path too short" << std::endl;
-        return -1;
+        ret = -1;
+        goto cleanup;
     }
 
     if (len >= MAX_NAME_LEN - 20) {
         std::cout << "Base directory path too long" << std::endl;
-        return -1;
+        ret = -1;
+        goto cleanup;
     }
 
+    results = new double[repetitions];
+    if (results == NULL) {
+        std::cout << "Failed to allocate results storage" << std::endl;
+        ret = -1;
+        goto cleanup;
+    }
 
     // Generate filenames
     for (int i = 0; i < FILE_COUNT; i++) {
         len = snprintf(buf[i], MAX_NAME_LEN, "%s/%d", basedir, i);
         if (len <= 0 || len >= MAX_NAME_LEN) {
             std::cout << "Failed to generate name" << std::endl;
-            return -1;
+            ret = -1;
+            goto cleanup;
         }        
     }
 
@@ -166,13 +183,41 @@ int run_benchmark(char *basedir, int repetitions) {
 
         if (ret != 0) {
             std::cout << "Run " << i << " failed" << std::endl;
-            return -1;
+            ret = -1;
+            goto cleanup;
         }
 
-        printTimespec(start, stop, "metadata");
+        results[i] = printTimespec(start, stop, "metadata");
     }
 
-    return 0;
+
+    // Perform analysis
+    double total, mean, median, p99;
+    
+    // Sort the data to make analysis easier
+    qsort(results, repetitions, sizeof(results[0]), compare_double);
+
+    median = results[repetitions/2];
+    p99 = results[(int)((double)repetitions*0.99)];
+
+    // Capture the mean
+    total = 0;
+    for (int i = 0; i < repetitions; i++) {
+        total = total + results[i];
+    }
+    mean = total / (double)repetitions;
+
+    std::cout << "Final times, total: " << total
+                         << ", median: " << median
+                         << ", mean: " << mean
+                         << ", p99: " << p99 << std::endl;
+
+    ret = 0;
+cleanup:
+    if (results != NULL) {
+        delete results;
+    }
+    return ret;
 }
 
 int main(int argc, char **argv) {

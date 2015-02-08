@@ -33,7 +33,20 @@ def memory_stream_suite():
 
 def memory_random_suite():
     cores = [0, 2]
-    bmarks [MemoryRandom1K(cores), MemoryRandom1M(cores), MemoryRandom1G(cores)]
+    bmarks = [MemoryRandom1K(cores), MemoryRandom1M(cores), MemoryRandom1G(cores)]
+
+    for bmark in bmarks:
+        bmark.start()
+
+    for bmark in bmarks:
+        bmark.join()
+
+    for bmark in bmarks:
+        print bmark.value
+
+def metadata_suite():
+    cores = [0, 2]
+    bmarks = [Metadata('test')]
 
     for bmark in bmarks:
         bmark.start()
@@ -45,7 +58,7 @@ def memory_random_suite():
         print bmark.value
 
 def main():
-    memory_stream_suite()
+    metadata_suite()
 
 
 if __name__ == '__main__':

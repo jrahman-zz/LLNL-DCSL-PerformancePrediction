@@ -192,13 +192,13 @@ int run_benchmark(char *basedir, int repetitions) {
 
 
     // Perform analysis
-    double total, mean, median, p99;
+    double total, mean, median, p90;
     
     // Sort the data to make analysis easier
     qsort(results, repetitions, sizeof(results[0]), compare_double);
 
     median = results[repetitions/2];
-    p99 = results[(int)((double)repetitions*0.99)];
+    p90 = results[(int)((double)repetitions*0.90)];
 
     // Capture the mean
     total = 0;
@@ -210,7 +210,7 @@ int run_benchmark(char *basedir, int repetitions) {
     std::cout << "Final times, total: " << total
                          << ", median: " << median
                          << ", mean: " << mean
-                         << ", p99: " << p99 << std::endl;
+                         << ", p90: " << p90 << std::endl;
 
     ret = 0;
 cleanup:

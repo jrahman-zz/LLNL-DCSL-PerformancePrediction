@@ -1,9 +1,9 @@
-from stream import StreamCopy, StreamAdd, StreamScale, StreamTriad
-from memory import MemoryStream1K, MemoryStream1M, MemoryStream1G
-from memory import MemoryRandom1K, MemoryRandom1M, MemoryRandom1G
-from iobench import IOBenchRead1M, IOBenchRead4M, IOBenchRead1G
-from iobench import IOBenchWrite1M, IOBenchWrite4M, IOBenchWrite1G
-from metadata import Metadata
+from benchmarks.stream import StreamCopy, StreamAdd, StreamScale, StreamTriad
+from benchmarks.memory import MemoryStream1K, MemoryStream1M, MemoryStream1G
+from benchmarks.memory import MemoryRandom1K, MemoryRandom1M, MemoryRandom1G
+from benchmarks.iobench import IOBenchRead1M, IOBenchRead4M, IOBenchRead1G
+from benchmarks.iobench import IOBenchWrite1M, IOBenchWrite4M, IOBenchWrite1G
+from benchmarks.metadata import Metadata
 
 def stream_suite():
     cores = [0, 2]

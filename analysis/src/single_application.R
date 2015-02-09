@@ -2,6 +2,7 @@
 
 library(Hmisc)
 library(rpart)
+library(boot)
 library(e1071)
 library(gbm)
 library(MASS)
@@ -28,23 +29,23 @@ feature.names=c("fs_create_1000", "fs_delete_1000", "memory_random_1e3",
 
 # Application names
 # TODO, update with actual and new application names
-application.names=c("cassandra.sh_10000", "mongodb.sh_10000", "voldemort.sh_10000",
-         "spec.GemsFDTD", "spec.astar", "spec.bwaves", "spec.bzip2", "spec.cactusADM",
-         "spec.calculix", "spec.dealII", "spec.gamess", "spec.gcc", "spec.gobmk",
-         "spec.gromacs", "spec.h264ref", "spec.hmmer", "spec.lbm", "spec.leslie3d",
-         "spec.libquantum", "spec.mcf", "spec.milc", "spec.namd", "spec.omnetpp",
-         "spec.perlbench", "spec.povray", "spec.sjeng", "spec.soplex", "spec.sphinx3",
-         "spec.tonto", "spec.wrf", "spec.xalancbmk", "spec.zeusmp")
+#application.names=c("cassandra.sh_10000", "mongodb.sh_10000", "voldemort.sh_10000",
+#         "spec.GemsFDTD", "spec.astar", "spec.bwaves", "spec.bzip2", "spec.cactusADM",
+#         "spec.calculix", "spec.dealII", "spec.gamess", "spec.gcc", "spec.gobmk",
+#         "spec.gromacs", "spec.h264ref", "spec.hmmer", "spec.lbm", "spec.leslie3d",
+#         "spec.libquantum", "spec.mcf", "spec.milc", "spec.namd", "spec.omnetpp",
+#         "spec.perlbench", "spec.povray", "spec.sjeng", "spec.soplex", "spec.sphinx3",
+#         "spec.tonto", "spec.wrf", "spec.xalancbmk", "spec.zeusmp")
 
 # Read in data
-d=read.csv('../data/colo6.colo7.131229.csv.gz',
-           head=F,
-           sep=' ',
-           stringsAsFactors=F)
+d=read.csv('../test/single_app.csv',
+           head=T,
+           sep=',',
+           stringsAsFactors=T)
 
 # Set data frame names appropriately
-metadata = c("application", "interference")
-names(d) = c(metadata, features.names)
+#metadata = c("application", "interference") # This won't be needed with the new data format
+#names(d) = c(metadata, features.names)
 
 # Compute training error
 compute.error = function(y0, y1) {
@@ -59,37 +60,48 @@ boot.pred=function(data, indices, model) {
   #   indices: Bootstrap method chooses indices
   #   model: Trained model to run data through
   #
-  data=data[indices,]
-  median(abs(predict(model, data)-data$y)/data$y)*100
+  data=data[indices, ]
+  median(abs(predict(model, data) - data$y) / data$y) * 100
 }
 
-model.names = c("gbm", "lm", "svm")
+model.names = c("lm", "svmLinear")
 
 # Define our formula for y in terms of others
 formula=as.formula('y~.')
 
+ci=list()
+
 # Sweep over applications
-for (appplication in application.names) {
+for (application in unique(d$application)) {
+  
+  # Select all rows for our application
+  data = d[d$application == application, ]
+  
+  # Partition the data into training and validation sets
+  training.rows=createDataPartition(data$y, p=.7, list=F)
+  training.set=data[training.rows, ]
+  test.set=data[-training.rows, ]
+  
+  print(training.set)
+  print(test.set)
+  
+  drops = c('application', 'interference')
+  training.data = training.set[, !(names(training.set) %in% drops)]
+  testing.data = test.set[, !(names(test.set) %in% drops)]
+  
   # Sweep over models
   for (model in model.names) {
-    
-    
-    # Partition the data into training and validation sets
-    training.rows=createDataPartition(data$y, p=.8, list=F)
-    training.set=data[training.rows, ]
-    test.set=data[-training.rows, ]
     
     control.object=trainControl(method='repeatedcv', repeats=5, number=10)
     set.seed(1)
     
     # Create a fit mapping from features (no interference) to application performance
-    fit=train(formula, data=training.set, method=model, trControl=control.object)
+    fit=train(form = y ~ ., data=training.data, method=model, trControl=control.object)
     
-    fit.boot=boot(data=test.sd =et, statistic=boot.pred, R=999, model=fit)
+    fit.boot=boot(data=testing.data, statistic=boot.pred, R=999, model=fit)
     # see for bca: "Better Bootstrap Confidence Intervals" by Efron 1987.
     # see "Bootstrapping Regression Models" by John Fox 2002.  
-    ci[[measurement]][[model]]=boot.ci(fit.boot, type="bca")
-    
+    ci[[application]][[model]]=boot.ci(fit.boot, type="bca")
   }
 }
 

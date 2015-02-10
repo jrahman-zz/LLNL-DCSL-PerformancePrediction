@@ -30,7 +30,7 @@ xNames=c("fs_create_1000", "fs_delete_1000", "memory_random_1e3",
          "memory_stream_1e6", "memory_stream_1e9", "read1G", "read4M", "read64M",
          "stream_Add", "stream_Copy", "stream_Scale", "stream_Triad", "write1G",
          "write4M", "write64M")
-yNames=c("cassandra.sh_10000", "mongodb.sh_10000", "voldemort.sh_10000",
+app.names=c("cassandra.sh_10000", "mongodb.sh_10000", "voldemort.sh_10000",
          "spec.GemsFDTD", "spec.astar", "spec.bwaves", "spec.bzip2", "spec.cactusADM",
          "spec.calculix", "spec.dealII", "spec.gamess", "spec.gcc", "spec.gobmk",
          "spec.gromacs", "spec.h264ref", "spec.hmmer", "spec.lbm", "spec.leslie3d",
@@ -56,6 +56,8 @@ set.seed(1)
 trainFolds=createFolds(1:length(allEnv), returnTrain=T)
 
 for (model in modelNames) {
+  
+  # Build matrices to hold the models
   pr[[model]]=matrix(0, length(allEnv), length(xNames))
   rownames(pr[[model]])=allEnv
   colnames(pr[[model]])=xNames
@@ -64,25 +66,39 @@ for (model in modelNames) {
   rownames(er[[model]])=allEnv
   colnames(er[[model]])=xNames
   
-  for (y in yNames) {
-    trainSet.app=single.env[single.env[,y]>0,]
+  # Build operator for single application prediction (no interference)
+  for (app in app.names) {
+    trainSet.app=single.env[single.env[,app]>0,]
     if (nrow(trainSet.app)==0) {
       next
     }
-    formula.app=as.formula(paste(y,"~",paste(xNames,collapse="+"),sep=""))
+    
+    # Build formula object based on feature column names in the data file
+    formula.app=as.formula(paste(app,"~",paste(xNames,collapse="+"),sep=""))
     set.seed(1)
-    fit.app[[model]][[y]]=train(formula.app, data=trainSet.app, method=model,
+    # Go ahead and fit the single application model
+    fit.app[[model]][[app]]=train(formula.app, data=trainSet.app, method=model,
                                 trControl=controlObject)
   }
   
   for (trainRows in trainFolds) {
+    
+    # Use the same training v.s. testing split for all experiments
     trainEnv=allEnv[trainRows]
     testEnv=allEnv[-trainRows]
   
     # STEP 1: Predict complex env from simple env
     for (measurement in xNames) {
+      # Filter rows based which only include the measurement we are interested in
       measurementData=d[d[,1]==measurement,]
       rownames(measurementData)=measurementData[,ncol(measurementData)]
+      
+      # MeasurementData has columns measurement, x1, x2, y
+      # Where measurement is the name of the measurement (could be bmark or app)
+      # x1 is the single application interference with measurement
+      # x2 is the single application (app #2) interference with measurement
+      # y is the two application interference with measurement
+      # Split into training and testing sets as appropriate
       trainSet=measurementData[trainEnv,]
       testSet=measurementData[testEnv,]
       
@@ -93,18 +109,23 @@ for (model in modelNames) {
     }
     
     # STEP 2: Predict app from env
-    for (y in yNames) {
-      if (!y %in% colnames(triple.env)) {
+    for (app in app.names) {
+      if (!app %in% colnames(triple.env)) {
         next
       }
-      tripleTestSet=triple.env[triple.env$INTERF %in% testEnv & triple.env[,y]>0,]
+      tripleTestSet=triple.env[triple.env$INTERF %in% testEnv & triple.env[,app]>0,]
       if (nrow(tripleTestSet)==0) {
         next
       }
       for (e in unique(tripleTestSet$INTERF)) {
-        origY=tripleTestSet[tripleTestSet$INTERF==e, y]
-        predY=predict(fit.app[[model]][[y]], as.data.frame(t(pr[[model]][match(e, allEnv),])))
-        pred.app[[model]][[y]]=c(pred.app[[model]][[y]], abs(predY-origY)/origY)
+        # Observed application performance in interference environment
+        origY=tripleTestSet[tripleTestSet$INTERF==e, app]
+        
+        # Predict based on multiple single interference features
+        predY=predict(fit.app[[model]][[app]], as.data.frame(t(pr[[model]][match(e, allEnv),])))
+        
+        # Save prediction errors
+        pred.app[[model]][[app]]=c(pred.app[[model]][[app]], abs(predY-origY)/origY)
       }
     }
   }
@@ -128,10 +149,10 @@ for (model in modelNames) {
   error.bar.horiz(bars, err, upp-err, err-low, col='gray')
   text(round(err, 1), bars, round(err, 1), adj=c(0,0.5))
   
-  for (y in yNames) {
-    if (y %in% names(pred.app[[model]])) {
-      bt.app=boot(data=pred.app[[model]][[y]], statistic=boot.stat, R=10000)
-      ci.app[[model]][[y]]=boot.ci(bt.app, type="bca")
+  for (app in app.names) {
+    if (app %in% names(pred.app[[model]])) {
+      bt.app=boot(data=pred.app[[model]][[app]], statistic=boot.stat, R=10000)
+      ci.app[[model]][[app]]=boot.ci(bt.app, type="bca")
     }
   }
   par(mar=c(4,10,1,0), xpd=T)

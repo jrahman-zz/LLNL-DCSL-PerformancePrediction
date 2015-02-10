@@ -37,6 +37,12 @@ feature.names=c("fs_create_1000", "fs_delete_1000", "memory_random_1e3",
 #         "spec.perlbench", "spec.povray", "spec.sjeng", "spec.soplex", "spec.sphinx3",
 #         "spec.tonto", "spec.wrf", "spec.xalancbmk", "spec.zeusmp")
 
+error.bar <- function(x, y, upper, lower=upper, length=0.1,...){
+  if(length(x) != length(y) | length(y) !=length(lower) | length(lower) != length(upper))
+    stop("vectors must be same length")
+  arrows(x,y+upper, x, y-lower, angle=90, code=3, length=length, ...)
+}
+
 # Read in data
 d=read.csv('../test/single_app.csv',
            head=T,
@@ -64,7 +70,7 @@ boot.pred=function(data, indices, model) {
   median(abs(predict(model, data) - data$y) / data$y) * 100
 }
 
-model.names = c("lm", "svmLinear")
+model.names = c("lm", "svmRadial")
 
 # Define our formula for y in terms of others
 formula=as.formula('y~.')
@@ -82,8 +88,7 @@ for (application in unique(d$application)) {
   training.set=data[training.rows, ]
   test.set=data[-training.rows, ]
   
-  print(training.set)
-  print(test.set)
+  print(application)
   
   drops = c('application', 'interference')
   training.data = training.set[, !(names(training.set) %in% drops)]
@@ -108,14 +113,14 @@ for (application in unique(d$application)) {
 # Plot results
 pdf("predict_application_clean_environment.pdf", width=10, height=5)
 par(mar=c(10,4,1,0), xpd=T)
-err=sapply(ci, function(x) x$lm$t0)
-low=sapply(ci, function(x) x$lm$bca[4])
-upp=sapply(ci, function(x) x$lm$bca[5])
+err=sapply(ci, function(x) x[[1]]$t0)
+low=sapply(ci, function(x) x[[1]]$bca[4])
+upp=sapply(ci, function(x) x[[1]]$bca[5])
 bars = barplot(err,
                beside=T, las=3, cex.names=0.8,
                ylim=c(0, extendrange(c(err, upp, low))[2]),
                ylab='Median Prediction Error %',
                col="green", border='white')
 error.bar(bars, err, upp-err, err-low)
-text(bars, 0, round(e, 1), srt=90, adj=c(0,0.5), cex=0.8)
+text(bars, 0, round(err, 1), srt=90, adj=c(0,0.5), cex=0.8)
 dev.off()

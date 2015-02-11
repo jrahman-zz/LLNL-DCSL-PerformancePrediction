@@ -1,1 +1,2 @@
-use ycsb
+conn = new Mongo("localhost");
+db = conn.getDB("ycsb"); 

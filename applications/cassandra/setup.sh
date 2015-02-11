@@ -1,7 +1,7 @@
 #!/bin/bash
 
-function usage {
-    echo "Usage: setup.sh YCSB_DIR CASSANDRA_DIR DATA_DIR PID_FILE"
+usage() {
+    echo "Usage: setup.sh YCSB_DIR CASSANDRA_DIR DATA_DIR CASSANDRA_INCLUDE PID_FILE"
 }
 
 if [ $# -ne 5 ]; then
@@ -44,9 +44,18 @@ if [ ! -d "${DATA_DIR}" ]; then
     usage
     exit 1
 fi
+export DATA_DIR
+
+CASSANDRA_INCLUDE=${4}
+if [ ! -r "${CASSANDRA_INCLUDE}" ]; then
+    echo "Error: Bad cassandra include config file"
+    usage
+    exit 1
+fi
+export CASSANDRA_INCLUDE
 
 # Name of PID file
-PID_FILE=${4}
+PID_FILE=${5}
 
 # Delete old datadir
 if [ -d "${DATA_DIR}/cassandra_data" ]; then
@@ -70,7 +79,7 @@ echo "Setup: Created data directory"
 
 # Start the server in the background
 echo "Setup: Starting server"
-${CASSANDRA_DIR}/bin/cassandra -p "${PID_FILE}"
+${CASSANDRA_DIR}/bin/cassandra -p "${PID_FILE}" > test.out
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start server"
     exit 1
@@ -78,12 +87,12 @@ fi
 
 # Need to give the server a couple seconds to catch it's breath...
 echo "Setup: Sleeping to give Cassandra time to start..."
-sleep 10
+sleep 30
 echo "Setup: Woke up, time to prepare data..."
 
 # Ok, lets build the tables
 echo "Setup: Creating tables..."
-cassandra-cli -h 127.0.0.1 -f setup.cql
+${CASSANDRA_DIR}/bin/cassandra-cli -h 127.0.0.1 -f setup.cql
 if [ $? -ne 0 ]; then
     echo "Error: Failed to create table"
     exit 1
@@ -93,7 +102,7 @@ echo "Setup: Tables created"
 
 # And now we load the benchmark data
 echo "Setup: Loading data..."
-${YCSBDIR}/bin/ycsb load cassandra-10 -threads 4 -P "${YCSB_DIR}/workload/workloada" -p hosts="127.0.0.1"
+${YCSB_DIR}/bin/ycsb load cassandra-10 -threads 4 -P "${YCSB_DIR}/workloads/workloada" -p hosts="127.0.0.1"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to load test data"
     exit 1

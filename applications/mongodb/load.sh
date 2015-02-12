@@ -47,7 +47,7 @@ if [ ! -d "${DATA_DIR}" ]; then
 fi
 
 # Name of PID file
-PIDFILE=${4}
+PID_FILE=${4}
 
 # Delete old datadir
 if [ -d "${DATA_DIR}/mongodb_data" ]; then
@@ -69,18 +69,10 @@ if [ $? -ne 0 ]; then
 fi
 echo "Setup: Created data directory"
 
-# Tweak the config file...
-echo "Setup: Customizing configuration..."
-cp "config.yaml" "config.yaml.custom"
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to copy config"
-    exit 1
-fi
-
 DBLOCATION="${DATA_DIR}/mongodb_data/"
 
 echo "Setup: Starting server..."
-${MONGODB_DIR}/bin/mongod --pidfilepath "${PIDFILE}" --fork --dbpath="${DBLOCATION}" --logpath="${DBLOCATION}/mongodb.log"
+${MONGODB_DIR}/bin/mongod --pidfilepath "${PID_ILE}" --fork --dbpath="${DBLOCATION}" --logpath="${DBLOCATION}/mongodb.log"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start mongodb"
     exit 1
@@ -104,12 +96,12 @@ fi
 echo "Setup: Loaded data into MongoDB"
 
 echo "Setup: Shutting MongoDB down..."
-kill `cat ${PIDFILE}`
+kill `cat ${PID_FILE}`
 if [ $? -ne 0 ]; then
     echo "Error: Failed to stop MongoDB"
     exit 1
 fi
-rm "${PIDFILE}"
+rm "${PID_FILE}"
 echo "Setup: Shutdown MongoDB"
 
 exit 0

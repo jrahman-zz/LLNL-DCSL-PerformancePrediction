@@ -102,11 +102,19 @@ echo "Setup: Tables created"
 
 # And now we load the benchmark data
 echo "Setup: Loading data..."
-${YCSB_DIR}/bin/ycsb load cassandra-10 -threads 4 -P "${YCSB_DIR}/workloads/workloada" -p hosts="127.0.0.1"
+${YCSB_DIR}/bin/ycsb load cassandra-10 -threads 4 -P "${YCSB_DIR}/workloads/workloada" -P "workload.dat" -p hosts="127.0.0.1"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to load test data"
     exit 1
 fi
 echo "Setup: Data loaded"
+
+echo "Setup: Shutting Cassandra down..."
+kill `cat ${PIDFILE}`
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to shut Cassandra down"
+    exit 1
+fi
+echo "Setup: Shut Cassandra down"
 
 exit 0

@@ -47,7 +47,7 @@ if [ ! -d "${DATA_DIR}" ]; then
 fi
 
 # Name of PID file
-PID_FILE=${4}
+PIDFILE=${4}
 
 # Delete old datadir
 if [ -d "${DATA_DIR}/mongodb_data" ]; then
@@ -101,11 +101,20 @@ fi
 
 # Load the data as needed
 echo "Setup: Loading data into MongoDB"
-${YCSB_DIR}/bin/ycsb load mongodb -P "${YCSB_DIR}/workloads/workloada" -threads 4
+${YCSB_DIR}/bin/ycsb load mongodb -P "${YCSB_DIR}/workloads/workloada" -threads 4 -P "workload.dat" -s
 if [ $? -ne 0 ]; then
     echo "Error: Failed to load data into MongoDB"
     exit 1
 fi
 echo "Setup: Loaded data into MongoDB"
+
+echo "Setup: Shutting MongoDB down..."
+kill `cat ${PIDFILE}`
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to stop MongoDB"
+    exit 1
+fi
+rm "${PIDFILE}"
+echo "Setup: Shutdown MongoDB"
 
 exit 0

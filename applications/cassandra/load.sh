@@ -31,7 +31,7 @@ if [ ! -d "${CASSANDRA_DIR}" ]; then
     exit 1
 fi
 
-if [ ! -f "${CASSANDRA_DIR}/bin/cassandra" -o ! -x "${CASSANDRA_DIR}/bin/cassandra-cli" ]; then
+if [ ! -x "${CASSANDRA_DIR}/bin/cassandra" -o ! -x "${CASSANDRA_DIR}/bin/cassandra-cli" ]; then
     echo "Error: Cassandra directory is incorrect"
     usage
     exit 1
@@ -79,7 +79,7 @@ echo "Setup: Created data directory"
 
 # Start the server in the background
 echo "Setup: Starting server"
-${CASSANDRA_DIR}/bin/cassandra -p "${PID_FILE}" > test.out
+${CASSANDRA_DIR}/bin/cassandra -p "${PID_FILE}" &> test.out
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start server"
     exit 1

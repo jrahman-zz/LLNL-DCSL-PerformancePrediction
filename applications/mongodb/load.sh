@@ -86,11 +86,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Give MongoDB time to catch it's breath
-echo "Setup: Waiting for MongoDB to start..."
-sleep 10
-echo "Setup: Waking up from deep sleep"
-
 # Create our database
 echo "Setup: Creating database..."
 ${MONGODB_DIR}/bin/mongo setup.js

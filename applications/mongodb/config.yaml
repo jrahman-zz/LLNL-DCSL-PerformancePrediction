@@ -1,9 +1,0 @@
-
-
-systemLog:
-    destination: file
-    path: <SYSTEMLOG>
-
-storage:
-    dbPath: <DBPATH>
-

@@ -32,7 +32,7 @@ if [ ! -d "${MONGODB_DIR}" ]; then
     exit 1
 fi
 
-if [ ! -f "${MONGODB_DIR}/bin/mongod" ]; then
+if [ ! -x "${MONGODB_DIR}/bin/mongod" ]; then
     echo "Error: MongoDB directory is incorrect"
     usage
     exit 1

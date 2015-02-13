@@ -21,15 +21,12 @@ DATABASE=${2} # TODO, should we sanity check this?
 # Shift both required parameters away
 shift 2
 
-WORKLOADS="${YCSB_DIR}/workloads/workload"{a,b,c,d}
-
-
-PARAMS='-P workload.dat'
+WORKLOADS="${YCSB_DIR}/workloads/workload"
 
 # Loop over each possible workload
-for WORKLOAD in ${WORKLOADS}; do
+for WORKLOAD in ${WORKLOADS}{a,b,c,d}; do
     echo "Run: Running workload ${WORKLOAD}..."
-    ${YCSB_DIR}/bin/ycsb run "${DATABASE}" -P "${WORKLOAD}" "${PARAMS}" $@
+    ${YCSB_DIR}/bin/ycsb run "${DATABASE}" -P "${WORKLOAD}" $@
     if [ $? -ne 0 ]; then
         echo "Error: Workload ${WORKLOAD} failed"
         exit 1

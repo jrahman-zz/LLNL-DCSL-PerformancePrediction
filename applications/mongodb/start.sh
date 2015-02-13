@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: start.sh MONGO_HOME DATA_DIR PIDFILE"
+    echo "Usage: start.sh MONGODB_HOME DATA_DIR PIDFILE"
 }
 
 if [ $# -ne 3 ]; then
@@ -23,13 +23,14 @@ if [ ! -d "${DATA_DIR}/mongodb_data" ]; then
     exit 1
 fi
 
-PID_FILE=${4}
+PID_FILE=${3}
 
 # Setup our data directory info
 DBLOCATION="${DATA_DIR}/mongodb_data"
 
 echo "Start: Launching MongoDB..."
-${MONGODB_DIR}/bin/mongod --pidfilepath="${PID_FILE}" --fork --dbpath="${DBLOCATION}" --logpath="${DBLOCATION}.mongodb.log"
+sleep 1 # Wait just a second for any previous instance to clear up
+${MONGODB_DIR}/bin/mongod --pidfilepath="${PID_FILE}" --fork --dbpath="${DBLOCATION}" --logpath="${DBLOCATION}/mongodb.log"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start MongoDB"
     exit 1

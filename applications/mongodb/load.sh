@@ -2,7 +2,7 @@
 
 
 usage() {
-    echo "Usage: load.sh YCSB_DIR MONGODB_DIR DATA_DIR PID_FILE"
+    echo "Usage: load.sh YCSB_DIR MONGODB_DIR DATA_DIR"
 }
 
 if [ $# -ne 4 ]; then
@@ -46,9 +46,6 @@ if [ ! -d "${DATA_DIR}" ]; then
     exit 1
 fi
 
-# Name of PID file
-PID_FILE=${4}
-
 # Delete old datadir
 if [ -d "${DATA_DIR}/mongodb_data" ]; then
     echo "Load: Deleting old data directory at ${DATA_DIR}/mongodb_data..."
@@ -72,7 +69,7 @@ echo "Load: Created data directory"
 DBLOCATION="${DATA_DIR}/mongodb_data/"
 
 echo "Load: Starting server..."
-${MONGODB_DIR}/bin/mongod --pidfilepath "${PID_ILE}" --fork --dbpath="${DBLOCATION}" --logpath="${DBLOCATION}/mongodb.log"
+${MONGODB_DIR}/bin/mongod --fork --dbpath="${DBLOCATION}" --logpath="${DBLOCATION}/mongodb.log"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start mongodb"
     exit 1
@@ -96,12 +93,14 @@ fi
 echo "Load: Loaded data into MongoDB"
 
 echo "Load: Shutting MongoDB down..."
-kill `cat ${PID_FILE}`
+${MONGODB_DIR}/bin/mongod --shutdown --dbpath="${DBLOCATION}"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to stop MongoDB"
     exit 1
 fi
-rm "${PID_FILE}"
+
+# Give MongoDB some time to release resources and locks
+sleep 2
 echo "Load: Shutdown MongoDB"
 
 exit 0

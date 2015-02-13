@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: setup.sh YCSB_DIR CASSANDRA_DIR DATA_DIR CASSANDRA_INCLUDE PID_FILE"
+    echo "Usage: load.sh YCSB_DIR CASSANDRA_DIR DATA_DIR CASSANDRA_INCLUDE PID_FILE"
 }
 
 if [ $# -ne 5 ]; then
@@ -59,26 +59,26 @@ PID_FILE=${5}
 
 # Delete old datadir
 if [ -d "${DATA_DIR}/cassandra_data" ]; then
-    echo "Setup: Deleting old data directory at ${DATA_DIR}/cassandra_data..."
+    echo "Load: Deleting old data directory at ${DATA_DIR}/cassandra_data..."
     rm -rf "${DATA_DIR}/cassandra_data"
     if [ $? -ne 0 ]; then
         echo "Error: Failed to delete ${DATA_DIR}/cassandra_data"
         exit 1
     fi
-    echo "Setup: Deleted old data directory"
+    echo "Load: Deleted old data directory"
 fi
 
 # Create new, empty data directory on target drive
-echo "Setup: Creating new data directory at ${DATA_DIR}/cassandra_data..."
+echo "Load: Creating new data directory at ${DATA_DIR}/cassandra_data..."
 mkdir -p "${DATA_DIR}/cassandra_data"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to create data directory"
     exit 1
 fi
-echo "Setup: Created data directory"
+echo "Load: Created data directory"
 
 # Start the server in the background
-echo "Setup: Starting server"
+echo "Load: Starting server"
 ${CASSANDRA_DIR}/bin/cassandra -p "${PID_FILE}" &> test.out
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start server"
@@ -86,35 +86,34 @@ if [ $? -ne 0 ]; then
 fi
 
 # Need to give the server a couple seconds to catch it's breath...
-echo "Setup: Sleeping to give Cassandra time to start..."
+echo "Load: Sleeping to give Cassandra time to start..."
 sleep 30
-echo "Setup: Woke up, time to prepare data..."
+echo "Load: Woke up, time to prepare data..."
 
 # Ok, lets build the tables
-echo "Setup: Creating tables..."
+echo "Load: Creating tables..."
 ${CASSANDRA_DIR}/bin/cassandra-cli -h 127.0.0.1 -f setup.cql
 if [ $? -ne 0 ]; then
     echo "Error: Failed to create table"
     exit 1
 fi
-echo "Setup: Tables created"
-
+echo "Load: Tables created"
 
 # And now we load the benchmark data
-echo "Setup: Loading data..."
+echo "Load: Loading data..."
 ${YCSB_DIR}/bin/ycsb load cassandra-10 -threads 4 -P "${YCSB_DIR}/workloads/workloada" -P "workload.dat" -p hosts="127.0.0.1"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to load test data"
     exit 1
 fi
-echo "Setup: Data loaded"
+echo "Load: Data loaded"
 
-echo "Setup: Shutting Cassandra down..."
+echo "Load: Shutting Cassandra down..."
 kill `cat ${PIDFILE}`
 if [ $? -ne 0 ]; then
     echo "Error: Failed to shut Cassandra down"
     exit 1
 fi
-echo "Setup: Shut Cassandra down"
+echo "Load: Shut Cassandra down"
 
 exit 0

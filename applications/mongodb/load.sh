@@ -2,7 +2,7 @@
 
 
 usage() {
-    echo "Usage: setup.sh YCSB_DIR MONGODB_DIR DATA_DIR PID_FILE"
+    echo "Usage: load.sh YCSB_DIR MONGODB_DIR DATA_DIR PID_FILE"
 }
 
 if [ $# -ne 4 ]; then
@@ -51,27 +51,27 @@ PID_FILE=${4}
 
 # Delete old datadir
 if [ -d "${DATA_DIR}/mongodb_data" ]; then
-    echo "Setup: Deleting old data directory at ${DATA_DIR}/mongodb_data..."
+    echo "Load: Deleting old data directory at ${DATA_DIR}/mongodb_data..."
     rm -rf "${DATA_DIR}/mongodb_data"
     if [ $? -ne 0 ]; then
         echo "Error: Failed to delete ${DATA_DIR}/mongodb_data"
         exit 1
     fi
-    echo "Setup: Deleted old data directory"
+    echo "Load: Deleted old data directory"
 fi
 
 # Create new, empty data directory on target drive
-echo "Setup: Creating new data directory at ${DATA_DIR}/mongodb_data..."
+echo "Load: Creating new data directory at ${DATA_DIR}/mongodb_data..."
 mkdir -p "${DATA_DIR}/mongodb_data"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to create data directory"
     exit 1
 fi
-echo "Setup: Created data directory"
+echo "Load: Created data directory"
 
 DBLOCATION="${DATA_DIR}/mongodb_data/"
 
-echo "Setup: Starting server..."
+echo "Load: Starting server..."
 ${MONGODB_DIR}/bin/mongod --pidfilepath "${PID_ILE}" --fork --dbpath="${DBLOCATION}" --logpath="${DBLOCATION}/mongodb.log"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start mongodb"
@@ -79,7 +79,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Create our database
-echo "Setup: Creating database..."
+echo "Load: Creating database..."
 ${MONGODB_DIR}/bin/mongo setup.js
 if [ $? -ne 0 ]; then
     echo "Error: Failed to setup database"
@@ -87,21 +87,21 @@ if [ $? -ne 0 ]; then
 fi
 
 # Load the data as needed
-echo "Setup: Loading data into MongoDB"
+echo "Load: Loading data into MongoDB"
 ${YCSB_DIR}/bin/ycsb load mongodb -P "${YCSB_DIR}/workloads/workloada" -threads 4 -P "workload.dat" -s
 if [ $? -ne 0 ]; then
     echo "Error: Failed to load data into MongoDB"
     exit 1
 fi
-echo "Setup: Loaded data into MongoDB"
+echo "Load: Loaded data into MongoDB"
 
-echo "Setup: Shutting MongoDB down..."
+echo "Load: Shutting MongoDB down..."
 kill `cat ${PID_FILE}`
 if [ $? -ne 0 ]; then
     echo "Error: Failed to stop MongoDB"
     exit 1
 fi
 rm "${PID_FILE}"
-echo "Setup: Shutdown MongoDB"
+echo "Load: Shutdown MongoDB"
 
 exit 0

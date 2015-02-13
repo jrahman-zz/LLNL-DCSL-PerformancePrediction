@@ -1,12 +1,12 @@
 
 from interference import InterferenceThread
-from program import Program
+from benchmark import Benchmark
 import re
 
-class MemoryBenchmark(Program):
+class MemoryBenchmark(Benchmark):
 
     def __init__(self, operation=1, size=1024, repeat=10, cores=[0]):
-        Program.__init__(self, cores)
+        Benchmark.__init__(self, cores)
         self._operation = operation
         if operation == 1:
             self._type = 'streaming'
@@ -16,7 +16,7 @@ class MemoryBenchmark(Program):
             raise Exception('Invalid operation type')
         self._size = size
         self._repeat = repeat
-        self._cmd = 'memory'
+        self._cmd = self._benchmark_dir + '/memory'
         self._params = [str(operation), str(size), str(repeat)]
         self._name = "memory_%s_%s" % (self._type, str(self._size))
 
@@ -55,7 +55,7 @@ class MemoryInterference(InterferenceThread):
             raise Exception('Invalid operation type')
         self._size = size
         self._repeat = repeat
-        self._cmd = 'memory'
+        self._cmd = self._benchmark_dir + '/memory'
         self._params = [str(operation), str(size), str(repeat)]
         self._name = 'memory_%s_%s' % (self._type, str(self._size))
 

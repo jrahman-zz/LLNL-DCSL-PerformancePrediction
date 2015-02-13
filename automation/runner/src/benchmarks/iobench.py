@@ -1,13 +1,13 @@
 
 import re
-from program import Program
+from benchmark import Benchmark
 from interference import InterferenceThread
 
-class IOBenchmark(Program):
+class IOBenchmark(Benchmark):
     """ Base class for IOBench benchmarks """
 
     def __init__(self, seconds=5, read=True, size='1K', path='/tmp/iobench.file', cores=[0]):
-        Program.__init__(self, cores)
+        Benchmark.__init__(self, cores)
         self._read = read
         if read:
             self._operation = 'read'
@@ -17,7 +17,7 @@ class IOBenchmark(Program):
         self._seconds = seconds
         self._cmd = 'java'
         self._runstring = ','.join([self._operation, '1', self._size, self._size])
-        self._params = ['-classpath', 'iobench.jar', 'Main', 'run', '-h=20', path, str(self._seconds), self._runstring]
+        self._params = ['-classpath', self._benchmark_dir + '/iobench.jar', 'Main', 'run', '-h=20', path, str(self._seconds), self._runstring]
         self._name = 'iobench_%s_%s' % (self._operation, self._size)
 
     def _setup(self):
@@ -59,7 +59,7 @@ class IOBenchInterfere(InterferenceThread):
         self._name = 'iobench_%s_%s' % (self._operation, self._size)
         self._cmd = 'java'
         self._runstring = ','.join([self._operation, '1', self._size, self._size])
-        self._params = ['-classpath', 'iobench.jar', 'Main', 'run', '-h=20', path, str(self._seconds), self._runstring]
+        self._params = ['-classpath', self._benchmark_dir + '/iobench.jar', 'Main', 'run', '-h=20', path, str(self._seconds), self._runstring]
 
 class IOBenchRead1M(IOBenchmark):
     def __init__(self, path, cores=[0]):

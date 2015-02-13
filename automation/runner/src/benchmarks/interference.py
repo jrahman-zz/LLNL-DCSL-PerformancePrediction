@@ -1,4 +1,5 @@
 
+import os
 import logging
 from gevent import Greenlet
 from gevent import subprocess
@@ -10,6 +11,7 @@ class InterferenceThread(Greenlet):
         self._cores = cores
         self._process = None
         self._keep_running = True
+        self._benchmark_dir = os.environ['BENCHMARK_DIR']
 
     def __str__(self):
         return self._name

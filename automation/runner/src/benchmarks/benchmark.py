@@ -1,13 +1,15 @@
 
 import sys
+import os
 import gevent.greenlet as greenlet
 import gevent.subprocess as subprocess
 
-class Program(greenlet.Greenlet):
+class Benchmark(greenlet.Greenlet):
 
     def __init__(self, cores=[0]):
         greenlet.Greenlet.__init__(self)
         self._cores = cores
+        self._benchmark_dir = os.environ['BENCHMARK_DIR']
 
     def __str__(self):
         return self._name

@@ -1,13 +1,13 @@
 
-from program import Program
+from benchmark import Benchmark
 from interference import InterferenceThread
 import re
 
-class Metadata(Program):
+class Metadata(Benchmark):
 
     def __init__(self, path, cores=[0]):
-        Program.__init__(self, cores)
-        self._cmd = 'metadata'
+        Benchmark.__init__(self, cores)
+        self._cmd = self._benchmark_dir + '/metadata'
         self._params = [path, '100'];
         self._name = 'metadata'
 
@@ -34,7 +34,7 @@ class MetadataInference(InterferenceThread):
     def __init__(self, path, cores=[0]):
         InterferenceThread.__init__(self, cores)
         self._params = [path, '1000'];
-        self._cmd = 'metadata'
+        self._cmd = self._benchmark_dir + '/metadata'
         self._name = 'metadata'
 
 

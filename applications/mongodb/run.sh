@@ -21,10 +21,10 @@ if [ ! -x "$YCSB_DIR}/bin/ycsb" ]; then
     exit 1
 fi
 
-PARAMS='-p "hosts=localhost" ${OPERATIONS}'
+PARAMS="${OPERATIONS}"
 
 echo "Run: Starting now..."
-ycsb_run.sh "${YCSB_DIR}" 'cassandra-10' ${PARAMS}
+ycsb_run.sh "${YCSB_DIR}" 'mongodb' ${PARAMS}
 if [ $? -ne 0 ]; then
     echo "Error: Failed to launch the run"
     exit 1

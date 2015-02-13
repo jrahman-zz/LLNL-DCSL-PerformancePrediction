@@ -18,11 +18,14 @@ class Program(greenlet.Greenlet):
 
         cmd = ['taskset', '-c', cores, self._cmd]
         cmd = cmd + self._params
-        
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        output = self._process_output(output)
-        self._teardown()
-        return output
+        features = {}
+        try:
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            features = self._process_output(output)
+        except:
+            self._teardown()
+            raise
+        return features
 
     def _setup(self):
         pass

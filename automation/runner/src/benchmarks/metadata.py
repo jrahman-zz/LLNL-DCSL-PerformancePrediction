@@ -7,7 +7,7 @@ class Metadata(Program):
 
     def __init__(self, path, cores=[0]):
         Program.__init__(self, cores)
-        self._cmd = './metadata'
+        self._cmd = 'metadata'
         self._params = [path, '100'];
         self._name = 'metadata'
 
@@ -34,7 +34,7 @@ class MetadataInference(InterferenceThread):
     def __init__(self, path, cores=[0]):
         InterferenceThread.__init__(self, cores)
         self._params = [path, '1000'];
-        self._cmd = './metadata'
+        self._cmd = 'metadata'
         self._name = 'metadata'
 
 

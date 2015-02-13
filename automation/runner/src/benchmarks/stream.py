@@ -8,7 +8,7 @@ class StreamBenchmark(Program):
     def __init__(self, operation=1, cores=[0]):
         Program.__init__(self, cores)
         self._operation = operation
-        self._cmd = './stream'
+        self._cmd = 'stream'
         self._params = [str(operation)]
         self._name = "stream_" + self._bmark.lower()
 
@@ -37,7 +37,7 @@ class StreamInterfere(InterferenceThread):
         InterferenceThread.__init__(self, cores)
         self._operation = operation
         self._params = [str(self._operation)]
-        self._cmd = './stream_interfere'
+        self._cmd = 'stream_interfere'
         self._name = 'stream_' + self._bmark.lower()
 
 class StreamCopy(StreamBenchmark):

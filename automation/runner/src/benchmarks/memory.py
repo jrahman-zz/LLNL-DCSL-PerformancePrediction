@@ -16,7 +16,7 @@ class MemoryBenchmark(Program):
             raise Exception('Invalid operation type')
         self._size = size
         self._repeat = repeat
-        self._cmd = './example'
+        self._cmd = 'memory'
         self._params = [str(operation), str(size), str(repeat)]
         self._name = "memory_%s_%s" % (self._type, str(self._size))
 
@@ -55,7 +55,7 @@ class MemoryInterference(InterferenceThread):
             raise Exception('Invalid operation type')
         self._size = size
         self._repeat = repeat
-        self._cmd = './example'
+        self._cmd = 'memory'
         self._params = [str(operation), str(size), str(repeat)]
         self._name = 'memory_%s_%s' % (self._type, str(self._size))
 

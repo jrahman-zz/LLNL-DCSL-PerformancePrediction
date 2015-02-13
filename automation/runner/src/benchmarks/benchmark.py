@@ -6,10 +6,10 @@ import gevent.subprocess as subprocess
 
 class Benchmark(greenlet.Greenlet):
 
-    def __init__(self, cores=[0]):
+    def __init__(self, environ, cores=[0]):
         greenlet.Greenlet.__init__(self)
         self._cores = cores
-        self._benchmark_dir = os.environ['BENCHMARK_DIR']
+        self._benchmark_dir = environ['benchmark_dir']
 
     def __str__(self):
         return self._name

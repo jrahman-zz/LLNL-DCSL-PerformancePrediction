@@ -6,12 +6,12 @@ from gevent import subprocess
 
 class InterferenceThread(Greenlet):
 
-    def __init__(self, cores=[0]):
+    def __init__(self, environ, cores=[0]):
         Greenlet.__init__(self)
         self._cores = cores
         self._process = None
         self._keep_running = True
-        self._benchmark_dir = os.environ['BENCHMARK_DIR']
+        self._benchmark_dir = environ['environ_dir']
 
     def __str__(self):
         return self._name

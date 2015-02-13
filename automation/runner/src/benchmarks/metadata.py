@@ -5,8 +5,8 @@ import re
 
 class Metadata(Benchmark):
 
-    def __init__(self, path, cores=[0]):
-        Benchmark.__init__(self, cores)
+    def __init__(self, environ, path, cores=[0]):
+        Benchmark.__init__(self, environ, cores)
         self._cmd = self._benchmark_dir + '/metadata'
         self._params = [path, '100'];
         self._name = 'metadata'
@@ -31,8 +31,8 @@ class Metadata(Benchmark):
 
 class MetadataInference(InterferenceThread):
 
-    def __init__(self, path, cores=[0]):
-        InterferenceThread.__init__(self, cores)
+    def __init__(self, environ, path, cores=[0]):
+        InterferenceThread.__init__(self, environ, cores)
         self._params = [path, '1000'];
         self._cmd = self._benchmark_dir + '/metadata'
         self._name = 'metadata'
@@ -45,7 +45,7 @@ Time metadata: 0.111712514
 Time metadata: 0.110697038
 Final times, total: 130.639, median: 0.126953, mean: 0.130639, p90: 0.293706"""
 
-    m = Metadata('this/is/a/test')
+    m = Metadata({'benchmark_dir': ''}, 'this/is/a/test')
     result = m._process_output(test)
     print result
 

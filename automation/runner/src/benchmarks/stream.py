@@ -5,8 +5,8 @@ import re
 
 class StreamBenchmark(Benchmark):
 
-    def __init__(self, operation=1, cores=[0]):
-        Benchmark.__init__(self, cores)
+    def __init__(self, environ, operation=1, cores=[0]):
+        Benchmark.__init__(self, environ, cores)
         self._operation = operation
         self._cmd = self._benchmark_dir + '/stream'
         self._params = [str(operation)]
@@ -33,8 +33,8 @@ class StreamBenchmark(Benchmark):
 
 class StreamInterfere(InterferenceThread):
 
-    def __init__(self, operation=1, cores=[0]):
-        InterferenceThread.__init__(self, cores)
+    def __init__(self, environ, operation=1, cores=[0]):
+        InterferenceThread.__init__(self, environ, cores)
         self._operation = operation
         self._params = [str(self._operation)]
         self._cmd = self._benchmark_dir + '/stream_interfere'
@@ -42,51 +42,51 @@ class StreamInterfere(InterferenceThread):
 
 class StreamCopy(StreamBenchmark):
 
-    def __init__(self, cores=[0]):
-        StreamBenchmark.__init__(self, 1, cores)
+    def __init__(self, environ, cores=[0]):
+        StreamBenchmark.__init__(self, environ, 1, cores)
         self._bmark = 'Copy'
 
 class StreamCopyInterfere(StreamInterfere):
     
     def __init__(self, cores=[0]):
         self._bmark = 'Copy'
-        StreamInterfere.__init__(self, 1, cores)
+        StreamInterfere.__init__(self, environ, 1, cores)
 
 class StreamScale(StreamBenchmark):
 
     def __init__(self, cores=[0]):
-        StreamBenchmark.__init__(self, 2, cores)
+        StreamBenchmark.__init__(self, environ, 2, cores)
         self._bmark = 'Scale'
 
 class StreamScaleInterfere(StreamInterfere):
 
-    def __init__(self, cores=[0]):
+    def __init__(self, enrivon, cores=[0]):
         self._bmark = 'Scale'
-        StreamInterfere.__init__(self, 2, cores)
+        StreamInterfere.__init__(self, environ, 2, cores)
 
 class StreamAdd(StreamBenchmark):
     
-    def __init__(self, cores=[0]):
-        StreamBenchmark.__init__(self, 3, cores)
+    def __init__(self, environ, cores=[0]):
+        StreamBenchmark.__init__(self, environ, 3, cores)
         self._bmark = 'Add'
 
 class StreamAddInterfere(StreamInterfere):
 
-    def __init__(self, cores=[0]): 
+    def __init__(self, environ, cores=[0]): 
         self._bmark = 'Add'
-        StreamInterfere.__init__(self, 3, cores)
+        StreamInterfere.__init__(self, environ, 3, cores)
 
 class StreamTriad(StreamBenchmark):
 
     def __init__(self, cores=[0]):
-        StreamBenchmark.__init__(self, 4, cores)
+        StreamBenchmark.__init__(self, environ, 4, cores)
         self._bmark = 'Triad'
 
 class StreamTriadInterfere(StreamInterfere):
 
-    def __init__(self, cores=[0]):
+    def __init__(self, environ, cores=[0]):
         self._bmark = 'Triad'
-        StreamInterfere.__init__(self, 4, cores)
+        StreamInterfere.__init__(self, environ, 4, cores)
 
 # Basic parsing unit test
 if __name__ == "__main__":
@@ -122,7 +122,7 @@ Failed Validation on array a[]
 -------------------------------------------------------------
 """
 
-    benchmark = StreamCopy()
+    benchmark = StreamCopy({'benchmark_dir': ''})
     output = benchmark._process_output(test)
 
     if not output['bandwidth'] == 11024.9489:

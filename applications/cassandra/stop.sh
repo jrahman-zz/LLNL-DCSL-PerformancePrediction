@@ -14,4 +14,9 @@ SUCCESS=$?
 if [ -f "${1}" ]; then
     rm "${1}"
 fi
+
+if [ ${SUCCESS} -eq 0 ]; then
+    echo "Stop: Stopped Cassandra"
+fi
+
 exit ${SUCCESS}

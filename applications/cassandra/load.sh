@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: load.sh YCSB_DIR CASSANDRA_DIR DATA_DIR CASSANDRA_INCLUDE PID_FILE"
+    echo "Usage: load.sh YCSB_DIR CASSANDRA_DIR DATA_DIR PID_FILE CASSANDRA_INCLUDE"
 }
 
 if [ $# -ne 5 ]; then
@@ -46,16 +46,16 @@ if [ ! -d "${DATA_DIR}" ]; then
 fi
 export DATA_DIR
 
-CASSANDRA_INCLUDE=${4}
+# Name of PID file
+PID_FILE=${4}
+
+CASSANDRA_INCLUDE=${5}
 if [ ! -r "${CASSANDRA_INCLUDE}" ]; then
     echo "Error: Bad cassandra include config file"
     usage
     exit 1
 fi
 export CASSANDRA_INCLUDE
-
-# Name of PID file
-PID_FILE=${5}
 
 # Delete old datadir
 if [ -d "${DATA_DIR}/cassandra_data" ]; then
@@ -108,8 +108,10 @@ if [ $? -ne 0 ]; then
 fi
 echo "Load: Data loaded"
 
+sleep 10
+
 echo "Load: Shutting Cassandra down..."
-kill `cat ${PIDFILE}`
+kill `cat ${PID_FILE}`
 if [ $? -ne 0 ]; then
     echo "Error: Failed to shut Cassandra down"
     exit 1

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: start.sh CASSANDRA_HOME DATA_DIR CASSANDRA_INCLUDE PIDFILE"
+    echo "Usage: start.sh CASSANDRA_HOME DATA_DIR PIDFILE CASSANDRA_INCLUDE"
 }
 
 if [ $# -ne 4 ]; then
@@ -24,15 +24,15 @@ if [ ! -d "${DATA_DIR}/cassandra_data" ]; then
 fi
 export DATA_DIR
 
-CASSANDRA_INCLUDE=${3}
+PID_FILE=${3}
+
+CASSANDRA_INCLUDE=${4}
 if [ ! -r "${CASSANDRA_INCLUDE}" ]; then
     echo "Error: Bad cassandra include config file"
     usage
     exit 1
 fi
 export CASSANDRA_INCLUDE
-
-PID_FILE=${4}
 
 echo "Start: Launching Cassandra..."
 ${CASSANDRA_DIR}/bin/cassandra -p "${PID_FILE}" &> /dev/null
@@ -43,13 +43,14 @@ fi
 
 # Give the server some time to start
 ALIVE=0
-for I in `seq 1`; do
+for I in `seq 5`; do
     echo "Start: Sleeping to give Cassandra time to start..."
     sleep 5
     echo "Start: Woke up, health check..."
     ${CASSANDRA_DIR}/bin/nodetool status &> /dev/null
     if [ $? -eq 0 ]; then
         ALIVE=1
+        break
     fi
 done
 
@@ -57,5 +58,6 @@ if [ ${ALIVE} -ne 1 ]; then
     echo "Error: Failed to start Cassandra server"
     exit 1
 fi
+echo "Start: Cassandra alive"
 
 exit 0

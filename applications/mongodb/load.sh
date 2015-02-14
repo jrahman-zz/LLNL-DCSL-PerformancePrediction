@@ -85,7 +85,7 @@ fi
 
 # Load the data as needed
 echo "Load: Loading data into MongoDB"
-${YCSB_DIR}/bin/ycsb load mongodb -P "${YCSB_DIR}/workloads/workloada" -threads 4 -P "workload.dat" -s
+${YCSB_DIR}/bin/ycsb load mongodb -P "${YCSB_DIR}/workloads/workloada" -threads 4 -p "recordcount=1000000"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to load data into MongoDB"
     exit 1

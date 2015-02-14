@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: load.sh YCSB_DIR CASSANDRA_DIR DATA_DIR PID_FILE CASSANDRA_INCLUDE"
+    echo "Usage: load.sh CASSANDRA_DIR DATA_DIR YCSB_DIR PID_FILE CASSANDRA_INCLUDE"
 }
 
 if [ $# -ne 5 ]; then
@@ -9,22 +9,8 @@ if [ $# -ne 5 ]; then
     exit 1
 fi
 
-# Path to base of YCSB dir
-YCSB_DIR=${1}
-if [ ! -d "${YCSB_DIR}" ]; then
-    echo "Error: YCSB directory doesn't exist"
-    usage
-    exit 1
-fi
-
-if [ ! -x "${YCSB_DIR}/bin/ycsb" ]; then
-    echo "Error: YCSB directory is incorrect"
-    usage
-    exit 1
-fi
-
 # Path
-CASSANDRA_DIR=${2}
+CASSANDRA_DIR=${1}
 if [ ! -d "${CASSANDRA_DIR}" ]; then
     echo "Error: Cassandra directory doesn't exist"
     usage
@@ -38,13 +24,27 @@ if [ ! -x "${CASSANDRA_DIR}/bin/cassandra" -o ! -x "${CASSANDRA_DIR}/bin/cassand
 fi
 
 # Path to directory to store data directory
-DATA_DIR=${3}
+DATA_DIR=${2}
 if [ ! -d "${DATA_DIR}" ]; then
     echo "Error: Data parent directory doesn't exist"
     usage
     exit 1
 fi
 export DATA_DIR
+
+# Path to base of YCSB dir
+YCSB_DIR=${3}
+if [ ! -d "${YCSB_DIR}" ]; then
+    echo "Error: YCSB directory doesn't exist"
+    usage
+    exit 1
+fi
+
+if [ ! -x "${YCSB_DIR}/bin/ycsb" ]; then
+    echo "Error: YCSB directory is incorrect"
+    usage
+    exit 1
+fi
 
 # Name of PID file
 PID_FILE=${4}

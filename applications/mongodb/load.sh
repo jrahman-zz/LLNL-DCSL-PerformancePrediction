@@ -2,30 +2,16 @@
 
 
 usage() {
-    echo "Usage: load.sh YCSB_DIR MONGODB_DIR DATA_DIR"
+    echo "Usage: load.sh MONGODB_DIR DATA_DIR YCSB_DIR"
 }
 
-if [ $# -ne 4 ]; then
-    usage
-    exit 1
-fi
-
-# Path to base of YCSB dir
-YCSB_DIR=${1}
-if [ ! -d "${YCSB_DIR}" ]; then
-    echo "Error: YCSB directory doesn't exist"
-    usage
-    exit 1
-fi
-
-if [ ! -x "${YCSB_DIR}/bin/ycsb" ]; then
-    echo "Error: YCSB directory is incorrect"
+if [ $# -ne 3 ]; then
     usage
     exit 1
 fi
 
 # Path
-MONGODB_DIR=${2}
+MONGODB_DIR=${1}
 if [ ! -d "${MONGODB_DIR}" ]; then
     echo "Error: MongoDB directory doesn't exist"
     usage
@@ -39,12 +25,27 @@ if [ ! -x "${MONGODB_DIR}/bin/mongod" ]; then
 fi
 
 # Path to directory to store data directory
-DATA_DIR=${3}
+DATA_DIR=${2}
 if [ ! -d "${DATA_DIR}" ]; then
     echo "Error: Data parent directory doesn't exist"
     usage
     exit 1
 fi
+
+# Path to base of YCSB dir
+YCSB_DIR=${3}
+if [ ! -d "${YCSB_DIR}" ]; then
+    echo "Error: YCSB directory doesn't exist"
+    usage
+    exit 1
+fi
+
+if [ ! -x "${YCSB_DIR}/bin/ycsb" ]; then
+    echo "Error: YCSB directory is incorrect"
+    usage
+    exit 1
+fi
+
 
 # Delete old datadir
 if [ -d "${DATA_DIR}/mongodb_data" ]; then

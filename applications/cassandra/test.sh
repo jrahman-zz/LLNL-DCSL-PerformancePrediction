@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./load.sh ${YCSB_DIR} ${CASSANDRA_DIR} /tmp/applications/ cassandra.pid ./cassandra.in.sh
+./load.sh ${CASSANDRA_DIR} /tmp/applications/ ${YCSB_DIR} cassandra.pid ./cassandra.in.sh
 if [ $? -ne 0 ]; then
     exit 1
 fi
@@ -10,12 +10,12 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-./run.sh ${YCSB_DIR} 10000
+./run.sh ${CASSANDRA_DIR} /tmp/applications/ ${YCSB_DIR} 10000
 if [ $? -ne 0 ]; then
     exit 1
 fi
 
-./stop.sh cassandra.pid
+./stop.sh ${CASSANDRA_DIR} /tmp/applications cassandra.pid
 if [ $? -ne 0 ]; then
     exit 1
 fi

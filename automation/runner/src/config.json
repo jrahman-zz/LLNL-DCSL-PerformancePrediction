@@ -1,4 +1,5 @@
 {
-    'target_disk': '/tmp/applications',
-    'benchmark_dir': '~/LLNL-DCSL-PerformancePrediction'
+    "data_dir": "/tmp/applications",
+    "benchmark_dir": "/home/jprahman/LLNL-DCSL-PerformancePrediction/benchmarks/bin/",
+    "ycsb_dir": "/home/jprahman/llnl/YCSB"
 }

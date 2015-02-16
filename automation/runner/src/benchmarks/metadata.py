@@ -5,10 +5,11 @@ import re
 
 class Metadata(Benchmark):
 
-    def __init__(self, environ, path, cores=[0]):
+    def __init__(self, environ, cores=[0]):
         Benchmark.__init__(self, environ, cores)
         self._cmd = self._benchmark_dir + '/metadata'
-        self._params = [path, '100'];
+        self._data_dir = environ['data_dir']
+        self._params = [self._data_dir, '100'];
         self._name = 'metadata'
 
     def _setup(self):
@@ -31,9 +32,10 @@ class Metadata(Benchmark):
 
 class MetadataInference(InterferenceThread):
 
-    def __init__(self, environ, path, cores=[0]):
+    def __init__(self, environ, cores=[0]):
         InterferenceThread.__init__(self, environ, cores)
-        self._params = [path, '1000'];
+        self._data_dir = environ['data_dir']
+        self._params = [self._data_dir, '1000'];
         self._cmd = self._benchmark_dir + '/metadata'
         self._name = 'metadata'
 

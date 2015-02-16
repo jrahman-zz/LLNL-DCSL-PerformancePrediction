@@ -28,6 +28,9 @@ class Application():
         self._cleanup_args = []
         self._interfere_args = []
 
+    def __str__(self):
+        return self._application_name
+
     def load(self):
         """ Load data ahead of any potential benchmark run """
         cmd = ["%s/load.sh" % (self._script_dir)]
@@ -102,7 +105,7 @@ class Application():
 
     def cleanup(self):
         """ Perform any final cleanup needed """
-        if self._loaded = False:
+        if self._loaded == False:
             # TODO, raise error here
             pass
 

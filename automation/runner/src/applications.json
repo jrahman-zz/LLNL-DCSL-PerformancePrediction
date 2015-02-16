@@ -1,19 +1,14 @@
 {
-    'params': {
-        'ycsb_dir': '~/llnl/YCSB'
+    "Cassandra": {
+        "script_dir": "applications/cassandra",
+        "application_dir": "~/llnl/applications/apache-cassandra-2.1.2"
     },
-    'applications': {
-        'Cassandra': {
-            'script_dir': 'applications/cassandra',
-            'application_dir': '~/llnl/applications/apache-cassandra-2.1.2'
-        },
-        'Mongodb': {
-            'script_dir': 'applications/mongodb',
-            'application_dir': '~/llnl/applications/mongodb-linux-x86_64-2.6.7',
-        },
-        'Voldemort': {
-            'script_dir': 'applications/voldemort',
-            'application_dir': '~/llnl/applications/voldemort-release-1.6.0-cutoff'
-        }
+    "MongoDB": {
+        "script_dir": "applications/mongodb",
+        "application_dir": "~/llnl/applications/mongodb-linux-x86_64-2.6.7"
+    },
+    "Voldemort": {
+        "script_dir": "applications/voldemort",
+        "application_dir": "~/llnl/applications/voldemort-release-1.6.0-cutoff"
     }
 }

@@ -5,6 +5,9 @@ from benchmarks.iobench import IOBenchRead1M, IOBenchRead4M, IOBenchRead1G
 from benchmarks.iobench import IOBenchWrite1M, IOBenchWrite4M, IOBenchWrite1G
 from benchmarks.metadata import Metadata
 
+from load_environ import load_environ
+from load_applications import load_applications
+
 def stream_suite(environ):
     cores = [0, 2]
     bmarks = [
@@ -93,7 +96,7 @@ def iobench_write_suite(environ):
 
 def metadata_suite(environ):
     cores = [0, 2]
-    bmarks = [Metadata(environ, 'test')]
+    bmarks = [Metadata(environ)]
 
     for bmark in bmarks:
         bmark.start()
@@ -105,9 +108,12 @@ def metadata_suite(environ):
         print bmark.value
 
 def main():
-    environ = {'benchmark_dir': '/home/jprahman/LLNL-DCSL-PerformancePrediction/benchmarks/bin'}
+    environ = load_environ('config.json', ['applications.json'])
+    apps = load_applications(environ)
+
+    print apps
+
     metadata_suite(environ)
-    iobench_read_suite(environ)
 
 
 if __name__ == '__main__':

@@ -4,7 +4,7 @@ import logging
 import json
 import applications
 
-def load_applications(environ, file_path):
+def load_applications(environ):
     logging.debug('Loading applications...')
     
     applications = {}
@@ -14,11 +14,12 @@ def load_applications(environ, file_path):
         logging.debug('Loading application %s from module %s', application, module_name)
         try:
             module = __import__(module_name)
-            app_class = getattr(module, application)
+            app_module = getattr(module, application.lower())
+            app_class = getattr(app_module, application)
             instance = app_class() # TODO, need a mechanism for passing cores in
             applications[application] = instance
-        except e:
-            logging.warning('Failed to load application %s from %s', application, module_name)
+        except Exception as e:
+            logging.warning('Failed to load application %s from %s: %s', application, module_name, str(e))
 
     return applications
 

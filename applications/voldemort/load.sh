@@ -1,7 +1,7 @@
-#!/bin/bas
+#!/bin/bash
 
 usage() {
-    echo "Usage: load.sh YCSB_DIR VOLDEMORT_DIR DATA_DIR"
+    echo "Usage: load.sh VOLDEMORT_DIR DATA_DIR YCSB_DIR"
 }
 
 if [ $# -ne 3 ]; then
@@ -9,22 +9,8 @@ if [ $# -ne 3 ]; then
     exit 1
 fi
 
-# Path to base of YCSB dir
-YCSB_DIR=${1}
-if [ ! -d "${YCSB_DIR}" ]; then
-    echo "Error: YCSB directory doesn't exist"
-    usage
-    exit 1
-fi
-
-if [ ! -x "${YCSB_DIR}/bin/ycsb" ]; then
-    echo "Error: YCSB directory is incorrect"
-    usage
-    exit 1
-fi
-
 # Path
-VOLDEMORT_DIR=${2}
+VOLDEMORT_DIR=${1}
 if [ ! -d "${VOLDEMORT_DIR}" ]; then
     echo "Error: Voldemort directory doesn't exist"
     usage
@@ -38,9 +24,23 @@ if [ ! -x "${VOLDEMORT_DIR}/bin/voldemort-server.sh" -o ! -x "${VOLDEMORT_DIR}/b
 fi
 
 # Path to directory to store data directory
-DATA_DIR=${3}
+DATA_DIR=${2}
 if [ ! -d "${DATA_DIR}" ]; then
     echo "Error: Data parent directory doesn't exist"
+    usage
+    exit 1
+fi
+
+# Path to base of YCSB dir
+YCSB_DIR=${3}
+if [ ! -d "${YCSB_DIR}" ]; then
+    echo "Error: YCSB directory doesn't exist"
+    usage
+    exit 1
+fi
+
+if [ ! -x "${YCSB_DIR}/bin/ycsb" ]; then
+    echo "Error: YCSB directory is incorrect"
     usage
     exit 1
 fi
@@ -65,11 +65,21 @@ if [ $? -ne 0 ]; then
 fi
 echo "Load: Created data directory"
 
+
 DBLOCATION="${DATA_DIR}/voldemort_data/"
+
+# Copy the config to the new home dir location
+echo "Load: Copying configuration files..."
+cp -r "${VOLDEMORT_DIR}/config/single_node_cluster/config" "${DBLOCATION}"
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to copy configuration files"
+    exit 1
+fi
+echo "Load: Copied configuration files"
 
 echo "Load: Starting server..."
 # TODO, change this to voldemort-prod-server.sh
-${VOLDEMORT_DIR}/bin/voldemort-server.sh "${DBLOCATION}" "${VOLDEMORT_DIR}/config/single_node_cluster/config/" &> /dev/null &
+${VOLDEMORT_DIR}/bin/voldemort-server.sh "${DBLOCATION}" &> /dev/null &
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start Voldemort"
     exit 1
@@ -79,7 +89,7 @@ fi
 sleep 3
 
 # Health check the server and ping away
-${VOLDEMORT_DIR}/bin/voldemort-admin-tool.sh --ro-metadata current --url tcp://localhost:6666 --node 0 &> /dev/null
+${VOLDEMORT_DIR}/bin/voldemort-admin-test.sh -f -n 0 tcp://localhost:6666 test
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start Voldemort"
     exit 1
@@ -88,7 +98,7 @@ echo "Load: Started Voldemort"
 
 # Load the data as needed
 echo "Load: Loading data into Voldemort"
-${YCSB_DIR}/bin/ycsb load voldemort -P "${YCSB_DIR}/workloads/workloada" -threads 4 -P "workload.dat" -p "boostrap_urls=[tcp://localhost:6666]" -s
+${YCSB_DIR}/bin/ycsb load voldemort -P "${YCSB_DIR}/workloads/workloada" -threads 4 -P "workload.dat" -p "bootstrap_urls=tcp://localhost:6666,tcp://localhost:6666" -s
 if [ $? -ne 0 ]; then
     echo "Error: Failed to load data into Voldemort"
     exit 1

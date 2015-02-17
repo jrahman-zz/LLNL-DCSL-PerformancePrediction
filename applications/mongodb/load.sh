@@ -10,6 +10,8 @@ if [ $# -ne 3 ]; then
     exit 1
 fi
 
+BASE_DIR=$(dirname $0)
+
 # Path
 MONGODB_DIR=${1}
 if [ ! -d "${MONGODB_DIR}" ]; then
@@ -78,7 +80,7 @@ fi
 
 # Create our database
 echo "Load: Creating database..."
-${MONGODB_DIR}/bin/mongo setup.js
+${MONGODB_DIR}/bin/mongo "${BASE_DIR}/setup.js"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to setup database"
     exit 1

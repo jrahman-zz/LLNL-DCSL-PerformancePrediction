@@ -8,6 +8,8 @@ from benchmarks.metadata import Metadata
 from load_environ import load_environ
 from load_applications import load_applications
 
+import logging
+
 def stream_suite(environ):
     cores = [0, 2]
     bmarks = [
@@ -112,9 +114,16 @@ def main():
     apps = load_applications(environ)
 
     print apps
-
-    metadata_suite(environ)
+    
+    app = apps['MongoDB'](environ, [0, 1], [2, 3])
+    
+    app.load()
+    app.start()
+    print app.run()
+    app.stop()
+    app.cleanup()
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     main()

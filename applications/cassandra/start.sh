@@ -13,14 +13,14 @@ CASSANDRA_DIR=${1}
 if [ ! -x "${CASSANDRA_DIR}/bin/cassandra" -o ! -x "${CASSANDRA_DIR}/bin/nodetool" ]; then
     echo "Error: Cassandra directory is incorrect"
     usage
-    exit 1
+    exit 2
 fi
 
 DATA_DIR=${2}
 if [ ! -d "${DATA_DIR}/cassandra_data" ]; then
     echo "Error: Missing ${DATA_DIR}/cassandra_data"
     usage
-    exit 1
+    exit 3
 fi
 export DATA_DIR
 
@@ -30,7 +30,7 @@ CASSANDRA_INCLUDE=${4}
 if [ ! -r "${CASSANDRA_INCLUDE}" ]; then
     echo "Error: Bad cassandra include config file"
     usage
-    exit 1
+    exit 4
 fi
 export CASSANDRA_INCLUDE
 
@@ -38,7 +38,7 @@ echo "Start: Launching Cassandra..."
 ${CASSANDRA_DIR}/bin/cassandra -p "${PID_FILE}" &> /dev/null
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start server"
-    exit 1
+    exit 5
 fi
 
 # Give the server some time to start
@@ -56,7 +56,7 @@ done
 
 if [ ${ALIVE} -ne 1 ]; then
     echo "Error: Failed to start Cassandra server"
-    exit 1
+    exit 6
 fi
 echo "Start: Cassandra alive"
 

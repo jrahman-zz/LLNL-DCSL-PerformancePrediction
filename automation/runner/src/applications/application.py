@@ -1,4 +1,5 @@
 
+import logging
 import gevent.greenlet as greenlet
 import gevent.subprocess as subprocess
 
@@ -12,7 +13,7 @@ class Application():
         self._application_dir = environ['applications'][self._application_name]['application_dir']
         self._data_dir = environ['data_dir']
 
-        self._interface_args = [self._application_dir, self._data_dir]
+        self._interface_params = [self._application_dir, self._data_dir]
 
         # TODO, clarify how this works
         self._run_cores = run_cores
@@ -21,23 +22,29 @@ class Application():
         self._loaded = False
         self._started = False
         
-        # Extra args that the sub-class will provide for it's shell automation scripts
-        self._load_args = []
-        self._start_args = []
-        self._run_args = []
-        self._stop_args = []
-        self._cleanup_args = []
-        self._interfere_args = []
+        # Extra params that the sub-class will provide for it's shell automation scripts
+        self._load_params = []
+        self._start_params = []
+        self._run_params = []
+        self._stop_params = []
+        self._cleanup_params = []
+        self._interfere_params = []
 
     def __str__(self):
         return self._application_name
 
     def load(self):
         """ Load data ahead of any potential benchmark run """
+        if self._started or self._loaded:
+            raise ValueError('Already loaded or started')
+
         cmd = ["%s/load.sh" % (self._script_dir)]
-        cmd = cmd + self._interface_args
-        cmd = cmd + self._load_args
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        cmd = cmd + self._interface_params
+        cmd = cmd + self._load_params
+
+        logging.info('Loading application: %s', self._application_name)
+        print cmd
+        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT )
         self._loaded = True
 
     # TODO, improve to use the with ... as ... idiom
@@ -50,8 +57,10 @@ class Application():
         cores = ','.join(map(lambda x: str(x), self._start_cores))
         cmd = ['taskset', '-c', cores]
         cmd = cmd + ["%s/start.sh" % (self._script_dir)]
-        cmd = cmd + self._interface_args
-        cmd = cmd + self._start_args
+        cmd = cmd + self._interface_params
+        cmd = cmd + self._start_params
+
+        logging.info('Starting application: %s', self._application_name)
         output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         self._started = True
 
@@ -65,8 +74,8 @@ class Application():
         # Build the command
         cmd = ['taskset', '-c', cores]
         cmd = cmd + ['%s/run.sh' % (self._script_dir)]
-        cmd = cmd + self._interface_args
-        cmd = cmd + self._interfere_args
+        cmd = cmd + self._interface_params
+        cmd = cmd + self._interfere_params
 
         return BackgroundProcess(cmd, self._application_name)
 
@@ -81,10 +90,11 @@ class Application():
         # Build our command as required
         cmd = ['taskset', '-c', cores]
         cmd = cmd + ["%s/run.sh" % (self._script_dir)]
-        cmd = cmd + self._interface_args
-        cmd = cmd + self._run_args
+        cmd = cmd + self._interface_params
+        cmd = cmd + self._run_params
 
-        # Run the command and process the output as neeed
+        # Run the command and process the output as needed
+        logging.info('Running application: %s', self._application_name)
         output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         features = self._process_output(output)
         return features
@@ -96,8 +106,10 @@ class Application():
             pass
 
         cmd = ["%s/stop.sh" % (self._script_dir)]
-        cmd = cmd + self._interface_args
-        cmd = cmd + self._stop_args
+        cmd = cmd + self._interface_params
+        cmd = cmd + self._stop_params
+
+        logging.info('Stopping application: %s', self._application_name)
         output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         self._started = False
 
@@ -108,8 +120,10 @@ class Application():
             pass
 
         cmd = ["%s/cleanup.sh" % (self._script_dir)]
-        cmd = cmd + self._interface_args
-        cmd = cmd + self._cleanup_args
+        cmd = cmd + self._interface_params
+        cmd = cmd + self._cleanup_params
+
+        logging.info('Cleaning up application: %s', self._application_name)
         output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         self._loaded = False
 
@@ -127,7 +141,7 @@ class BackgroundProcess(greenlet.Greenlet):
     def __str__(self):
         return self._application_name
 
-    def kill(self, exception=GreenletExit, block = True, timeout = None):
+    def kill(self, exception=greenlet.GreenletExit, block = True, timeout = None):
         self._stop()
         greenlet.Greenlet.kill(self, exception, block, timeout)
 
@@ -137,7 +151,7 @@ class BackgroundProcess(greenlet.Greenlet):
         return greenlet.Greenlet.join(self, timeout)
 
     def _stop(self):
-        logging.debug('Stopping %s', self._application_name)
+        logging.debug('Stopping application %s', self._application_name)
         self._keep_running = False
         if self._process is not None:
             self._process.kill()
@@ -153,9 +167,9 @@ class BackgroundProcess(greenlet.Greenlet):
         prog = self._args[3].split('/')[-1]
         while self._keep_running:
             logging.info('Starting new %s process...', prog)
-            self._process = subprocess(self._args, stdout = DEVNULL, stderr = subprocess.STDOUT)
+            self._process = subprocess(self._args, stdout=DEVNULL, stderr=subprocess.STDOUT)
             return_code = self._process.wait()
-            logging.info('Interference application %s exitied with return code %d', prog, return_code)
+            logging.info('Interference application %s exited with return code %d', prog, return_code)
         
             # Return code of -9 means SIGKILL, this is ok
             if not (return_code == 0 or return_code == -9):

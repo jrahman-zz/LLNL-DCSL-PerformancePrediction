@@ -16,8 +16,7 @@ def load_applications(environ):
             module = __import__(module_name)
             app_module = getattr(module, application.lower())
             app_class = getattr(app_module, application)
-            instance = app_class() # TODO, need a mechanism for passing cores in
-            applications[application] = instance
+            applications[application] = app_class
         except Exception as e:
             logging.warning('Failed to load application %s from %s: %s', application, module_name, str(e))
 

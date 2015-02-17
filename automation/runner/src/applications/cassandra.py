@@ -7,7 +7,7 @@ class Cassandra(Application):
         Application.__init__(self, environ, 'Cassandra', app_cores, client_cores)
         
         # Build params related to the cassandra interface scripts
-        self._pid_file = self._tmp_dir + '/cassandra.pid' # TODO, use a better PID file
+        self._pid_file = self._data_dir + '/cassandra.pid' # TODO, use a better PID file
         self._cassandra_include = self._script_dir + '/cassandra.in.sh'
         self._ycsb_dir = environ['ycsb_dir']
 

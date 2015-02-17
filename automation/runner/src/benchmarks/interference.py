@@ -1,7 +1,7 @@
 
 import os
 import logging
-from gevent import Greenlet
+from gevent import Greenlet, GreenletExit
 from gevent import subprocess
 
 class InterferenceThread(Greenlet):
@@ -16,19 +16,19 @@ class InterferenceThread(Greenlet):
     def __str__(self):
         return self._name
 
-    def kill(self):
+    def kill(self, exception = GreenletExit, block = True, timeout = None):
         self._stop()
-        super(InterferenceThread, self).kill()
+        Greenlet.kill(self, exception, block, timeout)
 
-    def join(self):
+    def join(self, timeout = None):
         self._stop()
-        super(InterferenceThread, self).join()
+        Greenlet.join(self, timeout)
 
     def _stop(self):
         logging.debug('Stopping %s', self._name)
+        self._keep_running = False
         if self._process is not None:
             self._process.kill()
-        self._keep_running = False
         self._process = None
 
 
@@ -47,8 +47,13 @@ class InterferenceThread(Greenlet):
             self._process = subprocess.Popen(args, stdout=DEVNULL, stderr=subprocess.STDOUT)
             return_code = self._process.wait()
             logging.info('Interference process %s exited with return code %d', prog, return_code)
+            
             # Return code of -9 means SIGKILL, this is OK!
             if not (return_code == 0 or return_code == -9):
                 self._keep_running = False
-                raise Exception('Process failure')
+                raise Exception('Process failure, return code %d' % (return_code))
+        
+        # Set ourself to None so that _stop doesn't try to do anything
+        # with a completed process
+        self._process = None
 

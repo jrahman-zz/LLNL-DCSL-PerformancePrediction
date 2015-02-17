@@ -1,5 +1,6 @@
 
 from application import Application
+from parse_ycsb import parse
 
 class Voldemort(Application):
 
@@ -14,5 +15,4 @@ class Voldemort(Application):
         self._interfere_params = [self._ycsb_dir, '10000000']
 
     def _process_output(self, output):
-        # TODO
-        pass
+        return parse(output)

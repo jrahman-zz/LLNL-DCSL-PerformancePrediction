@@ -24,7 +24,7 @@ shift 2
 WORKLOADS="${YCSB_DIR}/workloads/workload"
 
 # Loop over each possible workload
-for WORKLOAD in ${WORKLOADS}{a,b,c,d}; do
+for WORKLOAD in ${WORKLOADS}{a,b,c}; do
     echo "Run: Running workload ${WORKLOAD}..."
     ${YCSB_DIR}/bin/ycsb run "${DATABASE}" -P "${WORKLOAD}" $@
     if [ $? -ne 0 ]; then

@@ -1,5 +1,6 @@
 
 from application import Application
+from parse_ycsb import parse
 
 class Cassandra(Application):
 
@@ -18,6 +19,5 @@ class Cassandra(Application):
         self._stop_params = [self._pid_file]
 
     def _parse_output(self, output):
-        # TODO
-        pass
+        return parse(output)
 

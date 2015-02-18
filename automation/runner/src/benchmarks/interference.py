@@ -13,6 +13,14 @@ class InterferenceThread(Greenlet):
         self._keep_running = True
         self._benchmark_dir = environ['environ_dir']
 
+
+    # Use context manager for use in with statement
+    def __enter__(self):
+        self.start()
+
+    def __exit__(self):
+        self.join()
+
     def __str__(self):
         return self._name
 

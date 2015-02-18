@@ -17,7 +17,7 @@ stream: stream.c
 	$(CC) $(CFLAGS) stream.c -o stream
 
 stream_interfere: stream.c
-	$(CC) $(CFLAGS) stream.c -DNTIMES=1000 -o stream_interfere
+	$(CC) $(CFLAGS) stream.c -DNTIMES=10000 -o stream_interfere
 
 clean:
 	rm -f stream_f.exe stream stream_interfere *.o

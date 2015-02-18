@@ -33,6 +33,12 @@ class Application():
     def __str__(self):
         return self._application_name
 
+    def __enter__(self):
+        self.start()
+
+    def __exit__(self, type, value, traceback):
+        self.stop()
+
     def load(self):
         """ Load data ahead of any potential benchmark run """
         if self._started or self._loaded:
@@ -43,8 +49,12 @@ class Application():
         cmd = cmd + self._load_params
 
         logging.info('Loading application: %s', self._application_name)
-        print cmd
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT )
+        try:
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT )
+        except subprocess.CalledProcessError as e:
+            logging.error('Loading application %s failed, output: %s', self._application_name, e.output)
+            raise
+
         self._loaded = True
 
     # TODO, improve to use the with ... as ... idiom
@@ -61,7 +71,12 @@ class Application():
         cmd = cmd + self._start_params
 
         logging.info('Starting application: %s', self._application_name)
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        try:
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            logging.error('Failed to start application %s, output: %s', self._application_name, e.output)
+            raise
+
         self._started = True
 
     def interfere(self):
@@ -95,7 +110,12 @@ class Application():
 
         # Run the command and process the output as needed
         logging.info('Running application: %s', self._application_name)
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        try:
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            logging.error('Failed to run application %s, output: %s', self._application_name, e.output)
+            raise
+
         features = self._process_output(output)
         return features
 
@@ -110,7 +130,12 @@ class Application():
         cmd = cmd + self._stop_params
 
         logging.info('Stopping application: %s', self._application_name)
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        try:
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            logging.error('Failed to stop application %s, output %s', self._application_name, e.output)
+            raise
+
         self._started = False
 
     def cleanup(self):
@@ -124,7 +149,12 @@ class Application():
         cmd = cmd + self._cleanup_params
 
         logging.info('Cleaning up application: %s', self._application_name)
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        try:
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            logging.error('Failed to cleanup application %s, output %s', self._application_name, e.output)
+            raise
+
         self._loaded = False
 
     def _process_output(self, output):

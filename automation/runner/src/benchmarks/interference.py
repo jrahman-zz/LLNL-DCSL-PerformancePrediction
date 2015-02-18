@@ -25,7 +25,7 @@ class InterferenceThread(Greenlet):
         Greenlet.join(self, timeout)
 
     def _stop(self):
-        logging.debug('Stopping %s', self._name)
+        logging.info('Stopping %s', self._name)
         self._keep_running = False
         if self._process is not None:
             self._process.kill()

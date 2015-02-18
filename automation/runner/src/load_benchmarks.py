@@ -3,21 +3,29 @@
 import logging
 import benchmarks
 
-def load_benchmark(name, module, module_name, benchmark_name):
+def load_benchmark(module, module_name, benchmark_name):
+    """ Load a specfic benchmark class from a module """
+
     bmark_module = getattr(module, module_name)
     bmark_class = getattr(bmark_module, benchmark_name)
+    
     return bmark_class
 
-
 def load_benchmarks(environ):
+    """ Load benchmark classes from the environment dictionary """
+
     logging.debug('Loading benchmarks...')
 
-    benchmarks = {}
+    bmarks = {}
+    interference = {}
 
-    for benchmark_module in environ['benchmarks'].keys():
+    # Snapshot the environ for easier use
+    benchmarks = environ['benchmarks']
+
+    for bmark_module in benchmarks:
         
-        logging.debug('Loading benchmark module %s', module_name)
-        module_name = 'benchmarks.' + benchmark_module.lower()
+        logging.debug('Loading benchmark module %s', bmark_module)
+        module_name = 'benchmarks.' + bmark_module.lower()
         module = None
         try:
             module = __import__(module_name)
@@ -25,20 +33,37 @@ def load_benchmarks(environ):
             logging.warning('Failed to load benchmark module %s: %s', module_name, str(e))
             break
 
-        if not len(environ['benchmark'][benchmark_module]) == 0:
-            for benchmark in environ['benchmark'][benchmark_module].keys():
-                bmark_name = benchmark_module + benchmark
+        # Collect all the benchmark names in this module
+        # Then collect the classes at the end
+        bmark_names = []
+
+        if not len(benchmarks[bmark_module]) == 0:
+            for bmark in benchmarks[bmark_module]:
+                bmark_name = bmark_module + bmark
                 
-                try:
-                    bmark_class = load_benchmark(module, module_name, bmark_name)
-                    benchmarks[benchmark_name] = bmark_class
-                except Exception as e:
-                    logging.warning('Failed to load benchmark %s: %s', bmark_name, str(e)
+                if not len(benchmarks[bmark_module][bmark]) == 0:
+                    # Sum over all the sizes for this bmark
+                    for size in benchmarks[bmark_module][bmark]:
+                        bmark_names.append(bmark_name + size)
+                else:
+                    # Otherwise we don't have sizes
+                    bmark_names.append(bmark_name)
+                    
         else:
+            # Only one benchmark in the module
+            bmark_name = bmark_module
+            bmark_names.append(bmark_name)
+
+        # With our list of class names, actually get the class
+        # from within the module object
+        for bmark_name in bmark_names:
             try:
-                bmark_name = benchmark_module
+                cls = load_benchmark(module, bmark_module.lower(), bmark_name)
+                bmarks[bmark_name] = cls
+                bmark_name = bmark_name + "Interfere"
+                cls = load_benchmark(module, bmark_module.lower(), bmark_name)
+                interference[bmark_name] = cls
             except Exception as e:
                 logging.warning('Failed to load benchmark %s: %s', bmark_name, str(e))
-
-    return benchmarks
-
+    
+    return (bmarks, interference)

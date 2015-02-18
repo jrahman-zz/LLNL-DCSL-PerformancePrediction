@@ -1,22 +1,16 @@
-from benchmarks.stream import StreamCopy, StreamAdd, StreamScale, StreamTriad
-from benchmarks.memory import MemoryStream1K, MemoryStream1M, MemoryStream1G
-from benchmarks.memory import MemoryRandom1K, MemoryRandom1M, MemoryRandom1G
-from benchmarks.iobench import IOBenchRead1M, IOBenchRead4M, IOBenchRead1G
-from benchmarks.iobench import IOBenchWrite1M, IOBenchWrite4M, IOBenchWrite1G
-from benchmarks.metadata import Metadata
-
 from load_environ import load_environ
 from load_applications import load_applications
+from load_benchmarks import load_benchmarks
 
 import logging
 
-def stream_suite(environ):
+def stream_suite(environ, bmarks_cls):
     cores = [0, 2]
     bmarks = [
-                StreamCopy(environ, cores),
-                StreamAdd(environ, cores),
-                StreamScale(environ, cores),
-                StreamTriad(environ, cores)
+                bmark_cls['StreamCopy'](environ, cores),
+                bmark_cls['StreamAdd'](environ, cores),
+                bmark_cls['StreamScale'](environ, cores),
+                bmark_cls['StreamTriad'](environ, cores)
             ]
 
     for bmark in bmarks:
@@ -28,12 +22,12 @@ def stream_suite(environ):
     for bmark in bmarks:
         print bmark.value
 
-def memory_stream_suite(environ):
+def memory_stream_suite(environ, bmark_cls):
     cores = [1, 3]
     bmarks = [
-                MemoryStream1K(environ, cores),
-                MemoryStream1M(environ, cores),
-                MemoryStream1G(environ, cores)
+                bmark_cls['MemoryStream1K'](environ, cores),
+                bmark_cls['MemoryStream1M'](environ, cores),
+                bmark_cls['MemoryStream1G'](environ, cores)
             ]
 
     for bmark in bmarks:
@@ -45,12 +39,12 @@ def memory_stream_suite(environ):
     for bmark in bmarks:
         print bmark.value
 
-def memory_random_suite(environ):
+def memory_random_suite(environ, bmark_cls):
     cores = [0, 2]
     bmarks = [
-                MemoryRandom1K(environ, cores),
-                MemoryRandom1M(environ, cores),
-                MemoryRandom1G(environ, cores)
+                bmark_cls['MemoryRandom1K'](environ, cores),
+                bmark_cls['MemoryRandom1M'](environ, cores),
+                bmark_cls['MemoryRandom1G'](environ, cores)
             ]
 
     for bmark in bmarks:
@@ -62,12 +56,12 @@ def memory_random_suite(environ):
     for bmark in bmarks:
         print bmark.value
 
-def iobench_read_suite(environ):
+def iobench_read_suite(environ, bmark_cls):
     cores = [0, 2]
     bmarks = [
-                IOBenchRead1M(environ, '/tmp/iobench.file', cores),
-                IOBenchRead4M(environ, '/tmp/iobench.file', cores),
-                IOBenchRead1G(environ, '/tmp/iobench.file', cores)
+                bmark_cls['IOBenchRead1M'](environ, '/tmp/iobench.file', cores),
+                bmark_cls['IOBenchRead4M'](environ, '/tmp/iobench.file', cores),
+                bmark_cls['IOBenchRead1G'](environ, '/tmp/iobench.file', cores)
             ]
 
     for bmark in bmarks:
@@ -79,12 +73,12 @@ def iobench_read_suite(environ):
     for bmark in bmarks:
         print bmark.value
 
-def iobench_write_suite(environ):
+def iobench_write_suite(environ, bmark_cls):
     cores = [0, 2]
     bmarks = [
-                IOBenchWrite1M(environ, '/tmp/iobench.file', cores),
-                IOBenchWrite4M(environ, '/tmp/iobench.file', cores),
-                IOBenchWrite1G(environ, '/tmp/iobench.file', cores)
+                bmark_cls['IOBenchWrite1M'](environ, '/tmp/iobench.file', cores),
+                bmark_cls['IOBenchWrite4M'](environ, '/tmp/iobench.file', cores),
+                bmark_cls['IOBenchWrite1G'](environ, '/tmp/iobench.file', cores)
             ]
 
     for bmark in bmarks:
@@ -96,9 +90,9 @@ def iobench_write_suite(environ):
     for bmark in bmarks:
         print bmark.value
 
-def metadata_suite(environ):
+def metadata_suite(environ, bmark_cls):
     cores = [0, 2]
-    bmarks = [Metadata(environ)]
+    bmarks = [bmark_cls['Metadata'](environ)]
 
     for bmark in bmarks:
         bmark.start()
@@ -110,11 +104,14 @@ def metadata_suite(environ):
         print bmark.value
 
 def main():
-    environ = load_environ('config.json', ['applications.json'])
+    environ = load_environ('config.json', ['applications.json', 'benchmarks.json'])
     apps = load_applications(environ)
+    (bmarks, inter) = load_benchmarks(environ)
 
-    print apps
-    
+    bmark = bmarks['StreamAdd'](environ, [1, 2])
+    bmark.start()
+    bmark.join()
+
     app = apps['MongoDB'](environ, [0, 1], [2, 3])
     
     app.load()

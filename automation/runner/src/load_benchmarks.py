@@ -60,8 +60,8 @@ def load_benchmarks(environ):
             try:
                 cls = load_benchmark(module, bmark_module.lower(), bmark_name)
                 bmarks[bmark_name] = cls
-                bmark_name = bmark_name + "Interfere"
-                cls = load_benchmark(module, bmark_module.lower(), bmark_name)
+                thread_name = bmark_name + "Interfere"
+                cls = load_benchmark(module, bmark_module.lower(), thread_name)
                 interference[bmark_name] = cls
             except Exception as e:
                 logging.warning('Failed to load benchmark %s: %s', bmark_name, str(e))

@@ -141,6 +141,13 @@ class BackgroundProcess(greenlet.Greenlet):
     def __str__(self):
         return self._application_name
 
+    # Implement __enter__ and __exit__ so we can use with
+    def __enter__(self):
+        self.start()        
+    
+    def __exit__(self, type, value, traceback):
+        self.join()
+    
     def kill(self, exception=greenlet.GreenletExit, block = True, timeout = None):
         self._stop()
         greenlet.Greenlet.kill(self, exception, block, timeout)

@@ -11,14 +11,16 @@ class InterferenceThread(Greenlet):
         self._cores = cores
         self._process = None
         self._keep_running = True
-        self._benchmark_dir = environ['environ_dir']
+        self._benchmark_dir = environ['benchmark_dir']
 
 
     # Use context manager for use in with statement
     def __enter__(self):
+        print 'In enter'
         self.start()
 
-    def __exit__(self):
+    def __exit__(self, type, value, traceback):
+        print 'In exit'
         self.join()
 
     def __str__(self):

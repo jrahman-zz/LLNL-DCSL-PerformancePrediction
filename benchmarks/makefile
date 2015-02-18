@@ -4,6 +4,7 @@ all: copy
 
 .PHONY: copy
 copy: build
+	mkdir -p bin
 	cd stream/src && cp stream ../../bin/stream
 	cd stream/src && cp stream_interfere ../../bin/stream_interfere
 	cd iobench && cp iobench.jar ../bin/iobench.jar

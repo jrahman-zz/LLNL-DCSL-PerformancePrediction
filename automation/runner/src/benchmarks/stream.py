@@ -43,8 +43,8 @@ class StreamInterfere(InterferenceThread):
 class StreamCopy(StreamBenchmark):
 
     def __init__(self, environ, cores=[0]):
-        StreamBenchmark.__init__(self, environ, 1, cores)
         self._bmark = 'Copy'
+        StreamBenchmark.__init__(self, environ, 1, cores)
 
 class StreamCopyInterfere(StreamInterfere):
     
@@ -55,8 +55,8 @@ class StreamCopyInterfere(StreamInterfere):
 class StreamScale(StreamBenchmark):
 
     def __init__(self, cores=[0]):
-        StreamBenchmark.__init__(self, environ, 2, cores)
         self._bmark = 'Scale'
+        StreamBenchmark.__init__(self, environ, 2, cores)
 
 class StreamScaleInterfere(StreamInterfere):
 
@@ -67,8 +67,8 @@ class StreamScaleInterfere(StreamInterfere):
 class StreamAdd(StreamBenchmark):
     
     def __init__(self, environ, cores=[0]):
-        StreamBenchmark.__init__(self, environ, 3, cores)
         self._bmark = 'Add'
+        StreamBenchmark.__init__(self, environ, 3, cores)
 
 class StreamAddInterfere(StreamInterfere):
 
@@ -79,8 +79,8 @@ class StreamAddInterfere(StreamInterfere):
 class StreamTriad(StreamBenchmark):
 
     def __init__(self, cores=[0]):
-        StreamBenchmark.__init__(self, environ, 4, cores)
         self._bmark = 'Triad'
+        StreamBenchmark.__init__(self, environ, 4, cores)
 
 class StreamTriadInterfere(StreamInterfere):
 

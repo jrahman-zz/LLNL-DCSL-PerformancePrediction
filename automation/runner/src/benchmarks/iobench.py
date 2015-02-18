@@ -73,7 +73,7 @@ class IOBenchRead4M(IOBenchmark):
     def __init__(self, environ, path, cores=[0]):
         IOBenchmark.__init__(self, environ, 15, True, '4M', path, cores)
 
-class IOBenchRead1MInterfere(IOBenchInterfere):
+class IOBenchRead4MInterfere(IOBenchInterfere):
     def __init__(self, environ, path, cores=[0]):
         IOBenchInterfere.__init__(self, environ, 60, True, '4M', path, cores)
 

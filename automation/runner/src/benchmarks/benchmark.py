@@ -1,6 +1,7 @@
 
 import sys
 import os
+import logging
 import gevent.greenlet as greenlet
 import gevent.subprocess as subprocess
 
@@ -21,10 +22,17 @@ class Benchmark(greenlet.Greenlet):
         cmd = ['taskset', '-c', cores, self._cmd]
         cmd = cmd + self._params
         features = {}
+
+        logging.info('Starting benchmark %s', str(self))
+
         try:
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            
+            logging.info('Finished running benchmark %s', str(self))
+            
             features = self._process_output(output)
         except:
+            # Teardown for cleanup, then rethrow for capture somewhere else
             self._teardown()
             raise
         return features

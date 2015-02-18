@@ -30,7 +30,7 @@ class Metadata(Benchmark):
         }
         return features
 
-class MetadataInference(InterferenceThread):
+class MetadataInfere(InterferenceThread):
 
     def __init__(self, environ, cores=[0]):
         InterferenceThread.__init__(self, environ, cores)

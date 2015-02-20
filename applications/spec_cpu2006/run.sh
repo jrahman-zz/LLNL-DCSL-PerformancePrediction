@@ -16,12 +16,15 @@ BMARK_NAME=${3}
 BASE_DIR=$(dirname $0)/
 
 echo "Run: Starting now..."
-${SPEC_DIR}/bin/runspec -c custom-linux64.cfg --nobuild --noreportable --action run 
+(
+    cd "${SPEC_DIR}"
+    source shrc
+    ./bin/runspec -c custom-linux64.cfg --nobuild --noreportable --size train --action run "${BMARK_NAME}"
+    )
 if [ $? -ne 0 ]; then
     echo "Error: Failed to run the benchmark"
     exit 1
 fi
-cat "${SPEC_DIR}/benchspec/${BMARK_NAME}/
 echo "Run: Completed"
 
 exit 0

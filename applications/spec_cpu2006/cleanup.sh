@@ -24,7 +24,7 @@ fi
 
 # Remove run files
 
-RUN_DIR="${SPEC_DIR}/specbench/CPU2006/${3}/run"
+RUN_DIR="${SPEC_DIR}/benchspec/CPU2006/${3}/run"
 if [ -d "${RUN_DIR}" ]; then
     echo "Cleanup: Removing ${RUN_DIR}"
     rm -rf "${RUN_DIR}"

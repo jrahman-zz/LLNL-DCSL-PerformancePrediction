@@ -59,7 +59,11 @@ echo "Load: Created data directory"
 
 
 echo "Load: Building benchmark"
-${SPEC_DIR}/bin/runspec -c custom-linux64.cfg ${BMARK_NAME}
+(
+    cd "${SPEC_DIR}"
+    source shrc
+    ./bin/runspec -c custom-linux64.cfg --noreportable --action build ${BMARK_NAME}
+)
 if [ $? -ne 0 ]; then
     echo "Error: Failed to compile benchmark"
     exit 7

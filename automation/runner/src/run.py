@@ -112,7 +112,7 @@ def main():
     bmark.start()
     bmark.join()
 
-    app = apps['MongoDB'](environ, [0, 1], [2, 3])
+    app = apps['SpecH264Ref'](environ, [0, 1], [2, 3])
     
     app.load()
     app.start()

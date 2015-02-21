@@ -5,9 +5,9 @@ import re
 
 class Metadata(Benchmark):
 
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, instance=1, cores=[0]):
         Benchmark.__init__(self, environ, cores)
-        self._cmd = self._benchmark_dir + '/metadata'
+        self._cmd = '%s/metadata.%s' % (self._data_dir, instance)
         self._data_dir = environ['data_dir']
         self._params = [self._data_dir, '100'];
         self._name = 'metadata'

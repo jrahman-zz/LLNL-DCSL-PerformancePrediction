@@ -1,0 +1,49 @@
+{
+    "Cassandra": {
+        "script_dir": "/home/shay/b/rahmanj/PerfPred/applications/cassandra",
+        "application_dir": "/home/shay/b/rahmanj/llnl/application/apache-cassandra-2.1.2"
+    },
+    "MongoDB": {
+        "script_dir": "/home/shay/b/rahmanj/PerfPred/applications/mongodb",
+        "application_dir": "/home/shay/b/llnl/application/mongodb-linux-x86_64-2.6.7"
+    },
+    "Voldemort": {
+        "script_dir": "/home/shay/b/rahmanj/PerfPred/applications/voldemort",
+        "application_dir": "/home/shay/b/llnl/application/voldemort-release-1.6.0-cutoff"
+    },
+    "Spec": {
+        "script_dir": "/home/jprahman/LLNL-PerformancePrediction/applications/spec",
+        "application_dir": "/home/jprahman/SPEC2006",
+        "subapplications": [
+            "Perlbench",
+            "Bzip",
+            "Gcc",
+            "Gobmk",
+            "HRef",
+            "HMMER",
+            "Sjeng",
+            "Libquantum",
+            "HRef",
+            "Omnetpp",
+            "Astar",
+            "Xalancbmk",
+            "Bwaves",
+            "Gamess",
+            "Milc",
+            "Zeusmp",
+            "Gromacs",
+            "CactusADM",
+            "Leslie",
+            "Namd",
+            "DealII",
+            "Soplex",
+            "Povray",
+            "Calculix",
+            "GemsFDTD",
+            "Tonto",
+            "Lbm",
+            "Wrf",
+            "Sphinx"
+        ]
+    }
+}

@@ -1,5 +1,5 @@
 {
-    "data_dir": "/tmp/applications",
-    "benchmark_dir": "/home/shay/b/rahmanj/PerfPred/benchmarks/bin/",
-    "ycsb_dir": "/home/shay/b/rahmanj/llnl/YCSB"
+    "data_dir": "/tmp/applications/",
+    "benchmark_dir": "/home/jprahman/LLNL-DCSL-PerformancePrediction//benchmarks/bin/",
+    "ycsb_dir": "/home/jprahman/llnl//YCSB"
 }

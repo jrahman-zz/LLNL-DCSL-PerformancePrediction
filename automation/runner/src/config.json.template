@@ -1,0 +1,5 @@
+{
+    "data_dir": "${DATA_BASE}",
+    "benchmark_dir": "${SOURCE_BASE}/benchmarks/bin/",
+    "ycsb_dir": "${APPLICATION_BASE}/YCSB"
+}

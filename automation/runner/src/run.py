@@ -59,9 +59,9 @@ def memory_random_suite(environ, bmark_cls):
 def iobench_read_suite(environ, bmark_cls):
     cores = [0, 2]
     bmarks = [
-                bmark_cls['IOBenchRead1M'](environ, '/tmp/iobench.file', cores),
-                bmark_cls['IOBenchRead4M'](environ, '/tmp/iobench.file', cores),
-                bmark_cls['IOBenchRead1G'](environ, '/tmp/iobench.file', cores)
+                bmark_cls['IOBenchRead1M'](environ, 1, cores),
+                bmark_cls['IOBenchRead4M'](environ, 1, cores),
+                bmark_cls['IOBenchRead128M'](environ, 1, cores)
             ]
 
     for bmark in bmarks:
@@ -76,9 +76,9 @@ def iobench_read_suite(environ, bmark_cls):
 def iobench_write_suite(environ, bmark_cls):
     cores = [0, 2]
     bmarks = [
-                bmark_cls['IOBenchWrite1M'](environ, '/tmp/iobench.file', cores),
-                bmark_cls['IOBenchWrite4M'](environ, '/tmp/iobench.file', cores),
-                bmark_cls['IOBenchWrite1G'](environ, '/tmp/iobench.file', cores)
+                bmark_cls['IOBenchWrite1M'](environ, 1, cores),
+                bmark_cls['IOBenchWrite4M'](environ, 1, cores),
+                bmark_cls['IOBenchWrite128M'](environ, 1, cores)
             ]
 
     for bmark in bmarks:
@@ -92,7 +92,7 @@ def iobench_write_suite(environ, bmark_cls):
 
 def metadata_suite(environ, bmark_cls):
     cores = [0, 2]
-    bmarks = [bmark_cls['Metadata'](environ)]
+    bmarks = [bmark_cls['Metadata'](environ, 1)]
 
     for bmark in bmarks:
         bmark.start()
@@ -108,9 +108,12 @@ def main():
     apps = load_applications(environ)
     (bmarks, inter) = load_benchmarks(environ)
 
-    bmark = bmarks['StreamAdd'](environ, [1, 2])
-    bmark.start()
-    bmark.join()
+    bmark1 = bmarks['IOBenchWrite1M'](environ, 1, [1, 2])
+    bmark2 = bmarks['IOBenchWrite4M'](environ, 2, [1, 2])
+    bmark1.start()
+    bmark2.start()
+    bmark1.join()
+    bmark2.join()
 
     app = apps['SpecH264Ref'](environ, [0, 1], [2, 3])
     

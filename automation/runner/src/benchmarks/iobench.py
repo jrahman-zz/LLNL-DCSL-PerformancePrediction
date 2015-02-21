@@ -6,7 +6,7 @@ from interference import InterferenceThread
 class IOBenchmark(Benchmark):
     """ Base class for IOBench benchmarks """
 
-    def __init__(self, environ, seconds=5, read=True, size='1K', path='/tmp/iobench.file', cores=[0]):
+    def __init__(self, environ, seconds=5, read=True, size='1K', instance=1, cores=[0]):
         Benchmark.__init__(self, environ, cores)
         self._read = read
         if read:
@@ -15,9 +15,10 @@ class IOBenchmark(Benchmark):
             self._operation = 'write'
         self._size = size
         self._seconds = seconds
+        self._path = '%s/iobench.%d' % (environ['data_dir'], instance)
         self._cmd = 'java'
         self._runstring = ','.join([self._operation, '1', self._size, self._size])
-        self._params = ['-classpath', self._benchmark_dir + '/iobench.jar', 'Main', 'run', '-h=20', path, str(self._seconds), self._runstring]
+        self._params = ['-classpath', self._benchmark_dir + '/iobench.jar', 'Main', 'run', '-h=20', self._path, str(self._seconds), self._runstring]
         self._name = 'iobench_%s_%s' % (self._operation, self._size)
 
     def _setup(self):
@@ -36,7 +37,7 @@ class IOBenchmark(Benchmark):
         features = {
                 'mean': float(result.group(1)),
                 #'p10': float(result.group(2)),
-                'p50': float(result.group(3)),
+                #'p50': float(result.group(3)),
                 'p90': float(result.group(4)),
                 #'p99': float(result.group(5)),
                 #'min': float(result.group(6)),
@@ -47,7 +48,7 @@ class IOBenchmark(Benchmark):
 class IOBenchInterfere(InterferenceThread):
     """ Base class for IOBench interference threads"""
 
-    def __init__(self, environ, seconds=30, read=True, size='1K', path='/tmp/iobench.file', cores=[0]):
+    def __init__(self, environ, seconds=30, read=True, size='1K', instance=1, cores=[0]):
         InterferenceThread.__init__(self, environ, cores)
         self._size = size
         self._seconds = seconds
@@ -57,9 +58,10 @@ class IOBenchInterfere(InterferenceThread):
         else:
             self._operation = 'write'
         self._name = 'iobench_%s_%s' % (self._operation, self._size)
+        self._path = '%s/iobench.%d' % (environ['data_dir'], instance)
         self._cmd = 'java'
         self._runstring = ','.join([self._operation, '1', self._size, self._size])
-        self._params = ['-classpath', self._benchmark_dir + '/iobench.jar', 'Main', 'run', '-h=20', path, str(self._seconds), self._runstring]
+        self._params = ['-classpath', self._benchmark_dir + '/iobench.jar', 'Main', 'run', '-h=20', self._path, str(self._seconds), self._runstring]
 
 class IOBenchRead1M(IOBenchmark):
     def __init__(self, environ, path, cores=[0]):
@@ -77,13 +79,13 @@ class IOBenchRead4MInterfere(IOBenchInterfere):
     def __init__(self, environ, path, cores=[0]):
         IOBenchInterfere.__init__(self, environ, 60, True, '4M', path, cores)
 
-class IOBenchRead1G(IOBenchmark):
+class IOBenchRead128M(IOBenchmark):
     def __init__(self, environ, path, cores=[0]):
-        IOBenchmark.__init__(self, environ, 20, True, '1G', path, cores)
+        IOBenchmark.__init__(self, environ, 20, True, '128M', path, cores)
 
-class IOBenchRead1GInterfere(IOBenchInterfere):
+class IOBenchRead128MInterfere(IOBenchInterfere):
     def __init__(self, environ, path, cores=[0]):
-        IOBenchInterfere.__init__(self, environ, 60, True, '1G', path, cores)
+        IOBenchInterfere.__init__(self, environ, 60, True, '128M', path, cores)
 
 class IOBenchWrite1M(IOBenchmark):
     def __init__(self, environ, path, cores=[0]):
@@ -101,13 +103,13 @@ class IOBenchWrite4MInterfere(IOBenchInterfere):
     def __init__(self, environ, path, cores=[0]):
         IOBenchInterfere.__init__(self, environ, 60, False, '4M', path, cores)
 
-class IOBenchWrite1G(IOBenchmark):
+class IOBenchWrite128M(IOBenchmark):
     def __init__(self, environ, path, cores=[0]):
-        IOBenchmark.__init__(self, environ, 20, False, '1G', path, cores)
+        IOBenchmark.__init__(self, environ, 20, False, '128M', path, cores)
 
-class IOBenchWrite1GInterfere(IOBenchInterfere):
+class IOBenchWrite128MInterfere(IOBenchInterfere):
     def __init__(self, environ, path, cores=[0]):
-        IOBenchInterfere.__init__(self, environ, 60, False, '1G', path, cores)
+        IOBenchInterfere.__init__(self, environ, 60, False, '128M', path, cores)
 
 if __name__ == '__main__':
 

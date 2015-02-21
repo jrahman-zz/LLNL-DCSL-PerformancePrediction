@@ -11,7 +11,11 @@ class Spec(Application):
         self._intefere_params = [self._bmark_name, 'ref']
 
     def _parse_output(self, output):
-        return {'hi': 'test'}
+        regex=r""
+        match = re.search(regex, output)
+        if match is None:
+            raise Exception('No match')
+        return { 'time': float(match.group(1)) }
 
 class SpecFloat(Spec):
     def __init__(self, environ, app_cores, client_cores):

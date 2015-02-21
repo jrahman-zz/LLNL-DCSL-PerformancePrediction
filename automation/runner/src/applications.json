@@ -8,7 +8,7 @@
         "application_dir": "/home/jprahman/llnl//mongodb-linux-x86_64-2.6.7"
     },
     "Spec": {
-        "script_dir": "/home/jprahman/LLNL-DCSL-PerformancePrediction//applications/spec",
+        "script_dir": "/home/jprahman/LLNL-DCSL-PerformancePrediction//applications/spec_cpu2006",
         "application_dir": "/home/jprahman/llnl//SPEC2006",
         "subapplications": [
             "Perlbench",

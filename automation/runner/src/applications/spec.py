@@ -7,15 +7,20 @@ class Spec(Application):
 
     def __init__(self, environ, app_cores, client_cores):
         Application.__init__(self, environ, 'Spec', client_cores, app_cores)
+        self._load_params = [self._bmark_name]
+        self._cleanup_params = [self._bmark_name]
         self._run_params = [self._bmark_name, 'train']
         self._intefere_params = [self._bmark_name, 'ref']
 
-    def _parse_output(self, output):
+    def _process_output(self, output):
         regex = r"%s[^-]*--\s*(\d*\.\d*)[^-]*--\s*S.*\n" % self._bmark_name
         match = re.search(regex, output)
         if match is None:
             raise Exception('No match')
         return { 'time': float(match.group(1)) }
+
+    def __str__(self):
+        return "spec_%s" % (self._bmark_name)
 
     # regex=r".*Estimated.*Estimated\s*\n\s*Base\s*Base \s*Base \s*Peak\s*Peak\s*Peak\s*\nBenchmarks\s*Ref\.\s*Run\sTime\s*Ratio\s*Ref\.\s*Run\sTime\s*Ratio\s*\n[-\s]*\n(?:.*\n)*?%s[^-]*--[^-]*?(\d*\.\d*)[^-]*--\s*S.*\n(?:.*?\n)*\s*Est\.\s*SPECint2006\s*Not\sRun\s*\n\n\s*set:\sfp\s*\n\n\s*The\slog\sfor\sthis\srun\sis\sin .*\.log" % (self._bmark_name)
         

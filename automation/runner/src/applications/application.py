@@ -48,11 +48,11 @@ class Application():
         cmd = cmd + self._interface_params
         cmd = cmd + self._load_params
 
-        logging.info('Loading application: %s', self._application_name)
+        logging.info('Loading application: %s', str(self))
         try:
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT )
         except subprocess.CalledProcessError as e:
-            logging.error('Loading application %s failed, output: %s', self._application_name, e.output)
+            logging.error('Loading application %s failed, output: %s', str(self), e.output)
             raise
 
         self._loaded = True

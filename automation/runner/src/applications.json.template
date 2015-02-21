@@ -8,7 +8,7 @@
         "application_dir": "${APPLICATION_BASE}/mongodb-linux-x86_64-2.6.7"
     },
     "Spec": {
-        "script_dir": "${SOURCE_BASE}/applications/spec",
+        "script_dir": "${SOURCE_BASE}/applications/spec_cpu2006",
         "application_dir": "${APPLICATION_BASE}/SPEC2006",
         "subapplications": [
             "Perlbench",

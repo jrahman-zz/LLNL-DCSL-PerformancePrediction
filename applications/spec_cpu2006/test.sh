@@ -15,12 +15,12 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-./run.sh ${SPEC_DIR} /tmp/applications/ ${1}
+./run.sh ${SPEC_DIR} /tmp/applications/ ${1} train
 if [ $? -ne 0 ]; then
     exit 1
 fi
 
-./stop.sh ${SPEC_DIR} /tmp/applications/ ${1}
+./stop.sh ${SPEC_DIR} /tmp/applications/
 if [ $? -ne 0 ]; then
     exit 1
 fi

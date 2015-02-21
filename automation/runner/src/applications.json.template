@@ -1,19 +1,15 @@
 {
     "Cassandra": {
-        "script_dir": "/home/shay/b/rahmanj/PerfPred/applications/cassandra",
-        "application_dir": "/home/shay/b/rahmanj/llnl/application/apache-cassandra-2.1.2"
+        "script_dir": "${SOURCE_BASE}/applications/cassandra",
+        "application_dir": "${APPLICATION_BASE}/apache-cassandra-2.1.2"
     },
     "MongoDB": {
-        "script_dir": "/home/shay/b/rahmanj/PerfPred/applications/mongodb",
-        "application_dir": "/home/shay/b/llnl/application/mongodb-linux-x86_64-2.6.7"
-    },
-    "Voldemort": {
-        "script_dir": "/home/shay/b/rahmanj/PerfPred/applications/voldemort",
-        "application_dir": "/home/shay/b/llnl/application/voldemort-release-1.6.0-cutoff"
+        "script_dir": "${SOURCE_BASE}/applications/mongodb",
+        "application_dir": "${APPLICATION_BASE}/mongodb-linux-x86_64-2.6.7"
     },
     "Spec": {
-        "script_dir": "/home/jprahman/LLNL-PerformancePrediction/applications/spec",
-        "application_dir": "/home/jprahman/SPEC2006",
+        "script_dir": "${SOURCE_BASE}/applications/spec",
+        "application_dir": "${APPLICATION_BASE}/SPEC2006",
         "subapplications": [
             "Perlbench",
             "Bzip",

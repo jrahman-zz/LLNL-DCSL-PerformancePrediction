@@ -112,12 +112,12 @@ def main():
 
     bmark1 = bmarks['IOBenchWrite1M'](environ, [1, 2], 1)
     bmark2 = bmarks['IOBenchWrite4M'](environ, [1, 2], 2)
-    bmark1.start()
-    bmark2.start()
-    bmark1.join()
-    bmark2.join()
+    #bmark1.start()
+    #bmark2.start()
+    #bmark1.join()
+    #bmark2.join()
 
-    app = apps['SpecH264Ref'](environ, [0, 1], [2, 3])
+    app = apps['SpecHRef'](environ, [0, 1], [2, 3])
     
     app.load()
     app.start()

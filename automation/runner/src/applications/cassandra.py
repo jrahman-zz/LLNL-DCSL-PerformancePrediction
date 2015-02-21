@@ -18,6 +18,6 @@ class Cassandra(Application):
         self._start_params = [self._pid_file, self._cassandra_include]
         self._stop_params = [self._pid_file]
 
-    def _parse_output(self, output):
+    def _process_output(self, output):
         return parse(output)
 

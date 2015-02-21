@@ -1,10 +1,13 @@
 from load_environ import load_environ
 from load_applications import load_applications
 from load_benchmarks import load_benchmarks
+from load_numa import load_numa
 
 import argparse
 import logging
 import json
+
+
 
 def run(
         environ,
@@ -78,6 +81,14 @@ def main():
     app_cores = [0]
     client_cores = [2]
     interference_cores = [0]
+
+    config = {}
+    config['environ'] = environ
+    config['application_cores'] = app_cores
+    config['client_cores'] = client_cores
+    config['interference_cores'] = interference_cores
+    config['benchmarks'] = benchmarks
+    config['inter_threads'] = threads
 
     output = run(environ,
         interference,

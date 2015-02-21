@@ -65,5 +65,10 @@ def load_benchmarks(environ):
                 interference[bmark_name] = cls
             except Exception as e:
                 logging.warning('Failed to load benchmark %s: %s', bmark_name, str(e))
-    
+
+    # Add dummy interference
+    import benchmarks.dummy
+    dummy = benchmarks.dummy.DummyInterfere
+    interference['Dummy'] = dummy
+
     return (bmarks, interference)

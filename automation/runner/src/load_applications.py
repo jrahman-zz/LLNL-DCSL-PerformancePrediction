@@ -34,7 +34,6 @@ def load_applications(environ):
                 app_name = application + subapp
                 try:
                     app_module = importlib.import_module(module_name)
-                    print app_module
                     app_class = getattr(app_module, app_name)
                     applications[app_name] = app_class
                 except Exception as e:

@@ -2,127 +2,94 @@ from load_environ import load_environ
 from load_applications import load_applications
 from load_benchmarks import load_benchmarks
 
+import argparse
 import logging
+import json
 
-def stream_suite(environ, bmarks_cls):
-    cores = [0, 2]
-    bmarks = [
-                bmark_cls['StreamCopy'](environ, cores),
-                bmark_cls['StreamAdd'](environ, cores),
-                bmark_cls['StreamScale'](environ, cores),
-                bmark_cls['StreamTriad'](environ, cores)
-            ]
+def run(
+        environ,
+        interference_benchmark,
+        applications,
+        benchmarks,
+        interference,
+        app_cores,
+        client_cores,
+        interference_cores):
 
-    for bmark in bmarks:
-        bmark.start()
+    times = {}
 
-    for bmark in bmarks:
-        bmark.join()
+    # Create and start interference
+    threads = []
+    for i in range(len(interference_cores)):
+        threads.append(interference[interference_benchmark](environ, interference_cores, i + 1))
+        threads[i].start()
 
-    for bmark in bmarks:
-        print bmark.value
+    for benchmark in benchmarks:
+        try:
+            bmark = benchmarks[benchmark](environ, app_cores)
+            bmark.start()
+            bmark.join()
+            times[str(bmark)] = bmark.value
+        except Exception as e:
+            logging.warning('Failed to run benchmark %s: %s', benchmark, str(e))
 
-def memory_stream_suite(environ, bmark_cls):
-    cores = [1, 3]
-    bmarks = [
-                bmark_cls['MemoryStream1K'](environ, cores),
-                bmark_cls['MemoryStream1M'](environ, cores),
-                bmark_cls['MemoryStream1G'](environ, cores)
-            ]
+    #for application in applications:
+    #    app = applications[application](environ, app_cores, client_cores)
+    #    try:
+    #        app.load()
+    #        with app:
+    #            output = app.run()
+    #            times[app.application_name] = output
+    #    except Exception as e:
+    #            logging.warning('Failed to run application %s: %s', app.application_name, str(e))
+    #    finally:
+    #        app.cleanup()
 
-    for bmark in bmarks:
-        bmark.start()
+    for i in range(len[threads]):
+        # TODO, check for failure here...
+        try:
+            threads[i].join()
+        except Exception as e:
+            logging.warning('Failed to run interference thread %s: %s', str(threads[i]), str(e))
 
-    for bmark in bmarks:
-        bmark.join()
+    return times
 
-    for bmark in bmarks:
-        print bmark.value
+def get_args():
+    parser = argparse.ArgumentParser(description='Run benchmarks and applications to collect data')
+    parser.add_argument('--interference', help='Comma separated list of interfering applications and benchmarks', default='Dummy', type=str)
 
-def memory_random_suite(environ, bmark_cls):
-    cores = [0, 2]
-    bmarks = [
-                bmark_cls['MemoryRandom1K'](environ, cores),
-                bmark_cls['MemoryRandom1M'](environ, cores),
-                bmark_cls['MemoryRandom1G'](environ, cores)
-            ]
+    parser.add_argument('--collocation', help='Collocation between inteference and applications, 0=same core(s), 1=different core(s), same socket, 2=different socket', default=1, type=int)
 
-    for bmark in bmarks:
-        bmark.start()
-
-    for bmark in bmarks:
-        bmark.join()
-
-    for bmark in bmarks:
-        print bmark.value
-
-def iobench_read_suite(environ, bmark_cls):
-    cores = [0, 2]
-    bmarks = [
-                bmark_cls['IOBenchRead1M'](environ, 1, cores),
-                bmark_cls['IOBenchRead4M'](environ, 1, cores),
-                bmark_cls['IOBenchRead128M'](environ, 1, cores)
-            ]
-
-    for bmark in bmarks:
-        bmark.start()
-    
-    for bmark in bmarks:
-        bmark.join()
-
-    for bmark in bmarks:
-        print bmark.value
-
-def iobench_write_suite(environ, bmark_cls):
-    cores = [0, 2]
-    bmarks = [
-                bmark_cls['IOBenchWrite1M'](environ, 1, cores),
-                bmark_cls['IOBenchWrite4M'](environ, 1, cores),
-                bmark_cls['IOBenchWrite128M'](environ, 1, cores)
-            ]
-
-    for bmark in bmarks:
-        bmark.start()
-
-    for bmark in bmarks:
-        bmark.join()
-
-    for bmark in bmarks:
-        print bmark.value
-
-def metadata_suite(environ, bmark_cls):
-    cores = [0, 2]
-    bmarks = [bmark_cls['Metadata'](environ, 1)]
-
-    for bmark in bmarks:
-        bmark.start()
-
-    for bmark in bmarks:
-        bmark.join()
-
-    for bmark in bmarks:
-        print bmark.value
+    return parser.parse_args()
 
 def main():
-    environ = load_environ('config.json', ['applications.json', 'benchmarks.json'])
-    apps = load_applications(environ)
-    (bmarks, inter) = load_benchmarks(environ)
 
-    bmark1 = bmarks['IOBenchWrite1M'](environ, 1, [1, 2])
-    bmark2 = bmarks['IOBenchWrite4M'](environ, 2, [1, 2])
-    bmark1.start()
-    bmark2.start()
-    bmark1.join()
-    bmark2.join()
+    args = get_args()
+    interference = args.interference
 
-    app = apps['SpecH264Ref'](environ, [0, 1], [2, 3])
+    modules=['applications.json', 'benchmarks.json']
+    environ = load_environ('config.json', modules)
+
+    # Load our benchmarks and applications for use
+    (benchmarks, threads) = load_benchmarks(environ)
+    applications = load_applications(environ)
     
-    app.load()
-    app.start()
-    print app.run()
-    app.stop()
-    app.cleanup()
+    # TODO, get NUMA info here
+    app_cores = [0]
+    client_cores = [2]
+    interference_cores = [0]
 
+    output = run(environ,
+        interference,
+        applications,
+        benchmarks,
+        threads,
+        app_cores,
+        client_cores,
+        interference_cores)
+
+    with open('output.json', 'w') as f:
+        json.dump(output, f)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)

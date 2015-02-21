@@ -60,51 +60,51 @@ class MemoryInterference(InterferenceThread):
         self._name = 'memory_%s_%s' % (self._type, str(self._size))
 
 class MemoryStream1K(MemoryBenchmark):
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, cores=[0], instance=1):
         MemoryBenchmark.__init__(self, environ, 1, 1024, 10, cores)
 
 class MemoryStream1KInterfere(MemoryInterference):
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, cores=[0], instance=1):
         MemoryInterference.__init__(self, environ, 1, 1024, 100, cores)
 
 class MemoryStream1M(MemoryBenchmark):
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, cores=[0], instance=1):
         MemoryBenchmark.__init__(self, environ, 1, 1024 * 1024, 10, cores)
 
 class MemoryStream1MInterfere(MemoryInterference):
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, cores=[0], instance=1):
         MemoryInterference.__init__(self, environ, 1, 1024 * 1024, 100, cores)
 
 class MemoryStream1G(MemoryBenchmark):
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, cores=[0], instance=1):
         MemoryBenchmark.__init__(self, environ, 1, 1024*1024*1024, 1, cores)
 
 class MemoryStream1GInterfere(MemoryInterference):
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, cores=[0], instance=1):
         MemoryInterference.__init__(self, environ, 1, 1024*1024*1024, 10, cores)
 
 class MemoryRandom1K(MemoryBenchmark):
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, cores=[0], instance=1):
         MemoryBenchmark.__init__(self, environ, 2, 1024, 10, cores)
 
 class MemoryRandom1KInterfere(MemoryInterference):
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, cores=[0], instance=1):
         MemoryInterference.__init__(self, environ, 2, 1024, 100, cores)
 
 class MemoryRandom1M(MemoryBenchmark):
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, cores=[0], instance=1):
         MemoryBenchmark.__init__(self, environ, 2, 1024*1024, 10, cores)
 
 class MemoryRandom1MInterfere(MemoryInterference):
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, cores=[0], instance=1):
         MemoryInterference.__init__(self, environ, 2, 1024*1024, 100, cores)
 
 class MemoryRandom1G(MemoryBenchmark):
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, cores=[0], instance=1):
         MemoryBenchmark.__init__(self, environ, 2, 1024*1024*1024, cores)
 
 class MemoryRandom1GInterfere(MemoryInterference):
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, cores=[0], instance=1):
         MemoryInterference.__init__(self, environ, 2, 1024*1024*1024, 10, cores)
 
 

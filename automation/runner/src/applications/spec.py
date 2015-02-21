@@ -11,169 +11,153 @@ class Spec(Application):
         self._intefere_params = [self._bmark_name, 'ref']
 
     def _parse_output(self, output):
-        regex=r""
+        regex = r"%s[^-]*--\s*(\d*\.\d*)[^-]*--\s*S.*\n" % self._bmark_name
         match = re.search(regex, output)
         if match is None:
             raise Exception('No match')
         return { 'time': float(match.group(1)) }
 
-class SpecFloat(Spec):
-    def __init__(self, environ, app_cores, client_cores):
-        Spec.__init__(self, environ, app_cores, client_cores)
-
-    def _parse_output(self, output):
-        return {'hi': 'test'}
-
-class SpecInt(Spec):
-    def __init__(self, environ, app_cores, client_cores):
-        Spec.__init__(self, environ, app_cores, client_cores)
-
-    def _parse_output(self, output):
-        regex=r".*Estimated.*Estimated\s*\n\s*Base\s*Base \s*Base \s*Peak\s*Peak\s*Peak\s*\nBenchmarks\s*Ref\.\s*Run\sTime\s*Ratio\s*Ref\.\s*Run\sTime\s*Ratio\s*\n[-\s]*\n(?:.*\n)*?%s[^-]*--[^-]*?(\d*\.\d*)[^-]*--\s*S.*\n(?:.*?\n)*\s*Est\.\s*SPECint2006\s*Not\sRun\s*\n\n\s*set:\sfp\s*\n\n\s*The\slog\sfor\sthis\srun\sis\sin .*\.log" % (self._bmark_name)
-        match = re.search(regex, output)
-        if match is None:
-            raise Exception('No match')
-        return { 'time': float(match.group(1)) }
-
-class SpecPerlbench(SpecInt):
+    # regex=r".*Estimated.*Estimated\s*\n\s*Base\s*Base \s*Base \s*Peak\s*Peak\s*Peak\s*\nBenchmarks\s*Ref\.\s*Run\sTime\s*Ratio\s*Ref\.\s*Run\sTime\s*Ratio\s*\n[-\s]*\n(?:.*\n)*?%s[^-]*--[^-]*?(\d*\.\d*)[^-]*--\s*S.*\n(?:.*?\n)*\s*Est\.\s*SPECint2006\s*Not\sRun\s*\n\n\s*set:\sfp\s*\n\n\s*The\slog\sfor\sthis\srun\sis\sin .*\.log" % (self._bmark_name)
+        
+class SpecPerlbench(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '400.perlbench'
-        SpecInit.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecBzip(SpecInt):
+class SpecBzip(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '401.bzip2'
-        SpecInt.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecGcc(SpecInt):
+class SpecGcc(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '403.gcc'
-        SpecInt.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecGobmk(SpecInt):
+class SpecGobmk(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '445.gobmk'
-        SpecInt.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecHMMER(SpecInt):
+class SpecHMMER(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '456.hmmer'
-        SpecInt.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecSjeng(SpecInt):
+class SpecSjeng(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '458.sjeng'
-        SpecInt.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecLibquantum(SpecInt):
+class SpecLibquantum(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '462.libquantum'
-        SpecInt.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecHRef(SpecInt):
+class SpecHRef(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '464.h264ref'
-        SpecInt.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecOmnetpp(SpecInt):
+class SpecOmnetpp(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '471.omnetpp'
-        SpecInt.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecAstar(SpecInt):
+class SpecAstar(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '473.astar'
-        SpecInt.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecXalancbmk(SpecInt):
+class SpecXalancbmk(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '483.xalancbmk'
-        SpecInt.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecBwaves(SpecFloat):
+class SpecBwaves(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '410.bwaves'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecGamess(SpecFloat):
+class SpecGamess(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '416.gamess'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecMilc(SpecFloat):
+class SpecMilc(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '433.milc'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecZeusmp(SpecFloat):
+class SpecZeusmp(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '434.zeusmp'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecGromacs(SpecFloat):
+class SpecGromacs(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '435.gromacs'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecCactusADM(SpecFloat):
+class SpecCactusADM(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '436.cactusADM'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecLeslie(SpecFloat):
+class SpecLeslie(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '437.leslie3d'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecNamd(SpecFloat):
+class SpecNamd(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '444.namd'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecDealII(SpecFloat):
+class SpecDealII(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '447.dealII'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecSoplex(SpecFloat):
+class SpecSoplex(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '450.soplex'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecPovray(SpecFloat):
+class SpecPovray(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '453.povray'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecCalculix(SpecFloat):
+class SpecCalculix(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '454.calculix'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecGemsFDTD(SpecFloat):
+class SpecGemsFDTD(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '459.GemsFDTD'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecTonto(SpecFloat):
+class SpecTonto(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '465.tonto'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecLbm(SpecFloat):
+class SpecLbm(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '470.lbm'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecWrf(SpecFloat):
+class SpecWrf(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '481.wrf'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
-class SpecSphinx(SpecFloat):
+class SpecSphinx(Spec):
     def __init__(self, environ, app_cores, client_cores):
         self._bmark_name = '482.sphinx3'
-        SpecFloat.__init__(self, environ, app_cores, client_cores)
+        Spec.__init__(self, environ, app_cores, client_cores)
 
 
 if __name__ == '__main__':

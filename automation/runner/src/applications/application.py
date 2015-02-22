@@ -70,11 +70,11 @@ class Application():
         cmd = cmd + self._interface_params
         cmd = cmd + self._start_params
 
-        logging.info('Starting application: %s', self._application_name)
+        logging.info('Starting application: %s', str(self))
         try:
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            logging.error('Failed to start application %s, output: %s', self._application_name, e.output)
+            logging.error('Failed to start application %s, output: %s', str(self), e.output)
             raise
 
         self._started = True
@@ -109,11 +109,11 @@ class Application():
         cmd = cmd + self._run_params
 
         # Run the command and process the output as needed
-        logging.info('Running application: %s', self._application_name)
+        logging.info('Running application: %s', str(self))
         try:
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            logging.error('Failed to run application %s, output: %s', self._application_name, e.output)
+            logging.error('Failed to run application %s, output: %s', str(self), e.output)
             raise
 
         features = self._process_output(output)
@@ -129,11 +129,11 @@ class Application():
         cmd = cmd + self._interface_params
         cmd = cmd + self._stop_params
 
-        logging.info('Stopping application: %s', self._application_name)
+        logging.info('Stopping application: %s', str(self))
         try:
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            logging.error('Failed to stop application %s, output %s', self._application_name, e.output)
+            logging.error('Failed to stop application %s, output %s', str(self), e.output)
             raise
 
         self._started = False
@@ -148,11 +148,11 @@ class Application():
         cmd = cmd + self._interface_params
         cmd = cmd + self._cleanup_params
 
-        logging.info('Cleaning up application: %s', self._application_name)
+        logging.info('Cleaning up application: %s', str(self))
         try:
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            logging.error('Failed to cleanup application %s, output %s', self._application_name, e.output)
+            logging.error('Failed to cleanup application %s, output %s', str(self), e.output)
             raise
 
         self._loaded = False

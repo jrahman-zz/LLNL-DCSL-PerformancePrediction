@@ -33,8 +33,8 @@ class StreamBenchmark(Benchmark):
 
 class StreamInterfere(InterferenceThread):
 
-    def __init__(self, environ, operation=1, cores=[0]):
-        InterferenceThread.__init__(self, environ, cores)
+    def __init__(self, environ, operation=1, cores=[0], nice=0):
+        InterferenceThread.__init__(self, environ, cores, nice)
         self._operation = operation
         self._params = [str(self._operation)]
         self._cmd = self._benchmark_dir + '/stream_interfere'
@@ -46,9 +46,9 @@ class StreamCopy(StreamBenchmark):
         StreamBenchmark.__init__(self, environ, 1, cores)
 
 class StreamCopyInterfere(StreamInterfere):
-    def __init__(self, cores=[0], instance=1):
+    def __init__(self, cores=[0], nice=0, instance=1):
         self._bmark = 'Copy'
-        StreamInterfere.__init__(self, environ, 1, cores)
+        StreamInterfere.__init__(self, environ, 1, cores, nice)
 
 class StreamScale(StreamBenchmark):
     def __init__(self, cores=[0], instance=1):
@@ -56,9 +56,9 @@ class StreamScale(StreamBenchmark):
         StreamBenchmark.__init__(self, environ, 2, cores)
 
 class StreamScaleInterfere(StreamInterfere):
-    def __init__(self, enrivon, cores=[0], instance=1):
+    def __init__(self, enrivon, cores=[0], nice=0, instance=1):
         self._bmark = 'Scale'
-        StreamInterfere.__init__(self, environ, 2, cores)
+        StreamInterfere.__init__(self, environ, 2, cores, nice)
 
 class StreamAdd(StreamBenchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -66,9 +66,9 @@ class StreamAdd(StreamBenchmark):
         StreamBenchmark.__init__(self, environ, 3, cores)
 
 class StreamAddInterfere(StreamInterfere):
-    def __init__(self, environ, cores=[0], instance=1): 
+    def __init__(self, environ, cores=[0], nice=0, instance=1): 
         self._bmark = 'Add'
-        StreamInterfere.__init__(self, environ, 3, cores)
+        StreamInterfere.__init__(self, environ, 3, cores, nice)
 
 class StreamTriad(StreamBenchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -76,9 +76,9 @@ class StreamTriad(StreamBenchmark):
         StreamBenchmark.__init__(self, environ, 4, cores)
 
 class StreamTriadInterfere(StreamInterfere):
-    def __init__(self, environ, cores=[0], instance=1):
+    def __init__(self, environ, cores=[0], nice=0, instance=1):
         self._bmark = 'Triad'
-        StreamInterfere.__init__(self, environ, 4, cores)
+        StreamInterfere.__init__(self, environ, 4, cores, nice)
 
 # Basic parsing unit test
 if __name__ == "__main__":

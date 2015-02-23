@@ -6,8 +6,9 @@ from gevent import subprocess
 
 class InterferenceThread(Greenlet):
 
-    def __init__(self, environ, cores=[0]):
+    def __init__(self, environ, cores=[0], nice=0):
         Greenlet.__init__(self)
+        self._nice = str(nice)
         self._cores = cores
         self._process = None
         self._keep_running = True
@@ -50,8 +51,8 @@ class InterferenceThread(Greenlet):
             DEVNULL = open(os.devnull, 'wb')
 
         cores = ','.join(map(lambda x: str(x), self._cores))
-        args = ['taskset', '-c', cores, self._cmd] + self._params
-        prog = args[3].split('/')[-1]
+        args = ['nice', '-%s' % (self._nice), 'taskset', '-c', cores, self._cmd] + self._params
+        prog = args[5].split('/')[-1]
         while self._keep_running:
             logging.info('Starting new %s process...', prog)
             self._process = subprocess.Popen(args, stdout=DEVNULL, stderr=subprocess.STDOUT)
@@ -61,9 +62,14 @@ class InterferenceThread(Greenlet):
             # Return code of -9 means SIGKILL, this is OK!
             if not (return_code == 0 or return_code == -9):
                 self._keep_running = False
+                self._teardown()
                 raise Exception('Process failure, return code %d' % (return_code))
         
         # Set ourself to None so that _stop doesn't try to do anything
         # with a completed process
+        self._teardown()
         self._process = None
+
+    def _teardown(self):
+        pass
 

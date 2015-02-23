@@ -1,14 +1,17 @@
 
 from benchmark import Benchmark
 from interference import InterferenceThread
+
+from glob import glob
+from gevent import subprocess
 import re
 
 class Metadata(Benchmark):
 
     def __init__(self, environ, instance=1, cores=[0]):
         Benchmark.__init__(self, environ, cores)
-        self._cmd = '%s/metadata.%s' % (self._data_dir, instance)
-        self._data_dir = environ['data_dir']
+        self._data_dir = '%s/metadata.%s' % (self._data_dir, instance)
+        self._cmd = self._benchmark_dir + '/metadata'
         self._params = [self._data_dir, '100'];
         self._name = 'metadata'
 
@@ -32,13 +35,17 @@ class Metadata(Benchmark):
 
 class MetadataInterfere(InterferenceThread):
 
-    def __init__(self, environ, cores=[0]):
-        InterferenceThread.__init__(self, environ, cores)
-        self._data_dir = environ['data_dir']
-        self._params = [self._data_dir, '1000'];
+    def __init__(self, environ, cores=[0], nice=0, instance=1):
+        InterferenceThread.__init__(self, environ, cores, nice)
+        self._dir = '%s/metadata.%d' % (environ['data_dir'], instance)
+        self._params = [self._dir, '1000'];
         self._cmd = self._benchmark_dir + '/metadata'
         self._name = 'metadata'
 
+    def _teardown(self):
+        """ We need to scrub the directory if we were signalled """
+        globs = glob(self._dir + '/*')
+        subprocess.check_call(['rm', '-f'] + globs)
 
 if __name__ == "__main__":
 

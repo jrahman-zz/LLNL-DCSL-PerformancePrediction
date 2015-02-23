@@ -48,8 +48,8 @@ class IOBenchmark(Benchmark):
 class IOBenchInterfere(InterferenceThread):
     """ Base class for IOBench interference threads"""
 
-    def __init__(self, environ, cores=[0], seconds=30, read=True, size='1K', instance=1):
-        InterferenceThread.__init__(self, environ, cores)
+    def __init__(self, environ, cores=[0], seconds=30, read=True, size='1K', nice=0, instance=1):
+        InterferenceThread.__init__(self, environ, cores, nice)
         self._size = size
         self._seconds = seconds
         self._read = read
@@ -68,48 +68,48 @@ class IOBenchRead1M(IOBenchmark):
         IOBenchmark.__init__(self, environ, cores, 10, True, '1M', instance)
 
 class IOBenchRead1MInterfere(IOBenchInterfere):
-    def __init__(self, environ, cores=[0], instance=1):
-        IOBenchInterfere.__init__(self, environ, cores, 60, True, '1M', instance)
+    def __init__(self, environ, cores=[0], nice=0, instance=1):
+        IOBenchInterfere.__init__(self, environ, cores, 60, True, '1M', nice, instance)
 
 class IOBenchRead4M(IOBenchmark):
     def __init__(self, environ, cores=[0], instance=1):
         IOBenchmark.__init__(self, environ, cores, 15, True, '4M', instance)
 
 class IOBenchRead4MInterfere(IOBenchInterfere):
-    def __init__(self, environ, cores=[0], instance=1):
-        IOBenchInterfere.__init__(self, environ, cores, 60, True, '4M', instance)
+    def __init__(self, environ, cores=[0], nice=0, instance=1):
+        IOBenchInterfere.__init__(self, environ, cores, 60, True, '4M', nice, instance)
 
 class IOBenchRead128M(IOBenchmark):
     def __init__(self, environ, cores=[0], instance=1):
         IOBenchmark.__init__(self, environ, cores, 20, True, '128M', instance)
 
 class IOBenchRead128MInterfere(IOBenchInterfere):
-    def __init__(self, environ, cores=[0], instance=1):
-        IOBenchInterfere.__init__(self, environ, cores, 60, True, '128M', instance)
+    def __init__(self, environ, cores=[0], nice=0, instance=1):
+        IOBenchInterfere.__init__(self, environ, cores, 60, True, '128M', nice, instance)
 
 class IOBenchWrite1M(IOBenchmark):
     def __init__(self, environ, cores=[0], instance=1):
         IOBenchmark.__init__(self, environ, cores, 10, False, '1M', instance)
 
 class IOBenchWrite1MInterfere(IOBenchInterfere):
-    def __init__(self, environ, cores=[0], instance=1):
-        IOBenchInterfere.__init__(self, environ, cores, 60, False, '1M', instance)
+    def __init__(self, environ, cores=[0], nice=0, instance=1):
+        IOBenchInterfere.__init__(self, environ, cores, 60, False, '1M', nice, instance)
 
 class IOBenchWrite4M(IOBenchmark):
     def __init__(self, environ, cores=[0], instance=1):
         IOBenchmark.__init__(self, environ, cores, 15, False, '4M', instance)
 
 class IOBenchWrite4MInterfere(IOBenchInterfere):
-    def __init__(self, environ, cores=[0], instance=1):
-        IOBenchInterfere.__init__(self, environ, cores, 60, False, '4M', instance)
+    def __init__(self, environ, cores=[0], nice=0, instance=1):
+        IOBenchInterfere.__init__(self, environ, cores, 60, False, '4M', nice, instance)
 
 class IOBenchWrite128M(IOBenchmark):
     def __init__(self, environ, cores=[0], instance=1):
         IOBenchmark.__init__(self, environ, cores, 20, False, '128M', instance)
 
 class IOBenchWrite128MInterfere(IOBenchInterfere):
-    def __init__(self, environ, cores=[0], instance=1):
-        IOBenchInterfere.__init__(self, environ, cores, 60, False, '128M', instance)
+    def __init__(self, environ, cores=[0], nice=0, instance=1):
+        IOBenchInterfere.__init__(self, environ, cores, 60, False, '128M', nice, instance)
 
 if __name__ == '__main__':
 

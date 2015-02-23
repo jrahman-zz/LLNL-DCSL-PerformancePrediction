@@ -2,6 +2,7 @@ from load_environ import load_environ
 from load_applications import load_applications
 from load_benchmarks import load_benchmarks
 
+import gevent
 
 import argparse
 import logging
@@ -117,11 +118,24 @@ def main():
     #bmark1.join()
     #bmark2.join()
 
-    app = apps['SpecHRef'](environ, [0, 1], [2, 3])
+    interference1 = inter['Metadata'](environ, [1, 2], -5, 1)
+    interference2 = inter['Metadata'](environ, [1, 2], 5, 2)
+    interference3 = inter['StreamAdd'](environ, [1, 2], 0, 1)
+    interference1.start()
+    interference2.start()
+    interference3.start()
+    print 'Starting to sleep...'
+    gevent.sleep(20)
+    print 'Woke up'
+    interference1.join()
+    interference2.join()
+    interference3.join()
+
+    app = apps['SpecGromacs'](environ, [0, 1], [2, 3])
     
     app.load()
     app.start()
-    print app.run()
+    #print app.run()
     app.stop()
     app.cleanup()
 

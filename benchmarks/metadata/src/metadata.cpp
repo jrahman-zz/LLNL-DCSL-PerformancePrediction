@@ -140,27 +140,27 @@ int run_benchmark(char *basedir, int repetitions) {
     
     if (repetitions <= 0 || !basedir) {
         std::cout << "Bad arguments" << std::endl;
-        ret = -1;
+        ret = 1;
         goto cleanup;
     }
 
     len = strlen(basedir);
     if (len <= 0) {
         std::cout << "Base directory path too short" << std::endl;
-        ret = -1;
+        ret = 2;
         goto cleanup;
     }
 
     if (len >= MAX_NAME_LEN - 20) {
         std::cout << "Base directory path too long" << std::endl;
-        ret = -1;
+        ret = 3;
         goto cleanup;
     }
 
     results = new double[repetitions];
     if (results == NULL) {
         std::cout << "Failed to allocate results storage" << std::endl;
-        ret = -1;
+        ret = 4;
         goto cleanup;
     }
 
@@ -169,7 +169,7 @@ int run_benchmark(char *basedir, int repetitions) {
         len = snprintf(buf[i], MAX_NAME_LEN, "%s/%d", basedir, i);
         if (len <= 0 || len >= MAX_NAME_LEN) {
             std::cout << "Failed to generate name" << std::endl;
-            ret = -1;
+            ret = 5;
             goto cleanup;
         }        
     }
@@ -183,7 +183,7 @@ int run_benchmark(char *basedir, int repetitions) {
 
         if (ret != 0) {
             std::cout << "Run " << i << " failed" << std::endl;
-            ret = -1;
+            ret = 6;
             goto cleanup;
         }
 
@@ -241,5 +241,5 @@ int main(int argc, char **argv) {
     basedir = argv[1];
 
     ret = run_benchmark(basedir, reps);
-    return (ret == 0) ? 0 : 1;
+    return ret;
 }

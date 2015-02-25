@@ -2,10 +2,10 @@
 
 
 usage() {
-    echo "Usage: load.sh SPEC_DIR DATA_DIR BMARK_NAME"
+    echo "Usage: load.sh SPEC_DIR DATA_DIR BMARK_NAME SIZE"
 }
 
-if [ $# -ne 3 ]; then
+if [ $# -ne 4 ]; then
     usage
     exit 1
 fi
@@ -36,6 +36,13 @@ fi
 
 BMARK_NAME=${3}
 
+SIZE=${4}
+if [ "${SIZE}" != "train" -a "${SIZE}" != "test" -a "${SIZE}" != "ref" ]; then
+    echo "Error: Bad size"
+    usage
+    exit 5
+fi
+
 # Delete old datadir
 DATA="${DATA_DIR}/spec_data_${BMARK_NAME}"
 if [ -d "${DATA}" ]; then
@@ -43,7 +50,7 @@ if [ -d "${DATA}" ]; then
     rm -rf "${DATA}"
     if [ $? -ne 0 ]; then
         echo "Error: Failed to delete ${DATA}"
-        exit 5
+        exit 6
     fi
     echo "Load: Deleted old data directory"
 fi
@@ -53,7 +60,7 @@ echo "Load: Creating new data directory at ${DATA} ..."
 mkdir -p "${DATA}"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to create data directory"
-    exit 6
+    exit 7
 fi
 echo "Load: Created data directory"
 
@@ -62,11 +69,11 @@ echo "Load: Building benchmark"
 (
     cd "${SPEC_DIR}"
     source shrc
-    ./bin/runspec -c custom-linux64.cfg --noreportable --action build ${BMARK_NAME}
+    ./bin/runspec -c custom-linux64.cfg --tune base --noreportable --size ${SIZE} --action setup ${BMARK_NAME}
 )
 if [ $? -ne 0 ]; then
     echo "Error: Failed to compile benchmark"
-    exit 7
+    exit 8
 fi
 
 exit 0

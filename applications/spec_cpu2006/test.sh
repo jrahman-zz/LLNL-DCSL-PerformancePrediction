@@ -5,7 +5,7 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
-./load.sh ${SPEC_DIR} /tmp/applications/ ${1}
+./load.sh ${SPEC_DIR} /tmp/applications/ ${1} train
 if [ $? -ne 0 ]; then
     exit 1
 fi
@@ -15,7 +15,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-./run.sh ${SPEC_DIR} /tmp/applications/ ${1} train
+./run.sh ${SPEC_DIR} /tmp/applications/ ${1} train 1
 if [ $? -ne 0 ]; then
     exit 1
 fi

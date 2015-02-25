@@ -118,24 +118,24 @@ def main():
     #bmark1.join()
     #bmark2.join()
 
-    interference1 = inter['Metadata'](environ, [1, 2], -5, 1)
-    interference2 = inter['Metadata'](environ, [1, 2], 5, 2)
-    interference3 = inter['StreamAdd'](environ, [1, 2], 0, 1)
-    interference1.start()
-    interference2.start()
-    interference3.start()
+    #interference1 = inter['Metadata'](environ, [1, 2], -5, 1)
+    #interference2 = inter['StreamAdd'](environ, [2], 10, 2)
+    #interference3 = inter['StreamAdd'](environ, [1], 10, 1)
+    #interference1.start()
+    #interference2.start()
+    #interference3.start()
     print 'Starting to sleep...'
-    gevent.sleep(20)
+    #gevent.sleep(20)
     print 'Woke up'
-    interference1.join()
-    interference2.join()
-    interference3.join()
+    #interference1.join()
+    #interference2.join()
+    #interference3.join()
 
-    app = apps['SpecGromacs'](environ, [0, 1], [2, 3])
+    app = apps['SpecSoplex'](environ, [0, 1], [2, 3])
     
     app.load()
     app.start()
-    #print app.run()
+    print app.run()
     app.stop()
     app.cleanup()
 

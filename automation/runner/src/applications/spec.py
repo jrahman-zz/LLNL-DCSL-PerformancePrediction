@@ -7,10 +7,10 @@ class Spec(Application):
 
     def __init__(self, environ, app_cores, client_cores):
         Application.__init__(self, environ, 'Spec', client_cores, app_cores)
-        self._load_params = [self._bmark_name]
+        self._load_params = [self._bmark_name, 'train']
         self._cleanup_params = [self._bmark_name]
-        self._run_params = [self._bmark_name, 'train']
-        self._intefere_params = [self._bmark_name, 'ref']
+        self._run_params = [self._bmark_name, 'train', '0']
+        self._intefere_params = [self._bmark_name, 'train', '1']
 
     def _process_output(self, output):
         regex = r"%s[^-]*--\s*(\d*\.\d*)[^-]*--\s*S.*\n" % self._bmark_name

@@ -91,7 +91,7 @@ class Application():
         cmd = cmd + ['%s/run.sh' % (self._script_dir)]
         cmd = cmd + self._interface_params
         cmd = cmd + self._interfere_params
-
+        
         return BackgroundProcess(cmd, self._application_name)
 
     def run(self): 

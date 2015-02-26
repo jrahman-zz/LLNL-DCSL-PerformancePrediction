@@ -32,7 +32,7 @@ class StreamBenchmark(Benchmark):
         return feature
 
 class StreamInterfere(InterferenceThread):
-
+    
     def __init__(self, environ, operation=1, cores=[0], nice=0):
         InterferenceThread.__init__(self, environ, cores, nice)
         self._operation = operation

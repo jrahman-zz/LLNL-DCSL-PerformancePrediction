@@ -29,6 +29,15 @@
 #include <sstream>
 #include <iostream>
 
+// Add tuning parameters
+
+#ifndef BANDWIDTH_SCALE
+#define BANDWIDTH_SCALE 3736503
+#endif
+
+#ifndef REGULAR_STRIDE
+#define REGULAR_STRIDE 1
+#endif
 
 long long int identity(long long int n_);
 
@@ -203,50 +212,50 @@ void measurement_bandwidth(long long int n_, int CPU_, int repeat) {
 
       //time_old3 = PAPI_get_real_usec();
 
-      vec_[identity(3736503*k_)%n_]++;
-      vec_2[identity(3736503*k_)%n_]++;
-      vec_3[identity(3736503*k_)%n_]++;
-      vec_4[identity(3736503*k_)%n_]++;
-      vec_5[identity(3736503*k_)%n_]++;
-      vec_6[identity(3736503*k_)%n_]++;
-      vec_7[identity(3736503*k_)%n_]++;
-      vec_8[identity(3736503*k_)%n_]++;
-      vec_9[identity(3736503*k_)%n_]++;
-      vec_10[identity(3736503*k_)%n_]++;
-      vec_11[identity(3736503*k_)%n_]++;
-      vec_12[identity(3736503*k_)%n_]++;
-      vec_13[identity(3736503*k_)%n_]++;
-      vec_14[identity(3736503*k_)%n_]++;
-      vec_15[identity(3736503*k_)%n_]++;
-      vec_16[identity(3736503*k_)%n_]++;
-      vec_17[identity(3736503*k_)%n_]++;
-      vec_18[identity(3736503*k_)%n_]++;
-      vec_19[identity(3736503*k_)%n_]++;
-      vec_20[identity(3736503*k_)%n_]++;
-      vec_21[identity(3736503*k_)%n_]++;
-      vec_22[identity(3736503*k_)%n_]++;
-      vec_23[identity(3736503*k_)%n_]++;
-      vec_24[identity(3736503*k_)%n_]++;
-      vec_25[identity(3736503*k_)%n_]++;
-      vec_26[identity(3736503*k_)%n_]++;
-      vec_27[identity(3736503*k_)%n_]++;
-      vec_28[identity(3736503*k_)%n_]++;
-      vec_29[identity(3736503*k_)%n_]++;
-      vec_30[identity(3736503*k_)%n_]++;
-      vec_31[identity(3736503*k_)%n_]++;
-      vec_32[identity(3736503*k_)%n_]++;
-      vec_33[identity(3736503*k_)%n_]++;
-      vec_34[identity(3736503*k_)%n_]++;
-      vec_35[identity(3736503*k_)%n_]++;
-      vec_36[identity(3736503*k_)%n_]++;
-      vec_37[identity(3736503*k_)%n_]++;
-      vec_38[identity(3736503*k_)%n_]++;
-      vec_39[identity(3736503*k_)%n_]++;
-      vec_40[identity(3736503*k_)%n_]++;
-      vec_41[identity(3736503*k_)%n_]++;
-      vec_42[identity(3736503*k_)%n_]++;
-      vec_43[identity(3736503*k_)%n_]++;
-      vec_44[identity(3736503*k_)%n_]++;
+      vec_[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_2[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_3[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_4[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_5[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_6[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_7[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_8[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_9[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_10[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_11[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_12[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_13[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_14[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_15[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_16[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_17[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_18[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_19[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_20[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_21[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_22[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_23[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_24[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_25[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_26[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_27[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_28[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_29[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_30[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_31[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_32[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_33[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_34[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_35[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_36[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_37[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_38[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_39[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_40[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_41[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_42[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_43[identity(BANDWIDTH_SCALE*k_)%n_]++;
+      vec_44[identity(BANDWIDTH_SCALE*k_)%n_]++;
 
 
 
@@ -386,7 +395,7 @@ void measurement_regular_access(long long int n_, int CPU_, int repeat) {
         // PAPI_read_counters(Values, n_counters);
         // time_old = PAPI_get_real_usec();
       // }
-      for( long long int k_=0; k_<n_; k_++) {
+      for( long long int k_=0; k_<n_; k_ += REGULAR_STRIDE) {
         //printf("%lld %lld %lld %lld\n", (k_*500)%n_, (k_*1000)%n_, 500*k_, n_);
         //Stride = 1 
         vec_[k_]++;

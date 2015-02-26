@@ -5,7 +5,7 @@ import gevent.subprocess as subprocess
 
 class Application():
 
-    def __init__(self, environ, application_name, start_cores, run_cores):
+    def __init__(self, environ, application_name, start_cores, run_cores, nice=0):
         
         # Basic information for an application module
         self._application_name = application_name
@@ -18,7 +18,8 @@ class Application():
         # TODO, clarify how this works
         self._run_cores = run_cores
         self._start_cores = start_cores
-        
+        self._nice = nice
+
         self._loaded = False
         self._started = False
         
@@ -65,7 +66,7 @@ class Application():
             raise ValueError('Not started or already loaded')
 
         cores = ','.join(map(lambda x: str(x), self._start_cores))
-        cmd = ['taskset', '-c', cores]
+        cmd = ['nice', '-%s' % str(self._nice), 'taskset', '-c', cores]
         cmd = cmd + ["%s/start.sh" % (self._script_dir)]
         cmd = cmd + self._interface_params
         cmd = cmd + self._start_params
@@ -87,7 +88,7 @@ class Application():
         cores = ','.join(map(lambda x: str(x), self._run_cores))
 
         # Build the command
-        cmd = ['taskset', '-c', cores]
+        cmd = ['nice', '-%s' % str(self._nice), 'taskset', '-c', cores]
         cmd = cmd + ['%s/run.sh' % (self._script_dir)]
         cmd = cmd + self._interface_params
         cmd = cmd + self._interfere_params
@@ -201,7 +202,7 @@ class BackgroundProcess(greenlet.Greenlet):
             import os
             DEVNULL = open(os.devnull, 'wb')
     
-        prog = self._args[3].split('/')[-1]
+        prog = self._args[5].split('/')[-1]
         while self._keep_running:
             logging.info('Starting new %s process...', prog)
             self._process = subprocess(self._args, stdout=DEVNULL, stderr=subprocess.STDOUT)

@@ -2,11 +2,11 @@ all: copy
 
 .PHONY: build
 build:
-	cd src/hog && make
-	cd src/alloctest && make
-	cd src/filetest && make 
-	cd src/marc && make
-	cd src/SparseLib++/1.7 && make all
+	cd src/hog && $(MAKE)
+	cd src/alloctest && $(MAKE)
+	cd src/filetest && $(MAKE)
+	cd src/marc && $(MAKE)
+	cd src/SparseLib++/1.7 && $(MAKE) all
 
 .PHONY: copy
 copy: build
@@ -15,6 +15,7 @@ copy: build
 	mv src/SparseLib++/1.7/testing/tsp bin
 	mv src/SparseLib++/1.7/testing/td bin
 	mv src/marc/example bin
+	mv src/marc/exampleV2 bin
 	mv src/alloctest/alloctest bin
 	mv src/filetest/filetest bin
 	mv src/hog/hog bin

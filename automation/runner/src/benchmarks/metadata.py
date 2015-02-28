@@ -1,6 +1,6 @@
 
 from benchmark import Benchmark
-from interference import InterferenceThread
+from interference import Interference
 
 from glob import glob
 from gevent import subprocess
@@ -33,10 +33,10 @@ class Metadata(Benchmark):
         }
         return features
 
-class MetadataInterfere(InterferenceThread):
+class MetadataInterfere(Interference):
 
     def __init__(self, environ, cores=[0], nice=0, instance=1):
-        InterferenceThread.__init__(self, environ, cores, nice)
+        Interference.__init__(self, environ, cores, nice)
         self._dir = '%s/metadata.%d' % (environ['data_dir'], instance)
         self._params = [self._dir, '1000'];
         self._cmd = self._benchmark_dir + '/metadata'

@@ -1,5 +1,5 @@
 
-from interference import InterferenceThread
+from interference import Interference
 from benchmark import Benchmark
 import re
 
@@ -42,10 +42,10 @@ class MemoryBenchmark(Benchmark):
         }
         return feature
 
-class MemoryInterference(InterferenceThread):
+class MemoryInterference(Interference):
 
     def __init__(self, environ, operation=1, size=1024, repeat=100, cores=[0], nice=0):
-        InterferenceThread.__init__(self, environ, cores, nice)
+        Interference.__init__(self, environ, cores, nice)
         self._operation = operation
         if self._operation == 1:
             self._type = 'streaming'

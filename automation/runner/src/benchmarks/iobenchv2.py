@@ -1,7 +1,7 @@
 
 import re
 from benchmark import Benchmark
-from interference import InterferenceThread
+from interference import Interference
 
 class IOBenchmarkV2(Benchmark):
     """ Base class for IOBench benchmarks """
@@ -45,11 +45,11 @@ class IOBenchmarkV2(Benchmark):
             }
         return features
 
-class IOBenchV2Interfere(InterferenceThread):
+class IOBenchV2Interfere(Interference):
     """ Base class for IOBench interference threads"""
 
     def __init__(self, environ, cores=[0], seconds=30, read=True, size='1K', nice=0, instance=1):
-        InterferenceThread.__init__(self, environ, cores, nice)
+        Interference.__init__(self, environ, cores, nice)
         self._size = size
         self._seconds = seconds
         self._read = read

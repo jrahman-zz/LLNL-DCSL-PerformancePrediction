@@ -4,6 +4,8 @@ from load_benchmarks import load_benchmarks
 
 import gevent
 
+import contexter 
+
 import argparse
 import logging
 
@@ -23,7 +25,7 @@ def stream_suite(environ, bmarks_cls):
         bmark.join()
 
     for bmark in bmarks:
-        print bmark.value
+        print(bmark.value)
 
 def memory_stream_suite(environ, bmark_cls):
     cores = [1, 3]
@@ -40,7 +42,7 @@ def memory_stream_suite(environ, bmark_cls):
         bmark.join()
 
     for bmark in bmarks:
-        print bmark.value
+        print(bmark.value)
 
 def memory_random_suite(environ, bmark_cls):
     cores = [0, 2]
@@ -57,7 +59,7 @@ def memory_random_suite(environ, bmark_cls):
         bmark.join()
 
     for bmark in bmarks:
-        print bmark.value
+        print(bmark.value)
 
 def iobench_read_suite(environ, bmark_cls):
     cores = [0, 2]
@@ -74,7 +76,7 @@ def iobench_read_suite(environ, bmark_cls):
         bmark.join()
 
     for bmark in bmarks:
-        print bmark.value
+        print(bmark.value)
 
 def iobench_write_suite(environ, bmark_cls):
     cores = [0, 2]
@@ -91,7 +93,7 @@ def iobench_write_suite(environ, bmark_cls):
         bmark.join()
 
     for bmark in bmarks:
-        print bmark.value
+        print(bmark.value)
 
 def metadata_suite(environ, bmark_cls):
     cores = [0, 2]
@@ -104,7 +106,7 @@ def metadata_suite(environ, bmark_cls):
         bmark.join()
 
     for bmark in bmarks:
-        print bmark.value
+        print(bmark.value)
 
 def main():
     environ = load_environ('config.json', ['applications.json', 'benchmarks.json'])
@@ -118,24 +120,27 @@ def main():
     #bmark1.join()
     #bmark2.join()
 
-    #interference1 = inter['Metadata'](environ, [1, 2], -5, 1)
-    #interference2 = inter['StreamAdd'](environ, [2], 10, 2)
-    #interference3 = inter['StreamAdd'](environ, [1], 10, 1)
-    #interference1.start()
-    #interference2.start()
-    #interference3.start()
-    print 'Starting to sleep...'
-    #gevent.sleep(20)
-    print 'Woke up'
-    #interference1.join()
-    #interference2.join()
-    #interference3.join()
+    interference1 = inter['Metadata'](environ, [1, 2], -5, 1)
+    interference2 = inter['StreamAdd'](environ, [2], 10, 2)
+    interference3 = inter['StreamAdd'](environ, [1], 10, 1)
+
+    interference = [interference1, interference2, interference3]
+    with contexter.ExitStack() as top_stack:
+        for thread in interference:
+            top_stack.enter_context(thread)
+        with contexter.ExitStack() as stack:
+            for thread in interference:
+                stack.enter_context(thread.interfere())
+            print('Starting to sleep...')
+            gevent.sleep(20)
+            print('Woke up')
+    
 
     app = apps['SpecSoplex'](environ, [0, 1], [2, 3])
     
     app.load()
     app.start()
-    print app.run()
+    print(app.run())
     app.stop()
     app.cleanup()
 

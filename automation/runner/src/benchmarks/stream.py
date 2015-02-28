@@ -1,6 +1,6 @@
 
 from benchmark import Benchmark
-from interference import InterferenceThread
+from interference import Interference
 import re
 
 class StreamBenchmark(Benchmark):
@@ -31,10 +31,10 @@ class StreamBenchmark(Benchmark):
             }
         return feature
 
-class StreamInterfere(InterferenceThread):
+class StreamInterfere(Interference):
     
     def __init__(self, environ, operation=1, cores=[0], nice=0):
-        InterferenceThread.__init__(self, environ, cores, nice)
+        Interference.__init__(self, environ, cores, nice)
         self._operation = operation
         self._params = [str(self._operation)]
         self._cmd = self._benchmark_dir + '/stream_interfere'

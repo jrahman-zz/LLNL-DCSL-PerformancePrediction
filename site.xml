@@ -1,0 +1,11 @@
+<config>
+    <pool handle="pbs">
+        <execution jobmanager="local:pbs" provider="coaster" url="none" />
+        <profile namespace="globus" key="jobsPerNode">1</profile>
+        <profile namespace="globus" key="slots">40</profile>
+        <profile namespace="globus" key="maxWallTime">02:00:00</profile>
+        <profile namespace="globus" key=""></profile>
+        <profile namespace="globus" key="queue">batch</profile>
+        <profile namespace="globus" key="nodeGranularity">1</profile>
+    </pool>
+</config>

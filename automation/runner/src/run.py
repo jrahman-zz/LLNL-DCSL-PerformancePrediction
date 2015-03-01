@@ -10,23 +10,26 @@ import json
 
 from contexter import ExitStack
 
-def run(applications, interference, benchmarks):
+def run(applications, benchmarks, interference):
     """ Run a given set of applications in interference conditions """
 
-    times = {}
+    times = dict()
     for application in applications:
         try:
             application.load()
-
             with ExitStack() as top_stack:
                 for thread in interference:
                     top_stack.enter_context(thread)
                 with ExitStack() as stack:
                     for thread in interference:
-                        stack.enter_context(thread)
-                    times[application] = {}
-                    times[application]['benchmarks'] = run_benchmarks(benchmarks)
-                    times[application]['application'] = run_application(application)
+                        stack.enter_context(thread.interfere())
+                    try:
+                        times[application] = dict()
+                        times[application]['benchmarks'] = run_benchmarks(benchmarks)
+                        times[application]['application'] = run_application(application)
+                    except Exception as e:
+                        logging.exception('Failed, %s', str(e)) # DEBUG
+                        raise
         except Exception as e:
             logging.exception('Failed to run application: %s', str(application))
             raise
@@ -41,9 +44,10 @@ def run_application(application):
 def run_benchmarks(benchmarks):
     """ Run each selected benchmark """
     times = {}
+    print len(benchmarks)
     for benchmark in benchmarks:
-        benchmark.start()
-        times[benchmark] = benchmark.get()
+        times[benchmark] = benchmark.run()
+    print 'Done with benchmarks'
     return times
 
     
@@ -89,12 +93,15 @@ def create_config(environ, application_list, interference_specs):
     interfere_threads = load_interference(environ)
     apps = load_applications(environ)
 
+    if application_list == ['all']:
+        application_list = apps.keys()
+
     # Parse the interference specs, and extract core request counts
     specs = map(lambda x: parse_interference(x), interference_specs)
     requests = map(lambda x: (x[1], x[2]), specs)
 
     # Get our core assignments from the numa detection
-    (app_cores, interference_cores, client_cores) = load_numa.get_cores_new(1, requests, 1)
+    (app_cores, interference_cores, client_cores) = load_numa.get_cores_new(1, requests, [1])
     
     # Set up dictionary with both apps and interfere threads
     interfere = apps.copy()
@@ -102,13 +109,12 @@ def create_config(environ, application_list, interference_specs):
 
     # Process threads for use
     threads = zip(specs, interference_cores, range(2, len(specs)+2)) # Specs, Cores, Instance Num
-    threads = map(lambda x: (x[0][0], x[0][3], x[1], x[2]+2)) # Name,Nice,Cores,Instance
-    threads = map(lambda x: interfere[x[0]](environ, x[2], client_cores, x[1], x[3]))
+    threads = map(lambda x: (x[0][0], x[0][3], x[1], x[2]), threads) # Name,Nice,Cores,Instance
+    threads = map(lambda x: interfere[x[0]](environ, x[2], client_cores, x[1], x[3]), threads)
 
     # Process benchmarks for use
     benchmarks = map(lambda key: benchmarks[key](environ, app_cores), benchmarks.keys())
-
-    applications = map(lambda key: applications[key](environ, app_cores, client_cores), application_list)
+    applications = map(lambda key: apps[key](environ, app_cores, client_cores), application_list)
 
     return (applications, benchmarks, threads)
     

@@ -65,12 +65,19 @@ def get_cores_new(app_request, interference_requests, client_requests):
         interference_cores.append(core_source[start:end])
 
     for core_request in client_requests:
-        if (core_request < len(other_node_cores) - consumed_other_cores):
+        if core_request < (len(other_node_cores) - consumed_other_cores):
             start = consumed_other_cores
             end = start + count
             cores = other_node_cores[start:end]
-        
-
+        else:
+            start = consumed_other_cores
+            end = start + count
+            cores = other_node_cores[start:end]
+            # Fill remaining cores from the app NUMA node
+            remaining = core_request - len(cores)
+            end = len(app_node_cores)
+            start = end - remaining
+            cores = cores + app_node_cores[start:end]
         client_cores.append(cores)
 
     return (app_cores, interference_cores, client_cores)

@@ -1,67 +1,65 @@
-
-
 import logging
 import benchmarks
 
-def load_benchmark(module, module_name, benchmark_name):
-    """ Load a specfic benchmark class from a module """
+def load_thread(module, module_name, thread_name):
+    """ Load a specfic interference thread class from a module """
 
-    bmark_module = getattr(module, module_name)
-    bmark_class = getattr(bmark_module, benchmark_name)
+    thread_module = getattr(module, module_name)
+    thread_class = getattr(thread_module, thread_name)
     
-    return bmark_class
+    return thread_class
 
-def load_benchmarks(environ):
-    """ Load benchmark classes from the environment dictionary """
+def load_interference(environ):
+    """ Load interference classes from the environment dictionary """
 
-    logging.debug('Loading benchmarks...')
+    logging.debug('Loading interference...')
 
     interference = {}
 
     # Snapshot the environ for easier use
-    benchmarks = environ['benchmarks']
+    threads = environ['interference']
 
-    for bmark_module in benchmarks:
+    for thread_module in threads:
         
-        logging.debug('Loading benchmark module %s', bmark_module)
-        module_name = 'benchmarks.' + bmark_module.lower()
+        logging.debug('Loading interfence module %s', thread_module)
+        module_name = 'benchmarks.' + thread_module.lower()
         module = None
         try:
             module = __import__(module_name)
         except Exception as e:
-            logging.warning('Failed to load benchmark module %s: %s', module_name, str(e))
+            logging.warning('Failed to load interference module %s: %s', module_name, str(e))
             break
 
-        # Collect all the benchmark names in this module
+        # Collect all the thread names in this module
         # Then collect the classes at the end
-        bmark_names = []
+        thread_names = []
 
-        if not len(benchmarks[bmark_module]) == 0:
-            for bmark in benchmarks[bmark_module]:
-                bmark_name = bmark_module + bmark
+        if not len(threads[thread_module]) == 0:
+            for thread in threads[thread_module]:
+                thread_name = thread_module + thread
                 
-                if not len(benchmarks[bmark_module][bmark]) == 0:
-                    # Sum over all the sizes for this bmark
-                    for size in benchmarks[bmark_module][bmark]:
-                        bmark_names.append(bmark_name + size)
+                if not len(threads[thread_module][thread]) == 0:
+                    # Sum over all the sizes for this thread type
+                    for size in threads[thread_module][thread]:
+                        thread_names.append(thread_name + size)
                 else:
                     # Otherwise we don't have sizes
-                    bmark_names.append(bmark_name)
+                    thread_names.append(thread_name)
                     
         else:
             # Only one benchmark in the module
-            bmark_name = bmark_module
-            bmark_names.append(bmark_name)
+            thread_name = thread_module
+            thread_names.append(thread_name)
 
         # With our list of class names, actually get the class
         # from within the module object
-        for bmark_name in bmark_names:
+        for thread_name in thread_names:
             try:
-                thread_name = bmark_name + "Interfere"
-                cls = load_benchmark(module, bmark_module.lower(), thread_name)
-                interference[bmark_name] = cls
+                class_name = thread_name + "Interfere"
+                cls = load_thread(module, thread_module.lower(), class_name)
+                interference[thread_name] = cls
             except Exception as e:
-                logging.warning('Failed to load benchmark %s: %s', bmark_name, str(e))
+                logging.warning('Failed to load benchmark %s: %s', thread_name, str(e))
 
     # Add dummy interference
     import benchmarks.dummy

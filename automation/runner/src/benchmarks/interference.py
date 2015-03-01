@@ -55,11 +55,9 @@ class InterferenceThread(Greenlet):
 
     # Use context manager for use in with statement
     def __enter__(self):
-        print 'In enter'
         self.start()
 
     def __exit__(self, type, value, traceback):
-        print 'In exit'
         self.join()
 
     def kill(self, exception = GreenletExit, block = True, timeout = None):

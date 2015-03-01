@@ -1,6 +1,7 @@
 from load_environ import load_environ
 from load_applications import load_applications
 from load_benchmarks import load_benchmarks
+from load_interference import load_interference
 
 import gevent
 
@@ -19,13 +20,7 @@ def stream_suite(environ, bmarks_cls):
             ]
 
     for bmark in bmarks:
-        bmark.start()
-
-    for bmark in bmarks:
-        bmark.join()
-
-    for bmark in bmarks:
-        print(bmark.value)
+        print bmark.run()
 
 def memory_stream_suite(environ, bmark_cls):
     cores = [1, 3]
@@ -36,13 +31,7 @@ def memory_stream_suite(environ, bmark_cls):
             ]
 
     for bmark in bmarks:
-        bmark.start()
-
-    for bmark in bmarks:
-        bmark.join()
-
-    for bmark in bmarks:
-        print(bmark.value)
+        bmark.run()
 
 def memory_random_suite(environ, bmark_cls):
     cores = [0, 2]
@@ -53,13 +42,7 @@ def memory_random_suite(environ, bmark_cls):
             ]
 
     for bmark in bmarks:
-        bmark.start()
-
-    for bmark in bmarks:
-        bmark.join()
-
-    for bmark in bmarks:
-        print(bmark.value)
+        bmark.run()
 
 def iobench_read_suite(environ, bmark_cls):
     cores = [0, 2]
@@ -70,13 +53,8 @@ def iobench_read_suite(environ, bmark_cls):
             ]
 
     for bmark in bmarks:
-        bmark.start()
+        bmark.run()
     
-    for bmark in bmarks:
-        bmark.join()
-
-    for bmark in bmarks:
-        print(bmark.value)
 
 def iobench_write_suite(environ, bmark_cls):
     cores = [0, 2]
@@ -87,42 +65,31 @@ def iobench_write_suite(environ, bmark_cls):
             ]
 
     for bmark in bmarks:
-        bmark.start()
-
-    for bmark in bmarks:
-        bmark.join()
-
-    for bmark in bmarks:
-        print(bmark.value)
+        bmark.run()
 
 def metadata_suite(environ, bmark_cls):
     cores = [0, 2]
     bmarks = [bmark_cls['Metadata'](environ, cores)]
 
     for bmark in bmarks:
-        bmark.start()
-
-    for bmark in bmarks:
-        bmark.join()
-
-    for bmark in bmarks:
-        print(bmark.value)
+        bmark.run()
 
 def main():
-    environ = load_environ('config.json', ['applications.json', 'benchmarks.json'])
+    modules = ['applications.json', 'benchmarks.json', 'interference.json']
+    environ = load_environ('config.json', modules)
+
     apps = load_applications(environ)
-    (bmarks, inter) = load_benchmarks(environ)
+    bmarks = load_benchmarks(environ)
+    threads = load_interference(environ)
 
     bmark1 = bmarks['IOBenchWrite1M'](environ, [1, 2], 1)
     bmark2 = bmarks['IOBenchWrite4M'](environ, [1, 2], 2)
-    #bmark1.start()
-    #bmark2.start()
-    #bmark1.join()
-    #bmark2.join()
+    bmark1.run()
+    bmark2.run()
 
-    interference1 = inter['Metadata'](environ, [1, 2], -5, 1)
-    interference2 = inter['StreamAdd'](environ, [2], 10, 2)
-    interference3 = inter['StreamAdd'](environ, [1], 10, 1)
+    interference1 = threads['Metadata'](environ, [1, 2], [1], -5, 1)
+    interference2 = threads['StreamAdd'](environ, [2], [1], 10, 2)
+    interference3 = threads['StreamAdd'](environ, [1], [1], 10, 1)
 
     interference = [interference1, interference2, interference3]
     with contexter.ExitStack() as top_stack:

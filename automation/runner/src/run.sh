@@ -23,11 +23,13 @@ SOURCE_BASE="${BASE_DIR}/../../../"
 cp "${BASE_DIR}/config.json.template" "${BASE_DIR}/config.json"
 cp "${BASE_DIR}/applications.json.template" "${BASE_DIR}/applications.json"
 cp "${BASE_DIR}/benchmarks.json.template" "${BASE_DIR}/benchmarks.json"
+cp "${BASE_DIR}/inteference.json.template" "${BASE_DIR}/interference.json"
 
 DATA_BASE="/tmp/applications/"
 PATTERN="s \\\${DATA_BASE} ${DATA_BASE} g"
 echo "${PATTERN}"
-sed -i "${PATTERN}" "${BASE_DIR}/config.json" "${BASE_DIR}/applications.json"
+sed -i "${PATTERN}" "${BASE_DIR}/config.json" "${BASE_DIR}/applications.json" "${BASE_DIR}/interference.json"
+
 if [ $? -ne 0 ]; then
     echo "Failed to build JSON files"
     exit 2
@@ -36,7 +38,8 @@ fi
 SOURCE_BASE="/home/jprahman/LLNL-DCSL-PerformancePrediction/"
 PATTERN="s \\\${SOURCE_BASE} ${SOURCE_BASE} g"
 echo "${PATTERN}"
-sed -i "${PATTERN}" "${BASE_DIR}/config.json" "${BASE_DIR}/applications.json"
+sed -i "${PATTERN}" "${BASE_DIR}/config.json" "${BASE_DIR}/applications.json" "${BASE_DIR}/interference.json"
+
 if [ $? -ne 0 ]; then
     echo "Failed to build JSON files"
     exit 3
@@ -45,7 +48,8 @@ fi
 APPLICATION_BASE="/home/jprahman/llnl/"
 PATTERN="s \\\${APPLICATION_BASE} ${APPLICATION_BASE} g"
 echo "${PATTERN}"
-sed -i "${PATTERN}" "${BASE_DIR}/config.json" "${BASE_DIR}/applications.json"
+sed -i "${PATTERN}" "${BASE_DIR}/config.json" "${BASE_DIR}/applications.json" "${BASE_DIR}/interference.json"
+
 if [ $? -ne 0 ]; then
     echo "Failed to build JSON files"
     exit 4

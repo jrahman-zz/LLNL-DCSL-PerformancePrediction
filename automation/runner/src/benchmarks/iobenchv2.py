@@ -11,15 +11,17 @@ class IOBenchmarkV2(Benchmark):
         self._read = read
         if read:
             self._operation = 'read'
+            self._type = self._operation
         else:
             self._operation = 'writeFlush'
+            self._type = 'write'
         self._size = size
         self._seconds = seconds
         self._path = '%s/iobench.%d' % (environ['data_dir'], instance)
         self._cmd = 'java'
         self._runstring = ','.join([self._operation, '1', self._size, self._size/35])
         self._params = ['-classpath', self._benchmark_dir + '/iobench.jar', 'Main', 'run', '-h=20', self._path, str(self._seconds), self._runstring]
-        self._name = 'iobench_%s_%s' % (self._operation, self._size)
+        self._name = 'iobenchv2_%s_%s' % (self._type, self._size)
 
     def _setup(self):
         pass
@@ -55,9 +57,11 @@ class IOBenchV2Interfere(Interference):
         self._read = read
         if self._read:
             self._operation = 'read100'
+            self._type = self._operation
         else:
             self._operation = 'writeFlush'
-        self._name = 'iobench_%s_%s' % (self._operation, self._size)
+            self._type = 'write'
+        self._name = 'iobenchv2_%s_%s' % (self._type, self._size)
         self._path = '%s/iobench.%d' % (environ['data_dir'], instance)
         self._cmd = 'java'
         self._runstring = ','.join([self._operation, '1', self._size, self._size/35])
@@ -68,7 +72,7 @@ class IOBenchV2Read1M(IOBenchmarkV2):
         IOBenchmark.__init__(self, environ, cores, 10, True, '1M', instance)
 
 class IOBenchV2Read1MInterfere(IOBenchV2Interfere):
-    def __init__(self, environ, cores=[0], nice=0, instance=1):
+    def __init__(self, environ, cores=[0],extra_cores=[1], nice=0, instance=1):
         IOBenchInterfere.__init__(self, environ, cores, 60, True, '1M', nice, instance)
 
 class IOBenchV2Read4M(IOBenchmarkV2):
@@ -76,7 +80,7 @@ class IOBenchV2Read4M(IOBenchmarkV2):
         IOBenchmark.__init__(self, environ, cores, 15, True, '4M', instance)
 
 class IOBenchV2Read4MInterfere(IOBenchV2Interfere):
-    def __init__(self, environ, cores=[0], nice=0, instance=1):
+    def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
         IOBenchInterfere.__init__(self, environ, cores, 60, True, '4M', nice, instance)
 
 class IOBenchV2Read128M(IOBenchmarkV2):
@@ -84,7 +88,7 @@ class IOBenchV2Read128M(IOBenchmarkV2):
         IOBenchmark.__init__(self, environ, cores, 20, True, '128M', instance)
 
 class IOBenchV2Read128MInterfere(IOBenchV2Interfere):
-    def __init__(self, environ, cores=[0], nice=0, instance=1):
+    def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
         IOBenchInterfere.__init__(self, environ, cores, 60, True, '128M', nice, instance)
 
 class IOBenchV2Write1M(IOBenchmarkV2):
@@ -92,7 +96,7 @@ class IOBenchV2Write1M(IOBenchmarkV2):
         IOBenchmark.__init__(self, environ, cores, 10, False, '1M', instance)
 
 class IOBenchV2Write1MInterfere(IOBenchV2Interfere):
-    def __init__(self, environ, cores=[0], nice=0, instance=1):
+    def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
         IOBenchInterfere.__init__(self, environ, cores, 60, False, '1M', nice, instance)
 
 class IOBenchV2Write4M(IOBenchmarkV2):
@@ -100,7 +104,7 @@ class IOBenchV2Write4M(IOBenchmarkV2):
         IOBenchmark.__init__(self, environ, cores, 15, False, '4M', instance)
 
 class IOBenchV2Write4MInterfere(IOBenchV2Interfere):
-    def __init__(self, environ, cores=[0], nice=0, instance=1):
+    def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
         IOBenchInterfere.__init__(self, environ, cores, 60, False, '4M', nice, instance)
 
 class IOBenchV2Write128M(IOBenchmarkV2):
@@ -108,7 +112,7 @@ class IOBenchV2Write128M(IOBenchmarkV2):
         IOBenchmark.__init__(self, environ, cores, 20, False, '128M', instance)
 
 class IOBenchV2Write128MInterfere(IOBenchV2Interfere):
-    def __init__(self, environ, cores=[0], nice=0, instance=1):
+    def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
         IOBenchInterfere.__init__(self, environ, cores, 60, False, '128M', nice, instance)
 
 if __name__ == '__main__':

@@ -21,7 +21,7 @@ class StreamV2Copy(StreamV2Benchmark):
         StreamBenchmark.__init__(self, environ, 1, cores)
 
 class StreamV2CopyInterfere(StreamV2Interfere):
-    def __init__(self, environ, cores=[0], nice=0, instance=1):
+    def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
         self._bmark = 'Copy'
         StreamInterfere.__init__(self, environ, 1, cores, nice)
 
@@ -31,7 +31,7 @@ class StreamV2Scale(StreamBenchmark):
         StreamBenchmark.__init__(self, environ, 2, cores)
 
 class StreamV2ScaleInterfere(StreamInterfere):
-    def __init__(self, enrivon, cores=[0], nice=0, instance=1):
+    def __init__(self, enrivon, cores=[0], extra_cores=[1], nice=0, instance=1):
         self._bmark = 'Scale'
         StreamInterfere.__init__(self, environ, 2, cores, nice)
 
@@ -41,7 +41,7 @@ class StreamV2Add(StreamBenchmark):
         StreamBenchmark.__init__(self, environ, 3, cores)
 
 class StreamV2AddInterfere(StreamInterfere):
-    def __init__(self, environ, cores=[0], nice=0, instance=1): 
+    def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1): 
         self._bmark = 'Add'
         StreamInterfere.__init__(self, environ, 3, cores, nice)
 
@@ -51,7 +51,7 @@ class StreamV2Triad(StreamBenchmark):
         StreamBenchmark.__init__(self, environ, 4, cores)
 
 class StreamV2TriadInterfere(StreamInterfere):
-    def __init__(self, environ, cores=[0], nice=0, instance=1):
+    def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
         self._bmark = 'Triad'
         StreamInterfere.__init__(self, environ, 4, cores, nice)
 

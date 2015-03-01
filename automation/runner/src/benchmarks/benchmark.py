@@ -2,13 +2,11 @@
 import sys
 import os
 import logging
-import gevent.greenlet as greenlet
 import gevent.subprocess as subprocess
 
-class Benchmark(greenlet.Greenlet):
+class Benchmark:
 
     def __init__(self, environ, cores=[0]):
-        greenlet.Greenlet.__init__(self)
         self._cores = cores
         self._benchmark_dir = environ['benchmark_dir']
 
@@ -18,7 +16,7 @@ class Benchmark(greenlet.Greenlet):
     def __str__(self):
         return self._name
 
-    def _run(self):
+    def run(self):
         self._setup()
         cores = ','.join(map(lambda x: str(x), self._cores))
 
@@ -27,12 +25,9 @@ class Benchmark(greenlet.Greenlet):
         features = {}
 
         logging.info('Starting benchmark %s', str(self))
-
         try:
-            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-            
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)    
             logging.info('Finished running benchmark %s', str(self))
-            
             features = self._process_output(output)
         except:
             # Teardown for cleanup, then rethrow for capture somewhere else

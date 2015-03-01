@@ -4,8 +4,8 @@ from parse_ycsb import parse
 
 class Voldemort(Application):
 
-    def __init__(self, environ, app_cores, client_cores):
-        Application.__init__(self, environ, 'Voldemort', app_cores, client_cores)
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+        Application.__init__(self, environ, 'Voldemort', app_cores, client_cores, nice, instance)
 
         # Build params related to the mongodb interface scripts
         self._ycsb_dir = environ['ycsb_dir']

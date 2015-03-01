@@ -5,7 +5,7 @@ import gevent.subprocess as subprocess
 
 class Application():
 
-    def __init__(self, environ, application_name, start_cores, run_cores, nice=0):
+    def __init__(self, environ, application_name, start_cores, run_cores, nice=0, instance=1):
         
         # Basic information for an application module
         self._application_name = application_name

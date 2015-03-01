@@ -14,6 +14,68 @@ def load_numa():
 
     return nodes
 
+def assign_cores(app_core_req, intererence_core_reqs, client_core_req):
+    nodes = load_numa()
+
+    app_node = nodes.keys()[0]
+    app_cores = nodes[app_node]
+    other_cores = reduce(lambda x, y: x + nodes[y], nodes.keys()[1:], [])
+
+    consumed_other_cores = 0
+    consumed_app_cores = 0
+
+
+def get_cores_new(app_request, interference_requests, client_requests):
+    nodes = load_numa()
+
+    app_node = nodes.keys()[0]
+    app_node_cores = nodes[app_node]
+    consumed_app_cores = 0
+    other_node_cores = reduce(lambda x, y: x + nodes[y], nodes.keys()[1:], [])
+    consumed_other_cores = 0
+
+    # We need to find the largest request for same app cores
+    consumed_app_cores = max(reduce(lambda x, y: x + [y[1]], filter(lambda x: x[0] == 0, interference_requests), [app_request]))
+    app_cores = app_node_cores[0:app_request]
+
+    interference_cores = []
+    client_cores = []
+
+    for core_request in interference_requests:
+        (count, coloc) = core_request
+        if coloc == 0:
+            start = 0
+            end = start + count
+            available_cores = len(app_node_cores) 
+            core_source = app_node_cores
+        elif coloc == 1:
+            start = consumed_app_cores
+            end = start + count
+            available_cores = len(app_node_cores) - consumed_app_cores
+            core_source = app_node_cores
+            consumed_app_cores = consumed_app_cores + count
+        elif coloc == 2:
+            start = consumed_other_cores
+            end = start + count
+            available_cores = len(other_node_cores) - consumed_other_cores
+            core_source = other_node_cores
+            consumed_other_cores = consumed_other_cores + count
+        if count > available_cores:
+            raise Exception('Too many requests for cores')
+        interference_cores.append(core_source[start:end])
+
+    for core_request in client_requests:
+        if (core_request < len(other_node_cores) - consumed_other_cores):
+            start = consumed_other_cores
+            end = start + count
+            cores = other_node_cores[start:end]
+        
+
+        client_cores.append(cores)
+
+    return (app_cores, interference_cores, client_cores)
+
+
 def get_cores(policy, num_app_cores, num_interference_cores, num_client_cores):
     nodes = load_numa()
 
@@ -112,3 +174,9 @@ def available_collocation():
         policies.append(2)
     
     return set(policies)
+
+def main():
+    print get_cores_new(2, [(0, 1), (0, 2), (1, 2)], [2])
+
+if __name__ == '__main__':
+    main()

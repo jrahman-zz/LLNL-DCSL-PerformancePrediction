@@ -16,7 +16,7 @@ def load_benchmarks(environ):
 
     logging.debug('Loading benchmarks...')
 
-    bmarks = {}
+    interference = {}
 
     # Snapshot the environ for easier use
     benchmarks = environ['benchmarks']
@@ -57,9 +57,15 @@ def load_benchmarks(environ):
         # from within the module object
         for bmark_name in bmark_names:
             try:
-                cls = load_benchmark(module, bmark_module.lower(), bmark_name)
-                bmarks[bmark_name] = cls
+                thread_name = bmark_name + "Interfere"
+                cls = load_benchmark(module, bmark_module.lower(), thread_name)
+                interference[bmark_name] = cls
             except Exception as e:
                 logging.warning('Failed to load benchmark %s: %s', bmark_name, str(e))
 
-    return bmarks
+    # Add dummy interference
+    import benchmarks.dummy
+    dummy = benchmarks.dummy.DummyInterfere
+    interference['Dummy'] = dummy
+
+    return interference

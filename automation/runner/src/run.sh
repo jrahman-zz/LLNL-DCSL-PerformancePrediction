@@ -1,18 +1,20 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: run.sh INSTANCES INTEFERENCE DATA_BASE APPLICATION_BASE"
+    echo "Usage: run.sh INSTANCES INTEFERENCE OUTPUT_PATH DATA_BASE APPLICATION_BASE"
 }
 
-if [ $# -ne 4 ]; then
+if [ $# -ne 5 ]; then
     usage
     exit 1
 fi
 
-INSTANCES=${1}
+
+INSTANCES=${1} # For multi-instance application and benchmark support
 INTERFERENCE=${2}
-DATA_BASE={$3}
-APPLICATION_BASE=${4}
+OUTPUT_PATH=${3}
+DATA_BASE=${4}
+APPLICATION_BASE=${5}
 
 BASE_DIR=$(dirname $0)
 SOURCE_BASE="${BASE_DIR}/../../../"
@@ -73,4 +75,18 @@ for INSTANCE in `seq ${INSTANCES}`; do
     fi
 done
 
+echo "Starting run..."
+python ${BASEDIR}/run.py --applications all --interference ${INTERFERENCE} --output ${OUTPUT_PATH}
+if [ $? -ne 0 ]; then
+    echo "Run failed"
+    exit 8
+fi
 
+echo "Cleaning up data directory: ${DATA_BASE}"
+rm -rf "${DATA_BASE}"
+if [ $? -ne 0 ]; then
+    echo "Failed to cleanup data directory"
+    exit 9
+fi
+
+exit 0

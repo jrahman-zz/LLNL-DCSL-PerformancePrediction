@@ -31,6 +31,9 @@ class Application():
         self._cleanup_params = []
         self._interfere_params = []
 
+    def __hash__(self):
+        return hash(str(self))
+    
     def __str__(self):
         return self._application_name
 

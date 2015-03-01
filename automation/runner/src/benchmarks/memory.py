@@ -2,6 +2,7 @@
 from interference import Interference
 from benchmark import Benchmark
 import re
+import logging
 
 class MemoryBenchmark(Benchmark):
 
@@ -27,7 +28,7 @@ class MemoryBenchmark(Benchmark):
         pass
 
     def _process_output(self, output):
-        regex = r"CPU = \d+ n = %(size)s num_obs=(\d+)\nTime \.+/example%(operation)s: (\d+\.\d+)"
+        regex = r"CPU = \d+ n = %(size)s num_obs=(\d+)\nTime .+/memory%(operation)s: (\d*\.\d*)"
         regex = regex % {
                     'size': self._size,
                     'repeat': self._repeat,
@@ -35,6 +36,7 @@ class MemoryBenchmark(Benchmark):
                 }
         result = re.search(regex, output)
         if result == None:
+            logging.error('Mismatch: %s', output)
             raise Exception('No match found')
         feature = {
             'time': float(result.group(2)),

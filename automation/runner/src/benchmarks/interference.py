@@ -9,6 +9,7 @@ class Interference:
         self._nice = nice
         self._cores = cores
         self._benchmark_dir = environ['benchmark_dir']
+        self._data_dir = environ['data_dir']
 
     def __hash__(self):
         return hash(str(self))

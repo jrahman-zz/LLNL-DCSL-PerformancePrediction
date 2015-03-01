@@ -68,6 +68,7 @@ class Application():
         if self._started or not self._loaded:
             raise ValueError('Not started or already loaded')
 
+
         cores = ','.join(map(lambda x: str(x), self._start_cores))
         cmd = ['nice', '-%s' % str(self._nice), 'taskset', '-c', cores]
         cmd = cmd + ["%s/start.sh" % (self._script_dir)]
@@ -102,7 +103,7 @@ class Application():
         """ Run the actual app which generates parseable output """
         if not self._started or not self._loaded:
             raise ValueError('Not started or loaded yet')
-            
+        
         # Create list of cores we are allowed to run on
         cores = ','.join(map(lambda x: str(x), self._run_cores))
 

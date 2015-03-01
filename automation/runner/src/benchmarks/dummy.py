@@ -1,8 +1,8 @@
-from interference import InterferenceThread
+from interference import Interference
 
-class DummyInterfere(InterferenceThread):
-    def __init__(self, environ, cores=[0], extra_cores=[1], instance=1):
-        InterferenceThread.__init__(self, environ, cores, 0)
+class DummyInterfere(Interference):
+    def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
+        Interference.__init__(self, environ, cores, 0)
         self._cmd = 'sleep'
-        self._params = [str(10)]
+        self._params = [str(30)]
         self._name = 'dummy'

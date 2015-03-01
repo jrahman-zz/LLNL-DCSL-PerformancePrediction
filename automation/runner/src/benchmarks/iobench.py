@@ -31,7 +31,7 @@ class IOBenchmark(Benchmark):
 
     def _process_output(self, output):
         regex = r"Total for \[%s,%s,%s\]: \d+\.\d+ events \(\d+\.\d+ errors\), mean (\d*(?:\.\d*)?)ms, 10th (\d*(?:\.\d*)?)ms, 50th (\d*(?:\.\d*)?)ms, 90th (\d*(?:\.\d*)?)ms, 99th (\d*(?:\.\d*)?)ms, 999th (\d*(?:\.\d*)?)ms, 9999th (\d*(?:\.\d*)?)ms, min (\d*(?:\.\d*)?)ms, max (\d*(?:\.\d*)?)ms$"
-        regex = regex % (self._operation.lower(), self._size, self._size)
+        regex = regex % (self._operation, self._size, self._size)
         result = re.search(regex, output)
         if result == None:
             raise Exception('No match')

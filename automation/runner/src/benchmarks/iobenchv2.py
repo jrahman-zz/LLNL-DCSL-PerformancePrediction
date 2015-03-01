@@ -1,7 +1,21 @@
-
-import re
 from benchmark import Benchmark
 from interference import Interference
+import re
+import logging
+
+def str_to_num(s):
+    postfix = s[-1]
+    stem = s[0:-1]
+    base = int(stem)
+    if postfix == 'K':
+        m = 1024
+    elif postfix == 'M':
+        m = 1024 * 1024
+    elif postfix == 'G':
+        m = 1024 * 1024 * 1024
+    elif postfix == 'T':
+        m = 1024 * 1024 * 1024 * 1024
+    return base * m
 
 class IOBenchmarkV2(Benchmark):
     """ Base class for IOBench benchmarks """
@@ -16,10 +30,11 @@ class IOBenchmarkV2(Benchmark):
             self._operation = 'writeFlush'
             self._type = 'write'
         self._size = size
+        self._num_size = str_to_num(self._size)
         self._seconds = seconds
         self._path = '%s/iobench.%d' % (environ['data_dir'], instance)
         self._cmd = 'java'
-        self._runstring = ','.join([self._operation, '1', self._size, self._size/35])
+        self._runstring = ','.join([self._operation, '1', self._size, self._size])
         self._params = ['-classpath', self._benchmark_dir + '/iobench.jar', 'Main', 'run', '-h=20', self._path, str(self._seconds), self._runstring]
         self._name = 'iobenchv2_%s_%s' % (self._type, self._size)
 
@@ -31,9 +46,10 @@ class IOBenchmarkV2(Benchmark):
 
     def _process_output(self, output):
         regex = r"Total for \[%s,%s,%s\]: \d+\.\d+ events \(\d+\.\d+ errors\), mean (\d*(?:\.\d*)?)ms, 10th (\d*(?:\.\d*)?)ms, 50th (\d*(?:\.\d*)?)ms, 90th (\d*(?:\.\d*)?)ms, 99th (\d*(?:\.\d*)?)ms, 999th (\d*(?:\.\d*)?)ms, 9999th (\d*(?:\.\d*)?)ms, min (\d*(?:\.\d*)?)ms, max (\d*(?:\.\d*)?)ms$"
-        regex = regex % (self._operation.lower(), self._size, self._size)
+        regex = regex % (self._operation, self._size, self._size)
         result = re.search(regex, output)
         if result == None:
+            logging.error('Mismatch: %s', output)
             raise Exception('No match')
 
         features = {
@@ -64,56 +80,56 @@ class IOBenchV2Interfere(Interference):
         self._name = 'iobenchv2_%s_%s' % (self._type, self._size)
         self._path = '%s/iobench.%d' % (environ['data_dir'], instance)
         self._cmd = 'java'
-        self._runstring = ','.join([self._operation, '1', self._size, self._size/35])
+        self._runstring = ','.join([self._operation, '1', self._size, self._size])
         self._params = ['-classpath', self._benchmark_dir + '/iobench.jar', 'Main', 'run', '-h=20', self._path, str(self._seconds), self._runstring]
 
 class IOBenchV2Read1M(IOBenchmarkV2):
     def __init__(self, environ, cores=[0], instance=1):
-        IOBenchmark.__init__(self, environ, cores, 10, True, '1M', instance)
+        IOBenchmarkV2.__init__(self, environ, cores, 10, True, '1M', instance)
 
 class IOBenchV2Read1MInterfere(IOBenchV2Interfere):
     def __init__(self, environ, cores=[0],extra_cores=[1], nice=0, instance=1):
-        IOBenchInterfere.__init__(self, environ, cores, 60, True, '1M', nice, instance)
+        IOBenchV2Interfere.__init__(self, environ, cores, 60, True, '1M', nice, instance)
 
 class IOBenchV2Read4M(IOBenchmarkV2):
     def __init__(self, environ, cores=[0], instance=1):
-        IOBenchmark.__init__(self, environ, cores, 15, True, '4M', instance)
+        IOBenchmarkV2.__init__(self, environ, cores, 15, True, '4M', instance)
 
 class IOBenchV2Read4MInterfere(IOBenchV2Interfere):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        IOBenchInterfere.__init__(self, environ, cores, 60, True, '4M', nice, instance)
+        IOBenchV2Interfere.__init__(self, environ, cores, 60, True, '4M', nice, instance)
 
 class IOBenchV2Read128M(IOBenchmarkV2):
     def __init__(self, environ, cores=[0], instance=1):
-        IOBenchmark.__init__(self, environ, cores, 20, True, '128M', instance)
+        IOBenchmarkV2.__init__(self, environ, cores, 20, True, '128M', instance)
 
 class IOBenchV2Read128MInterfere(IOBenchV2Interfere):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        IOBenchInterfere.__init__(self, environ, cores, 60, True, '128M', nice, instance)
+        IOBenchV2Interfere.__init__(self, environ, cores, 60, True, '128M', nice, instance)
 
 class IOBenchV2Write1M(IOBenchmarkV2):
     def __init__(self, environ, cores=[0], instance=1):
-        IOBenchmark.__init__(self, environ, cores, 10, False, '1M', instance)
+        IOBenchmarkV2.__init__(self, environ, cores, 10, False, '1M', instance)
 
 class IOBenchV2Write1MInterfere(IOBenchV2Interfere):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        IOBenchInterfere.__init__(self, environ, cores, 60, False, '1M', nice, instance)
+        IOBenchV2Interfere.__init__(self, environ, cores, 60, False, '1M', nice, instance)
 
 class IOBenchV2Write4M(IOBenchmarkV2):
     def __init__(self, environ, cores=[0], instance=1):
-        IOBenchmark.__init__(self, environ, cores, 15, False, '4M', instance)
+        IOBenchmarkV2.__init__(self, environ, cores, 15, False, '4M', instance)
 
 class IOBenchV2Write4MInterfere(IOBenchV2Interfere):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        IOBenchInterfere.__init__(self, environ, cores, 60, False, '4M', nice, instance)
+        IOBenchV2Interfere.__init__(self, environ, cores, 60, False, '4M', nice, instance)
 
 class IOBenchV2Write128M(IOBenchmarkV2):
     def __init__(self, environ, cores=[0], instance=1):
-        IOBenchmark.__init__(self, environ, cores, 20, False, '128M', instance)
+        IOBenchmarkV2.__init__(self, environ, cores, 20, False, '128M', instance)
 
 class IOBenchV2Write128MInterfere(IOBenchV2Interfere):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        IOBenchInterfere.__init__(self, environ, cores, 60, False, '128M', nice, instance)
+        IOBenchV2Interfere.__init__(self, environ, cores, 60, False, '128M', nice, instance)
 
 if __name__ == '__main__':
 

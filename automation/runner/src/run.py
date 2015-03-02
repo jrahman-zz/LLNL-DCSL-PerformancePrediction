@@ -24,9 +24,9 @@ def run(applications, benchmarks, interference):
                     for thread in interference:
                         stack.enter_context(thread.interfere())
                     try:
-                        times[application] = dict()
-                        times[application]['benchmarks'] = run_benchmarks(benchmarks)
-                        times[application]['application'] = run_application(application)
+                        times[str(application)] = dict()
+                        times[str(application)]['benchmarks'] = run_benchmarks(benchmarks)
+                        times[str(application)]['application'] = run_application(application)
                     except Exception as e:
                         logging.exception('Failed, %s', str(e)) # DEBUG
                         raise
@@ -46,7 +46,7 @@ def run_benchmarks(benchmarks):
     times = {}
     print len(benchmarks)
     for benchmark in benchmarks:
-        times[benchmark] = benchmark.run()
+        times[str(benchmark)] = benchmark.run()
     print 'Done with benchmarks'
     return times
 
@@ -110,11 +110,11 @@ def create_config(environ, application_list, interference_specs):
     # Process threads for use
     threads = zip(specs, interference_cores, range(2, len(specs)+2)) # Specs, Cores, Instance Num
     threads = map(lambda x: (x[0][0], x[0][3], x[1], x[2]), threads) # Name,Nice,Cores,Instance
-    threads = map(lambda x: interfere[x[0]](environ, x[2], client_cores, x[1], x[3]), threads)
+    threads = map(lambda x: interfere[x[0]](environ, x[2], client_cores[0], x[1], x[3]), threads)
 
     # Process benchmarks for use
     benchmarks = map(lambda key: benchmarks[key](environ, app_cores), benchmarks.keys())
-    applications = map(lambda key: apps[key](environ, app_cores, client_cores), application_list)
+    applications = map(lambda key: apps[key](environ, app_cores, client_cores[0]), application_list)
 
     return (applications, benchmarks, threads)
     

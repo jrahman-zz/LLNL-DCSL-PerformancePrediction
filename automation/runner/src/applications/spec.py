@@ -1,7 +1,7 @@
 
 from application import Application
-
 import re
+import logging
 
 class Spec(Application):
 
@@ -13,9 +13,10 @@ class Spec(Application):
         self._intefere_params = [self._bmark_name, 'train', '1']
 
     def _process_output(self, output):
-        regex = r"%s[^-]*--\s*(\d*\.\d*)[^-]*--\s*S.*\n" % self._bmark_name
+        regex = r"%s[^-]*--\s*(\d*(?:\.\d*)?)[^-]*--\s*S.*\n" % self._bmark_name
         match = re.search(regex, output)
         if match is None:
+            logging.error('Mismatch: %s', output)
             raise Exception('No match')
         return { 'time': float(match.group(1)) }
 

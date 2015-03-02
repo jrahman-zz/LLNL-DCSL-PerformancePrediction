@@ -1,6 +1,5 @@
-
-
 import json
+import logging
 
 def load_environ(config_path, additional_paths):
     environ = {}
@@ -12,6 +11,7 @@ def load_environ(config_path, additional_paths):
     for path in additional_paths:
         # Yeah, don't ask how this works
         file_name = '.'.join(path.split('/')[-1].split('.')[0:-1])
+        logging.debug('Loading %s config', file_name)
         with open(path) as f:
             conf = json.load(f)
             environ[file_name] = conf

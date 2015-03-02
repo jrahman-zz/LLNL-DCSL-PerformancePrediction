@@ -56,6 +56,7 @@ def get_args():
     parser.add_argument('--interference', help='Comma separated list of interfering applications and benchmarks', default='Dummy:1:1:0', type=str)
     parser.add_argument('--applications', help='Comma separated list of applications to run', default='all', type=str)
     parser.add_argument('--output', help='Output file path', default='output.json', type=str)
+    parser.add_argument('--config', help='Config file path', default='config.json', type=str)
     return parser.parse_args()
 
 
@@ -127,7 +128,7 @@ def main():
     output_path = args.output
 
     modules=['applications.json', 'benchmarks.json', 'interference.json']
-    environ = load_environ('config.json', modules)
+    environ = load_environ(args.config, modules)
    
     logging.info('Building configuration')
     (apps, bmarks, threads) = create_config(environ, application_list, interference_specs)

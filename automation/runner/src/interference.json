@@ -1,54 +1,26 @@
 {
-    "Stream": {
-        "Copy": [],
-        "Scale": [],
-        "Triad": [],
-        "Add": []
-    },
-
     "StreamV2": {
-        "Copy": [],
         "Scale": [],
-        "Triad": [],
         "Add": []
     },
 
-    "Memory": {
+    "MemoryV2": {
         "Stream": [
             "1K",
-            "1M",
             "256M"
         ],
         "Random": [
-            "1K",
-            "1M",
-            "256M"
-        ]
-    },
-
-    "IOBench": {
-        "Read": [
-            "1M",
-            "4M",
-            "128M"
-        ],
-        "Write": [
-            "1M",
-            "4M",
-            "128M"
+            "1M"
         ]
     },
 
     "IOBenchV2": {
         "Read": [
             "1M",
-            "4M",
             "128M"
         ],
         "Write": [
-            "1M",
-            "4M",
-            "128M"
+            "4M"
         ]
     },
 

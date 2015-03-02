@@ -79,6 +79,7 @@ def main():
     environ = load_environ('config.json', modules)
 
     apps = load_applications(environ)
+    print apps
     bmarks = load_benchmarks(environ)
     threads = load_interference(environ)
 

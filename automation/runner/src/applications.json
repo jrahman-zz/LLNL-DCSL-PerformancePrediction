@@ -1,43 +1,20 @@
 {
-    "Cassandra": {
-        "script_dir": "/home/jprahman/LLNL-DCSL-PerformancePrediction//applications/cassandra",
-        "application_dir": "/home/jprahman/llnl//apache-cassandra-2.1.2"
-    },
-    "MongoDB": {
-        "script_dir": "/home/jprahman/LLNL-DCSL-PerformancePrediction//applications/mongodb",
-        "application_dir": "/home/jprahman/llnl//mongodb-linux-x86_64-2.6.7"
-    },
     "Spec": {
         "script_dir": "/home/jprahman/LLNL-DCSL-PerformancePrediction//applications/spec_cpu2006",
         "application_dir": "/home/jprahman/llnl//SPEC2006",
         "subapplications": [
             "Perlbench",
-            "Bzip",
             "Gcc",
-            "Gobmk",
             "HRef",
-            "HMMER",
             "Sjeng",
-            "Libquantum",
-            "HRef",
-            "Omnetpp",
             "Astar",
             "Xalancbmk",
-            "Bwaves",
-            "Gamess",
-            "Milc",
             "Zeusmp",
             "Gromacs",
             "CactusADM",
-            "Leslie",
-            "Namd",
-            "DealII",
-            "Soplex",
             "Povray",
             "Calculix",
-            "GemsFDTD",
             "Tonto",
-            "Lbm",
             "Wrf",
             "Sphinx"
         ]

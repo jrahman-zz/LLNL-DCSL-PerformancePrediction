@@ -1,4 +1,12 @@
 {
+    "Cassandra": {
+        "script_dir": "${SOURCE_BASE}/applications/cassandra",
+        "application_dir": "${APPLICATION_BASE}/apache-cassandra-2.1.2"
+    },
+    "MongoDB": {
+        "script_dir": "${SOURCE_BASE}/applications/mongodb",
+        "application_dir": "${APPLICATION_BASE}/mongodb-linux-x86_64-2.6.7"
+    },
     "Spec": {
         "script_dir": "${SOURCE_BASE}/applications/spec_cpu2006",
         "application_dir": "${APPLICATION_BASE}/SPEC2006",

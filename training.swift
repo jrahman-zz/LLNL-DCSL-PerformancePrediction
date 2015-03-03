@@ -1,35 +1,45 @@
 
-type outfile
 
-string interference[] = ["", "", ""]
-int replications = 10
+string interference[] = ["StreamV2Scale", "StreamV2Add", "MemoryV2Stream1K", "MemoryV2Stream256M", "MemoryV2Random1M", "IOBenchV2Read1M", "IOBenchV2Read128M", "IOBenchV2Write4M", "Metadata"];
 
-app (outfile output) run (int replication, string interference_spec, string data_path, string app_path) {
-    run_sh 3 interference_spec @filename(outout) data_path app_path
+string apps = "SpecHRef,SpecGromacs";
+string appPath = @arg("appPath");
+string dataPath = @arg("dataPath");
+
+int reps = 10;
+
+app (file output, file log) run (int rep, string interSpec, string apps, string dataPath, string appPath) {
+    run 3 interSpec apps "training" @filename(output) dataPath appPath stderr=@filename(log);
 }
 
-(string thread_spec) create_interfere_spec(string thread_name, int coloc_level, int nice_level) {
-    thread_spec = thread_name + ":1:" + coloc_level + ":" + nice_level
+(string threadSpec) createInterfereSpec(string threadName, int colocLevel, int niceLevel) {
+    threadSpec = threadName + ":1:" + colocLevel + ":" + niceLevel;
 }
 
-int coloc_levels[] = [0:2]
-int nice_levels[] = [-10, 0, 10]
+type file;
+file[string] output;
+file[string] logs;
 
-outfile[string] output;
+int count = 0;
+int colocLevels[] = [0:1];
 
-foreach replication in [1:replications] {
+foreach rep in [1:reps] {
     foreach thread in interference {
-        foreach coloc_level in coloc_levels {
-            int nice_levels
-            if (coloc_level == 0) {
-                nice_levels = [-10, 0, 10]
+        foreach colocLevel in colocLevels {
+            int niceLevels[];
+            if (colocLevel == 0) {
+                niceLevels = [-10, 0, 10];
             } else {
-                nice_levels = [0]
+                niceLevels = [0];
             }
-            foreach nice_level in nice_levels {
-                threadspec = create_interfere_spec(thread, coloc_level, nice_level)
-                runspec = replication + ":" + threadspec
-                output[runspec] = run(replication, threadspec, data_path, app_path)
+            foreach niceLevel in niceLevels {
+                string threadspec = createInterfereSpec(thread, colocLevel, niceLevel);
+                string runspec = rep + ":" + threadspec;
+                file simout <single_file_mapper; file=strcat("output/run_", runspec, ".json")>;
+                file simlog <single_file_mapper; file=strcat("output/run_", runspec, ".stdout")>;
+                (simout, simlog) = run(rep, threadspec, apps, dataPath, appPath);
+                output[runspec] = simout;
+                logs[runspec] = simlog;
             }
         }
     }

@@ -1,10 +1,10 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: run.sh INSTANCES INTEFERENCE OUTPUT_PATH DATA_BASE APPLICATION_BASE"
+    echo "Usage: run.sh INSTANCES INTEFERENCE APPS MODE OUTPUT_PATH DATA_BASE APP_BASE"
 }
 
-if [ $# -ne 5 ]; then
+if [ $# -ne 7 ]; then
     usage
     exit 1
 fi
@@ -12,43 +12,42 @@ fi
 
 INSTANCES=${1} # For multi-instance application and benchmark support
 INTERFERENCE=${2}
-OUTPUT_PATH=${3}
-DATA_BASE=${4}
-APPLICATION_BASE=${5}
+APPS=${3}
+MODE=${4} # Testing or training
+OUTPUT_PATH=${5}
+DATA_BASE=${6}
+APP_BASE=${7}
 
 BASE_DIR=$(dirname $0)
 SOURCE_BASE="${BASE_DIR}/../../../"
 
 # Build customize json files
-cp "${BASE_DIR}/config.json.template" "${BASE_DIR}/config.json"
-cp "${BASE_DIR}/applications.json.template" "${BASE_DIR}/applications.json"
-cp "${BASE_DIR}/benchmarks.json.template" "${BASE_DIR}/benchmarks.json"
-cp "${BASE_DIR}/inteference.json.template" "${BASE_DIR}/interference.json"
+cp "${BASE_DIR}/config.json.template" config.json
+cp "${BASE_DIR}/applications.json.template" applications.json
+cp "${BASE_DIR}/benchmarks.json.template" benchmarks.json
+cp "${BASE_DIR}/interference.json.${MODE}" interference.json
 
-DATA_BASE="/tmp/applications/"
 PATTERN="s \\\${DATA_BASE} ${DATA_BASE} g"
 echo "${PATTERN}"
-sed -i "${PATTERN}" "${BASE_DIR}/config.json" "${BASE_DIR}/applications.json" "${BASE_DIR}/interference.json"
+sed -i "${PATTERN}" config.json applications.json interference.json
 
 if [ $? -ne 0 ]; then
     echo "Failed to build JSON files"
     exit 2
 fi
 
-SOURCE_BASE="/home/jprahman/LLNL-DCSL-PerformancePrediction/"
 PATTERN="s \\\${SOURCE_BASE} ${SOURCE_BASE} g"
 echo "${PATTERN}"
-sed -i "${PATTERN}" "${BASE_DIR}/config.json" "${BASE_DIR}/applications.json" "${BASE_DIR}/interference.json"
+sed -i "${PATTERN}" config.json applications.json interference.json
 
 if [ $? -ne 0 ]; then
     echo "Failed to build JSON files"
     exit 3
 fi
 
-APPLICATION_BASE="/home/jprahman/llnl/"
-PATTERN="s \\\${APPLICATION_BASE} ${APPLICATION_BASE} g"
+PATTERN="s \\\${APPLICATION_BASE} ${APP_BASE} g"
 echo "${PATTERN}"
-sed -i "${PATTERN}" "${BASE_DIR}/config.json" "${BASE_DIR}/applications.json" "${BASE_DIR}/interference.json"
+sed -i "${PATTERN}"  config.json applications.json interference.json
 
 if [ $? -ne 0 ]; then
     echo "Failed to build JSON files"
@@ -80,7 +79,7 @@ for INSTANCE in `seq ${INSTANCES}`; do
 done
 
 echo "Starting run..."
-python ${BASEDIR}/run.py --applications all --interference ${INTERFERENCE} --output ${OUTPUT_PATH}
+python ${BASE_DIR}/run.py --applications "${APPS}" --interference "${INTERFERENCE}" --output ${OUTPUT_PATH} --config "${BASE_DIR}/config.json"
 if [ $? -ne 0 ]; then
     echo "Run failed"
     exit 8

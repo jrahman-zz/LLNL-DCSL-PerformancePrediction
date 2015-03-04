@@ -39,6 +39,10 @@
 #define REGULAR_STRIDE 1
 #endif
 
+#ifndef RANDOM_STRIDE
+#define RANDOM_STRIDE 64
+#endif
+
 long long int identity(long long int n_);
 
 struct duo {
@@ -472,6 +476,7 @@ void measurement_random_access(long long int n_, int CPU_, int repeat) {
   srand ( time(NULL) );
   fprintf(stderr, "CPU = %d n = %lld num_obs=%d\n", CPU_, n_, num_obs);
 
+  int index;
   struct timespec ts_start, ts_stop;
   clock_gettime(CLOCK_MONOTONIC, &ts_start);
 
@@ -489,8 +494,14 @@ void measurement_random_access(long long int n_, int CPU_, int repeat) {
 
         //Stride = 3000000 
         //vec_[(3736503*k_)%n_]++;
-
-        vec_[rand()%n_]++; 
+        index = rand();
+        vec_[index%n_] += index;
+        #ifdef V2
+        vec_[(index+RANDOM_STRIDE)%n_] += vec_[((unsigned int)vec_[index%n_])%n_];
+        vec_[(index+2*RANDOM_STRIDE)%n_] += vec_[((unsigned int)vec_[2*index%n_])%n_];
+        vec_[(index+3*RANDOM_STRIDE)%n_] += vec_[((unsigned int)vec_[3*index%n_])%n_];
+        vec_[(index+4*RANDOM_STRIDE)%n_] += vec_[((unsigned int)vec_[4*index%n_])%n_];
+        #endif
       
       }
       // if(CPU_ == 0) {

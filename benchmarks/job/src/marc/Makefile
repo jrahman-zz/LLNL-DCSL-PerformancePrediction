@@ -14,7 +14,7 @@ example.o: example.cpp
 	$(CC) -c -o example.o example.cpp $(INCLUDE)
 
 exampleV2.o: example.cpp
-	$(CC) -DBANDWIDTH_SCALE=100000 -DREGULAR_STRIDE=1024 -c -o exampleV2.o example.cpp $(INCLUDE)
+	$(CC) -DV2 -DBANDWIDTH_SCALE=100000 -DREGULAR_STRIDE=1024 -DRANDOM_STRIDE=512 -c -o exampleV2.o example.cpp $(INCLUDE)
 
 example: example.o identity.o
 	 $(CC) example.o identity.o -o example $(LIBS)

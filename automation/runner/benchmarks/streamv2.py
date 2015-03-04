@@ -31,7 +31,7 @@ class StreamV2Scale(StreamBenchmark):
         StreamBenchmark.__init__(self, environ, 2, cores)
 
 class StreamV2ScaleInterfere(StreamInterfere):
-    def __init__(self, enrivon, cores=[0], extra_cores=[1], nice=0, instance=1):
+    def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
         self._bmark = 'Scale'
         StreamInterfere.__init__(self, environ, 2, cores, nice)
 

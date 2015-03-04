@@ -9,7 +9,7 @@ string dataPath = @arg("dataPath");
 int reps = 10;
 
 app (file output, file log) run (int rep, string interSpec, string apps, string dataPath, string appPath) {
-    run 3 interSpec apps "training" @filename(output) dataPath appPath stderr=@filename(log);
+    run 2 interSpec apps "training" @filename(output) dataPath appPath stderr=@filename(log);
 }
 
 (string threadSpec) createInterfereSpec(string threadName, int colocLevel, int niceLevel) {

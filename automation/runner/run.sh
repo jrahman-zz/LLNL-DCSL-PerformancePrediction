@@ -19,7 +19,7 @@ DATA_BASE=${6}
 APP_BASE=${7}
 
 BASE_DIR=$(dirname $0)
-SOURCE_BASE="${BASE_DIR}/../../../"
+SOURCE_BASE="${BASE_DIR}/../../"
 
 # Build customize json files
 cp "${BASE_DIR}/config.json.template" config.json

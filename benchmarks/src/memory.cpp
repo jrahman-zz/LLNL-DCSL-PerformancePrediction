@@ -22,7 +22,7 @@
 #include <syscall.h>
 #include <errno.h>
 #include <pthread.h>
-//#include <papi.h>
+#include <papi.h>
 #include <signal.h>
 #include <math.h>
 #include <string.h>
@@ -466,7 +466,7 @@ void measurement_random_access(long long int n_, int CPU_, int repeat) {
   if(vec_==0) 
     printf("Error Allocating Memory\n");
 
-  int num_obs = 1000000000/n_;
+  int num_obs = 10000000/n_;
   if(num_obs<1)
     num_obs=1;
   //WARM-UP

@@ -390,18 +390,25 @@ void measurement_regular_access(long long int n_, int CPU_, int repeat) {
     vec_[k_] = 1;
   }
 
+// Only use the performance counters for benchmarks
+// Since we have a limited number of performance counters
+#ifndef INTERFERE
   papi_counters_t *counters = create_miss_counters();
   if (counters == NULL) {
     fprintf(stderr, "Failed to create PAPI counters\n");
     exit(1);
   }
+#endif
+  
   fprintf(stderr, "CPU = %d n = %lld num_obs=%d\n", CPU_, n_, num_obs);
   
+#ifndef INTERFERE
   // Start the HW counters
   if (start_counters(counters) != 0) {
     fprintf(stderr, "Failed to start counters\n");
     exit(1);
   }
+#endif
 
   struct timespec ts_start, ts_stop;
   clock_gettime(CLOCK_MONOTONIC, &ts_start);
@@ -444,12 +451,15 @@ void measurement_regular_access(long long int n_, int CPU_, int repeat) {
   clock_gettime(CLOCK_MONOTONIC, &ts_stop);
   printTimespec(ts_start, ts_stop, app);
 
+#ifndef INTERFERE
   // Stop and print the PAPI counters
   if(stop_counters(counters) != 0) {
     fprintf(stderr, "Failed to stop counters");
     exit(1);
   }
   print_counters(counters);
+  destroy_counters(counters);
+#endif
 
   free(vec_);
   // if(CPU_==0)

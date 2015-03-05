@@ -3,11 +3,11 @@
 
 #include "papi_util.h"
 
-#ifdef _cplusplus 
+#ifdef __cplusplus 
 extern "C" {
 #endif
-papi_counters_t* create_miss_counters(void); 
-#ifdef _cplusplus
+papi_counters_t* create_miss_counters(); 
+#ifdef __cplusplus
 }
 #endif
 

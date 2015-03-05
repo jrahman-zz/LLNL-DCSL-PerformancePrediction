@@ -43,6 +43,10 @@ int create_counters(struct papi_counters **counters, char **names, int *events, 
     for (int i = 0; i < len; i++) {
         (*counters)->events[i] = events[i];
     }
+
+    (*counters)->values = (long long int*)malloc(sizeof(long long int*) * len);
+    if ((*counters)->values == NULL) goto cleanup;
+
     return 0;
 
     cleanup:
@@ -65,7 +69,7 @@ int create_counters(struct papi_counters **counters, char **names, int *events, 
     return -1;
 }
 
-int destroy_counters(struct papi_counters *counters) {
+int destroy_counters(papi_counters_t *counters) {
     if (counters == NULL) {
         return -1;
     }
@@ -82,7 +86,7 @@ int destroy_counters(struct papi_counters *counters) {
     return 0;
 }
 
-int start_counters(struct papi_counters *counters) {
+int start_counters(papi_counters_t *counters) {
     if (counters == NULL) {
         return -1;
     }
@@ -91,21 +95,23 @@ int start_counters(struct papi_counters *counters) {
         counters->values[i] = 0;
     }
 
-    if (PAPI_start_counters(counters->events, counters->n_counters) != PAPI_OK) {
-        fprintf(stderr, "Failed to start PAPI counters");
+    int ret = PAPI_start_counters(counters->events, counters->n_counters);
+    if (ret != PAPI_OK) {
+        fprintf(stderr, "Failed to start PAPI counters, %d", ret);
         return -1;
     }
 
     return 0;
 }
 
-int stop_counters(struct papi_counters *counters) {
+int stop_counters(papi_counters_t *counters) {
     if (counters == NULL) {
         return -1;
     }
 
-    if (PAPI_stop_counters(counters->values, counters->n_counters) != PAPI_OK) {
-        fprintf(stderr, "Failed to stop PAPI counters");
+    int ret = PAPI_stop_counters(counters->values, counters->n_counters);
+    if (ret != PAPI_OK) {
+        fprintf(stderr, "Failed to stop PAPI counters, %d", ret);
         return -1;
     }
 

@@ -46,7 +46,7 @@ metadata: metadata.cpp $(PAPI_OBJS)
 	$(CPP) $(CPPFLAGS) metadata.cpp $(METADATA_FLAGS) -o metadata
 
 metadata_interfere: metadata.cpp
-	$(CPP) $(CPPFLAGS) metadata.cpp $(METADATA_FLAGS) -DINTERFERE -o metadata_intefere
+	$(CPP) $(CPPFLAGS) metadata.cpp $(METADATA_FLAGS) -DINTERFERE -o metadata_interfere
 
 # Memory
 memory: memory.o identity.o $(PAPI_OBJS)

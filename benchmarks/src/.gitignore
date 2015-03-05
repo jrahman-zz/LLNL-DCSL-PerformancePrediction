@@ -1,9 +1,13 @@
 *.o
 a.out
 metadata
+metadata_interfere
 stream
 stream_interfere
 streamV2
 streamV2_interfere
 memory
+memory_interfere
 memoryV2
+memoryV2_interfere
+test

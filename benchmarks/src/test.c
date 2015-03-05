@@ -1,15 +1,15 @@
 #include "papi_util.h"
+#include "papi_counters.h"
 
 #define ARR_SIZE 1024
 
 int main(int argc, char **argv) {
 
-    int events[] = {PAPI_L1_TCA, PAPI_L1_TCM, PAPI_L2_TCA, PAPI_L2_TCM, PAPI_L3_TCA, PAPI_L3_TCM};
-    char *names[] = {"L1 Accesses", "L1 Misses", "L2 Accesses", "L2 Misses", "L3 Accesses", "L3 Misses"};
 
-    struct papi_counters *counters;
+    papi_counters_t *counters;
 
-    if (create_counters(&counters, names, events, sizeof(events)/sizeof(events[0])) != 0) {
+    counters = create_miss_counters();    
+    if (counters == NULL) {
         fprintf(stderr, "Failed to initialize the papi events\n");
         return 1;
     }

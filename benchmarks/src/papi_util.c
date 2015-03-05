@@ -29,7 +29,7 @@ int create_counters(struct papi_counters **counters, char **names, int *events, 
     (*counters)->names = NULL;
 
     // Allocate and copy the names
-    (*counters)->names = (char**)malloc(len+1);
+    (*counters)->names = (char**)malloc(sizeof(char*)*(len+1));
     if ((*counters)->names == NULL) goto cleanup;
     for (int i = 0; i < len; i++) {
         (*counters)->names[i] = strdup(names[i]);

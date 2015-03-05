@@ -1,0 +1,19 @@
+
+CC=gcc
+CCFLAGS=-Wall -std=c99
+
+all: test
+
+test: test.o papi_util.o
+	$(CC) test.o papi_util.o -o test
+
+papi_util.o: papi_util.c papi_util.h
+	$(CC) $(CCFLAGS) -c papi_util.c
+
+test.o: test.c papi_util.h
+	$(CC) $(CCFLAGS) -c test.c
+
+.PHONY: clean
+clean:
+	rm -f *.o
+

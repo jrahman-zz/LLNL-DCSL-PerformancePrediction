@@ -13,6 +13,9 @@
 #include <sched.h>
 */
 
+#include "papi_util.h"
+#include "papi_counters.h"
+
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
@@ -22,7 +25,6 @@
 #include <syscall.h>
 #include <errno.h>
 #include <pthread.h>
-#include <papi.h>
 #include <signal.h>
 #include <math.h>
 #include <string.h>
@@ -387,8 +389,20 @@ void measurement_regular_access(long long int n_, int CPU_, int repeat) {
   for(int k_=0; k_<n_; k_++) {
     vec_[k_] = 1;
   }
+
+  papi_counters_t *counters = create_miss_counters();
+  if (counters == NULL) {
+    fprintf(stderr, "Failed to create PAPI counters\n");
+    exit(1);
+  }
   fprintf(stderr, "CPU = %d n = %lld num_obs=%d\n", CPU_, n_, num_obs);
   
+  // Start the HW counters
+  if (start_counters(counters) != 0) {
+    fprintf(stderr, "Failed to start counters\n");
+    exit(1);
+  }
+
   struct timespec ts_start, ts_stop;
   clock_gettime(CLOCK_MONOTONIC, &ts_start);
 
@@ -429,6 +443,13 @@ void measurement_regular_access(long long int n_, int CPU_, int repeat) {
   // }
   clock_gettime(CLOCK_MONOTONIC, &ts_stop);
   printTimespec(ts_start, ts_stop, app);
+
+  // Stop and print the PAPI counters
+  if(stop_counters(counters) != 0) {
+    fprintf(stderr, "Failed to stop counters");
+    exit(1);
+  }
+  print_counters(counters);
 
   free(vec_);
   // if(CPU_==0)

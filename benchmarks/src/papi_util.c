@@ -91,7 +91,7 @@ int start_counters(papi_counters_t *counters) {
         return -1;
     }
 
-    for (int i; i < counters->n_counters; i++) {
+    for (int i = 0; i < counters->n_counters; i++) {
         counters->values[i] = 0;
     }
 

@@ -491,6 +491,9 @@ int main (int argc, char *argv[])
     if (errors == 0)
     {
         fprintf(outfile, " Numeric results were as expected\n");
+    } else {
+        fprintf(outfile, "Numeric results were not as expected\n");
+        return 1;
     }
 
     fprintf(outfile, "\n");

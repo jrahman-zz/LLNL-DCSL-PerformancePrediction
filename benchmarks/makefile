@@ -5,26 +5,27 @@ all: copy
 .PHONY: copy
 copy: build
 	mkdir -p bin
-	cd stream/src && cp stream ../../bin/stream
-	cd stream/src && cp streamV2 ../../bin/streamV2
-	cd stream/src && cp stream_interfere ../../bin/stream_interfere
-	cd stream/src && cp streamV2_interfere ../../bin/streamV2_interfere
+	cd src && cp stream ../bin/stream
+	cd src && cp streamV2 ../bin/streamV2
+	cd src && cp stream_interfere ../bin/stream_interfere
+	cd src && cp streamV2_interfere ../bin/streamV2_interfere
 	cd iobench && cp iobench.jar ../bin/iobench.jar
-	cd job/bin && cp example ../../bin/memory
-	cd job/bin && cp exampleV2 ../../bin/memoryV2
-	cd job/bin && cp alloctest ../../bin/alloctest
-	cd metadata && cp src/metadata ../bin/metadata
+	cd src && cp memory ../bin/memory
+	cd src && cp memory_interfere ../bin/memory_interfere
+	cd src && cp memoryV2 ../bin/memoryV2
+	cd src && cp memoryV2_interfere ../bin/memoryV2_interfere
+	cd src && cp metadata ../bin/metadata
+	cd src && cp whetstone ../bin/whetstone
+	cd src && cp dhrystone ../bin/dhrystone
+	cd src && cp lloops ../bin/lloops
+	cd src && cp linpack ../bin/linpack
 
 .PHONY: build
 build:
-	cd stream && $(MAKE)
+	cd src && $(MAKE)
 	cd iobench && $(MAKE)
-	cd job && $(MAKE)
-	cd metadata/src && $(MAKE)
 
 clean:
-	cd stream && make clean
+	cd src && make clean
 	cd iobench && make clean
-	cd job && make clean
-	cd metadata/src && make clean
 	rm -rf bin/*

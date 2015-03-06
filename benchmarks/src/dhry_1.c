@@ -21,7 +21,7 @@
  #include <stdlib.h>
  #include <stdio.h>
  #include "dhry.h"
- #include "cpuidh.h"
+#include "cpuidh.h"
 
  #ifdef CNNT
     #define options   "Non-optimised"
@@ -126,13 +126,14 @@ int             Int_Glob;
          }
       }
  
-   if ((Ap = fopen("Dhry.txt","a+")) == NULL)
+    Ap = stdout;
+   /*if ((Ap = fopen("Dhry.txt","a+")) == NULL)
      {
         printf(" Can not open Dhry.txt\n\n");
         printf(" Press Enter\n\n");
         int g = getchar();
         exit(1);
-     }
+     }*/
 
 /***********************************************************************
  *         Change for compiler and optimisation used                   *
@@ -155,19 +156,19 @@ int             Int_Glob;
          /* Warning: With 16-Bit processors and Number_Of_Runs > 32000, */
          /* overflow may occur for this array element.                  */
  
-    getDetails();
+    /*getDetails();
     for (i=1; i<10; i++)
     {
         printf("%s\n", configdata[i]);
     }
-    printf("\n");
+    printf("\n");*/
 
     fprintf (Ap, " #####################################################\n\n");                     
-    for (i=1; i<10; i++)
+    /*(for (i=1; i<10; i++)
     {
         fprintf(Ap, "%s \n", configdata[i]);
     }
-    fprintf (Ap, "\n");
+    fprintf (Ap, "\n");*/
  
     printf("##########################################\n"); 
 
@@ -576,7 +577,7 @@ int             Int_Glob;
     if (nopause)
     {
        printf(" Press Enter\n\n");
-       int g = getchar();
+       //int g = getchar();
     }
  }
  

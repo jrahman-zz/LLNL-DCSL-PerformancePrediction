@@ -375,7 +375,8 @@ main(int argc, char *argv[])
 /************************************************************************
  *                  Open results file LLloops.txt                       *
  ************************************************************************/
-    outfile = fopen("LLloops.txt","a+");
+    outfile = stdout;
+    /*outfile = fopen("LLloops.txt","a+");
     if (outfile == NULL)
     {
         printf (" Cannot open results file LLloops.txt\n\n");
@@ -397,7 +398,7 @@ main(int argc, char *argv[])
         fprintf(outfile, "%s \n", configdata[i]);
     }
     fprintf (outfile, "\n");
- 
+    */
             
     local_time();
 
@@ -733,7 +734,7 @@ main(int argc, char *argv[])
     if (nopause)
     {
         printf(" Press Enter\n\n");
-        gg = getchar();
+        //gg = getchar();
     }
     return 0;
 }

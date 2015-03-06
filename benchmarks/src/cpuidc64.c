@@ -87,7 +87,7 @@
       return;
   }    
 
-  int getDetails()
+  /*int getDetails()
   {
      int max;
      int min = 1000000;
@@ -103,7 +103,7 @@
      struct sysinfo sysdata;
      struct utsname udetails; 
  
-      _cpuida();
+     _cpuida();
      sprintf(configdata[1], "  Assembler CPUID and RDTSC      ");  
      sprintf(configdata[2], "  CPU %s, Features Code %8.8X, Model Code %8.8X",
                            idString1, edxCode1, eaxCode1);
@@ -171,5 +171,5 @@
      }
 
      return 0; 
-  }
+  }*/
 

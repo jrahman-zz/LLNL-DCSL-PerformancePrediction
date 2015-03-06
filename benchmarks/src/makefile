@@ -84,22 +84,23 @@ memoryV2_interfere.o: memory.cpp
 	$(CPP) $(CPPFLAGS) memory.cpp $(MEMORYV2_FLAGS) -DINTERFERE -c -o memoryV2_interfere.o
 
 # Dhrystone
-dhrystone: dhry_1.c dhry_2.c cpuidc64.o cpuida64.o
-	$(CC) dhry_1.c dhry_2.c cpuidc64.o cpuida64.o $(DHRYSTONE_FLAGS) -o dhrystone
+dhrystone: dhry_1.c dhry_2.c cpuidc64.o
+	$(CC) dhry_1.c dhry_2.c cpuidc64.o $(DHRYSTONE_FLAGS) -o dhrystone
 
 # Whetstone
-whetstone: whets.c cpuidc64.o cpuida64.o
-	$(CC) whets.c cpuidc64.o cpuida64.o $(WHETSTONE_FLAGS) -o whetstone
+whetstone: whets.c cpuidc64.o
+	$(CC) whets.c cpuidc64.o $(WHETSTONE_FLAGS) -o whetstone
 
 # Livermore loops
-lloops: lloops.c cpuidc64.o cpuida64.o
-	$(CC) lloops.c cpuidc64.o cpuida64.o $(LIVERMORE_FLAGS) -o lloops
+lloops: lloops.c cpuidc64.o
+	$(CC) lloops.c cpuidc64.o $(LIVERMORE_FLAGS) -o lloops
 
 # Linpack
-linpack: linpack.c cpuidc64.o cpuida64.o
-	$(CC) linpack.c cpuidc64.o cpuida64.o $(LINPACK_FLAGS) -o linpack
+linpack: linpack.c cpuidc64.o
+	$(CC) linpack.c cpuidc64.o $(LINPACK_FLAGS) -g -o linpack
 
-
+cpuidc64.o:
+	$(CC) cpuidc64.c -c
 
 # Papi
 papi_util.o: papi_util.c papi_util.h

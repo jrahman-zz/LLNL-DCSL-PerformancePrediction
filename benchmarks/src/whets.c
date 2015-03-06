@@ -164,7 +164,7 @@
  #include <stdio.h>      /* standard I/O                */ 
  #include <string.h>     /* for strcpy - 3 occurrences  */
  #include <stdlib.h>     /* for exit   - 1 occurrence   */
-  #include "cpuidh.h"
+ #include "cpuidh.h"
 
  /*PRECISION PRECISION PRECISION PRECISION PRECISION PRECISION PRECISION*/
 
@@ -224,26 +224,27 @@ int main(int argc, char *argv[])
          }
       }
 
-    getDetails();
+    /*getDetails();
     for (i=1; i<10; i++)
     {
         printf("%s\n", configdata[i]);
-    }
+    }*/
 
     local_time();
     printf("\n");
     printf("##########################################\n"); 
     printf("%s Precision C Whetstone Benchmark %s, %s\n", Precision, opt, timeday);
 
-    outfile = fopen("whets.txt","a+");
-    if (outfile == NULL)
+    //outfile = fopen("whets.txt","a+");
+    outfile = stdout;
+    /*if (outfile == NULL)
       {
        printf ("Cannot open results file \n\n");
        printf("Press Enter to exit\n");
-       i = getchar();
+       //i = getchar();
  
-       exit (0);
-      }
+       exit (1);
+      }*/
             
   printf("Calibrate\n");
   do
@@ -311,12 +312,12 @@ int main(int argc, char *argv[])
  /************************************************************************/
  fprintf (outfile, "\n"); 
  fprintf (outfile, "##############################################\n\n");
- for (i=1; i<10; i++)
+ /*for (i=1; i<10; i++)
  {
      fprintf(outfile, "%s \n", configdata[i]);
  }
  fprintf (outfile, "\n");
- fprintf (outfile, "##############################################\n\n");
+ fprintf (outfile, "##############################################\n\n");*/
  fprintf (outfile, "Whetstone %s Precision C Benchmark  %s, %s\n",Precision, opt, timeday);
  fprintf (outfile, "\n");
 
@@ -365,7 +366,7 @@ int main(int argc, char *argv[])
  if (nopause)
  {
     printf(" Press Enter\n\n");
-    i = getchar();
+    //i = getchar();
  }  
  return 0;             
 }

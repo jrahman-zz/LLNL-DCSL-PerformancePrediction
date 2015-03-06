@@ -10,4 +10,8 @@ memory
 memory_interfere
 memoryV2
 memoryV2_interfere
+dhrystone
+whetstone
+lloops
+linpack
 test

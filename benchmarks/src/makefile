@@ -14,7 +14,13 @@ STREAM_FLAGS = -O2 $(COMMON)
 STREAMV2_FLAGS = -O0 $(COMMON)
 METADATA_FLAGS = -lrt $(COMMON)
 MEMORY_FLAGS = -lrt $(COMMON)
-MEMORYV2_FLAGS = -lrt -DV2 -DREGULAR_STRIDE=1024 -DRANDOM_STRIDE=512 -DBANDWIDTH_SCALE=100000 $(COMMON)
+MEMORYV2_FLAGS = -lrt -DV2 -DREGULAR_STRIDE=64 -DRANDOM_STRIDE=512 -DBANDWIDTH_SCALE=100000 $(COMMON)
+
+DHRYSTONE_FLAGS = -m64 -lrt -lc -lm
+WHETSTONE_FLAGS = -m64 -lrt -lc -lm
+LIVERMORE_FLAGS = -m64 -lrt -lc -lm
+LINPACK_FLAGS = -m64 -lrt -lc -lm
+
 PAPI_FLAGS = -std=c99 $(COMMON)
 
 all: build
@@ -22,7 +28,7 @@ all: build
 build: benchmarks interference test
 
 .PHONY: benchmarks
-benchmarks: stream streamV2 metadata memory memoryV2
+benchmarks: stream streamV2 metadata memory memoryV2 dhrystone whetstone lloops linpack
 
 .PHONY: interference
 interference: stream_interfere streamV2_interfere metadata_interfere memory_interfere memoryV2_interfere
@@ -76,6 +82,24 @@ memoryV2.o: memory.cpp
 
 memoryV2_interfere.o: memory.cpp
 	$(CPP) $(CPPFLAGS) memory.cpp $(MEMORYV2_FLAGS) -DINTERFERE -c -o memoryV2_interfere.o
+
+# Dhrystone
+dhrystone: dhry_1.c dhry_2.c cpuidc64.o cpuida64.o
+	$(CC) dhry_1.c dhry_2.c cpuidc64.o cpuida64.o $(DHRYSTONE_FLAGS) -o dhrystone
+
+# Whetstone
+whetstone: whets.c cpuidc64.o cpuida64.o
+	$(CC) whets.c cpuidc64.o cpuida64.o $(WHETSTONE_FLAGS) -o whetstone
+
+# Livermore loops
+lloops: lloops.c cpuidc64.o cpuida64.o
+	$(CC) lloops.c cpuidc64.o cpuida64.o $(LIVERMORE_FLAGS) -o lloops
+
+# Linpack
+linpack: linpack.c cpuidc64.o cpuida64.o
+	$(CC) linpack.c cpuidc64.o cpuida64.o $(LINPACK_FLAGS) -o linpack
+
+
 
 # Papi
 papi_util.o: papi_util.c papi_util.h

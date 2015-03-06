@@ -78,7 +78,7 @@ static REAL atime[9][15];
 double runSecs = 1;
 
 
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
         static REAL aa[200*200],a[200*201],b[200],x[200];       
         REAL cray,ops,total,norma,normx;
@@ -109,8 +109,9 @@ main (int argc, char *argv[])
             }
          }
         printf("\n");
-         
-        getDetails();
+
+        outfile = stdout;        
+        /*getDetails();
         for (i=1; i<10; i++)
         {
             printf("%s\n", configdata[i]);
@@ -118,6 +119,7 @@ main (int argc, char *argv[])
         printf("\n");
         printf("##########################################\n"); 
 
+        outfile = stdout;
         outfile = fopen("Linpack.txt","a+");
         if (outfile == NULL)
         {
@@ -131,7 +133,7 @@ main (int argc, char *argv[])
         {
             fprintf(outfile, "%s \n", configdata[i]);
         }
-        fprintf (outfile, "\n");
+        fprintf (outfile, "\n");*/
 
     
         lda = 201;
@@ -493,14 +495,15 @@ main (int argc, char *argv[])
 
     fprintf(outfile, "\n");
     
-    fclose (outfile);
+    //fclose (outfile);
     printf ("\n");
 
     if (nopause)
     {
        printf(" Press Enter\n\n");
-       int gg = getchar();
+       //int gg = getchar();
     }
+    return 0;
 }
      
 /*----------------------*/ 

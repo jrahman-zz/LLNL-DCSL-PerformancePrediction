@@ -46,6 +46,39 @@
 # include <limits.h>
 # include <sys/time.h>
 
+/**
+ * Custom PAPI performance counters are only reported
+ * if requested upon compilation
+ */
+#ifdef COUNTERS
+#include "perf_counters.h"
+#define START_COUNTERS(counters) do {               \
+    if (start_perf_counters(counters) != 0) {       \
+            printf("Failed to start counters\n");   \
+            return 1;                               \
+    }                                               \
+} while (0)
+#define END_COUNTERS(counters) do {                 \
+    int ret = stop_perf_counters(counters);         \
+    if (ret != 0) {                                 \
+        printf("Failed to stop counters, %d\n", ret);   \
+        return 1;                                   \
+    }                                               \
+} while (0)
+#define PRINT_COUNTERS(counters) do {               \
+    if(print_perf_counters(counters) != 0) {        \
+        printf("Failed to collect counter data");    \
+        return 1;                                   \
+    }                                               \
+} while(0)
+#define FREE_COUNTERS(counters) free_perf_counters(counters)
+#else
+#define START_COUNTERS(counters)
+#define END_COUNTERS(counters)
+#define PRINT_COUNTERS(counters)
+#define FREE_COUNTERS(counters)
+#endif
+
 /* INSTRUCTIONS:
  *
  *	1) Stream requires a good bit of memory to run.  Adjust the
@@ -55,10 +88,10 @@
  */
 
 #ifndef N
-#   define N	4000000
+#   define N	20000000
 #endif
 #ifndef NTIMES
-#   define NTIMES	10
+#   define NTIMES	15
 #endif
 #ifndef OFFSET
 #   define OFFSET	0
@@ -131,6 +164,12 @@ main(int argc, char **argv)
     double		scalar, t, times[4][NTIMES];
     int operation = 0;
 
+#ifdef COUNTERS
+    perf_counters_t *counters;
+#else
+    int counters;
+#endif
+
     if (argc == 2) {
         operation = atoi(argv[1]);
     }
@@ -173,6 +212,13 @@ main(int argc, char **argv)
     {
     printf ("Printing one line per active thread....\n");
     }
+
+#ifdef COUNTERS
+    if (init_perf_counters(&counters) != 0) {
+        printf("Failed to initialize perf counters\n");
+        return 1;
+    }
+#endif
 
     /* Get initial value for system clock. */
 #pragma omp parallel for
@@ -218,19 +264,22 @@ main(int argc, char **argv)
     for (k=0; k<NTIMES; k++)
 	{
 	if (operation == 0 || operation == 1) {
-    times[0][k] = mysecond();
+        START_COUNTERS(counters);
+        times[0][k] = mysecond();
 #ifdef TUNED
         tuned_STREAM_Copy();
 #else
 #pragma omp parallel for
-	for (j=0; j<N; j++)
-	    c[j] = a[j];
+    	for (j=0; j<N; j++)
+	        c[j] = a[j];
 #endif
-	times[0][k] = mysecond() - times[0][k];
+	    times[0][k] = mysecond() - times[0][k];
+        END_COUNTERS(counters);
     } // Copy
 	
     if (operation == 0 || operation == 2) {
-	times[1][k] = mysecond();
+	    START_COUNTERS(counters);
+        times[1][k] = mysecond();
 #ifdef TUNED
         tuned_STREAM_Scale(scalar);
 #else
@@ -239,10 +288,12 @@ main(int argc, char **argv)
 	    b[j] = scalar*c[j];
 #endif
 	times[1][k] = mysecond() - times[1][k];
+        END_COUNTERS(counters);
     } // Scale
 
     if (operation == 0 || operation == 3) {    
-	times[2][k] = mysecond();
+	    START_COUNTERS(counters);
+        times[2][k] = mysecond();
 #ifdef TUNED
         tuned_STREAM_Add();
 #else
@@ -250,11 +301,13 @@ main(int argc, char **argv)
 	for (j=0; j<N; j++)
 	    c[j] = a[j]+b[j];
 #endif
-	times[2][k] = mysecond() - times[2][k];
+    	times[2][k] = mysecond() - times[2][k];
+        END_COUNTERS(counters);
     } // Add
 
     if (operation == 0 || operation == 4) {
-	times[3][k] = mysecond();
+	    START_COUNTERS(counters);
+        times[3][k] = mysecond();
 #ifdef TUNED
         tuned_STREAM_Triad(scalar);
 #else
@@ -262,7 +315,8 @@ main(int argc, char **argv)
 	for (j=0; j<N; j++)
 	    a[j] = b[j]+scalar*c[j];
 #endif
-	times[3][k] = mysecond() - times[3][k];
+    	times[3][k] = mysecond() - times[3][k];
+        END_COUNTERS(counters);
     } // Triad
 	}
 
@@ -298,6 +352,8 @@ main(int argc, char **argv)
     checkSTREAMresults();
     printf(HLINE);
 
+    PRINT_COUNTERS(counters);
+    FREE_COUNTERS(counters);
     return 0;
 }
 

@@ -8,9 +8,9 @@ COMMON = -L$(PAPI_PATH)/libpapi.so -l:libpapi.so -Wl,-rpath,$(PAPI_PATH)
 CFLAGS = -Wall -g
 CPPFLAGS = -Wall -std=c++11
 
-PAPI_OBJS = papi_util.o papi_counters.o
+PAPI_OBJS = papi_util.o papi_counters.o perf_counters.o
 
-STREAM_FLAGS = -O2 $(COMMON)
+STREAM_FLAGS = -O2 $(COMMON) -DCOUNTERS
 STREAMV2_FLAGS = -O0 $(COMMON)
 METADATA_FLAGS = -lrt $(COMMON)
 MEMORY_FLAGS = -lrt $(COMMON)
@@ -108,6 +108,10 @@ papi_util.o: papi_util.c papi_util.h
 
 papi_counters.o: papi_counters.c papi_util.h
 	$(CC) $(CFLAGS) papi_counters.c $(PAPI_FLAGS) -c -o papi_counters.o
+
+# Perf counters
+perf_counters.o: perf_counters.c perf_counters.h papi_util.h
+	$(CC) $(CFLAGS) perf_counters.c -c -o perf_counters.o
 
 test: test.c $(PAPI_OBJS)
 	$(CC) $(CFLAGS) $(PAPI_OBJS) test.c $(COMMON) -o test

@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include <papi.h>
 
+/**
+ * Create a given set of event counters
+ */
 int create_counters(struct papi_counters **counters, char **names, int *events, int len) {
     if (counters == NULL) {
         return -1;
@@ -25,6 +28,7 @@ int create_counters(struct papi_counters **counters, char **names, int *events, 
 
     (*counters)->n_counters = len;
     (*counters)->events = NULL;
+    (*counters)->accum = NULL;
     (*counters)->values = NULL;
     (*counters)->names = NULL;
 
@@ -43,10 +47,20 @@ int create_counters(struct papi_counters **counters, char **names, int *events, 
     for (int i = 0; i < len; i++) {
         (*counters)->events[i] = events[i];
     }
-
-    (*counters)->values = (long long int*)malloc(sizeof(long long int*) * len);
+    
+    // Allocate the values array
+    (*counters)->values = (long long int*)malloc(sizeof(long long int) * len);
     if ((*counters)->values == NULL) goto cleanup;
 
+
+    // Allocate the accum array
+    (*counters)->accum = (double*)malloc(sizeof(double) * len);
+    if ((*counters)->accum == NULL) goto cleanup;
+    
+    for (int i = 0; i < len; i++) {
+        (*counters)->accum[i] = 0.0;
+    }
+    (*counters)->state = INITIALIZED;
     return 0;
 
     cleanup:
@@ -59,6 +73,9 @@ int create_counters(struct papi_counters **counters, char **names, int *events, 
     if ((*counters)->values) {
         free((*counters)->values);
     }
+    if ((*counters)->accum) {
+        free((*counters)->accum);
+    }
     if ((*counters)->events) {
         free((*counters)->events);
     }
@@ -69,9 +86,21 @@ int create_counters(struct papi_counters **counters, char **names, int *events, 
     return -1;
 }
 
+/**
+ * Destroy a given set of event counters when done
+ */
 int destroy_counters(papi_counters_t *counters) {
     if (counters == NULL) {
         return -1;
+    }
+
+    int ret;
+    if (counters->state == RUNNING) {
+        ret = stop_counters(counters);
+        if (ret != PAPI_OK) {
+            return ret;
+        }
+        counters->state = STOPPED;
     }
 
     char **tmp = counters->names;
@@ -82,10 +111,14 @@ int destroy_counters(papi_counters_t *counters) {
     free(counters->names);
     free(counters->events);
     free(counters->values);
+    free(counters->accum);
     free(counters);
     return 0;
 }
 
+/**
+ * Start a given set of event counters
+ */
 int start_counters(papi_counters_t *counters) {
     if (counters == NULL) {
         return -1;
@@ -98,22 +131,65 @@ int start_counters(papi_counters_t *counters) {
     int ret = PAPI_start_counters(counters->events, counters->n_counters);
     if (ret != PAPI_OK) {
         fprintf(stderr, "Failed to start PAPI counters, %d", ret);
-        return -1;
+        return ret;
     }
+
+    counters->state = RUNNING;
 
     return 0;
 }
 
+/**
+ * Accumulate the current counters
+ * stopping the counters in the background
+ * in the process
+ */
+int accum_counters(papi_counters_t *counters) {
+    if (counters == NULL) {
+        return -1;
+    }
+
+    if (counters->state != RUNNING) {
+        return -1;
+    }
+
+    int ret;
+    ret = PAPI_read_counters(counters->values, counters->n_counters);
+    if (ret != PAPI_OK) goto end;
+
+    for (int i = 0; i < counters->n_counters; i++) {
+        counters->accum[i] += (double)counters->values[i];
+        // Note, possible precision loss
+    }
+
+    ret = PAPI_stop_counters(counters->values, counters->n_counters);
+    if (ret != PAPI_OK) goto end;
+
+    counters->state = STOPPED;
+end:
+    return ret;
+}
+
+/**
+ * Stop running the event counters
+ */
 int stop_counters(papi_counters_t *counters) {
     if (counters == NULL) {
         return -1;
     }
 
-    int ret = PAPI_stop_counters(counters->values, counters->n_counters);
+    if (counters->state != RUNNING) {
+        return 0;
+    }
+
+    int ret;
+    ret = PAPI_stop_counters(counters->values, counters->n_counters);
     if (ret != PAPI_OK) {
         fprintf(stderr, "Failed to stop PAPI counters, %d", ret);
-        return -1;
+        return ret;
     }
+
+    counters->state = STOPPED;
 
     return 0;
 }
@@ -121,6 +197,10 @@ int stop_counters(papi_counters_t *counters) {
 int print_counters(struct papi_counters *counters) {
     if (counters == NULL) {
         return -1;
+    }
+
+    if (counters->state == INITIALIZED) {
+        return -1; // Not run yet, no meaningful data
     }
 
     for (int i = 0; i < counters->n_counters; i++) {

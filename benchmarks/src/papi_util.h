@@ -21,8 +21,18 @@ typedef struct papi_counters {
 
     char **names;
     int *events;
+
+    // Temp holding space for valus
     long long int *values;
+
+    // Accumulated counter values
     double *accum;
+    
+    // Total accumulated time
+    long long int elapsed_time;
+
+    // Starting time
+    long long int temp_time;
 
     int state;
 } papi_counters_t;

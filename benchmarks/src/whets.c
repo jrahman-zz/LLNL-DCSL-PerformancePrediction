@@ -180,7 +180,42 @@
 
  #define opt "Opt 3 64 Bit"
 
- void whetstones(long xtra, long x100, int calibrate);  
+/**
+ * Custom PAPI performance counters are only reported
+ * if requested upon compilation
+ */
+#ifdef COUNTERS
+#include "perf_counters.h"
+#define START_COUNTERS(counters) do {               \
+        if (start_perf_counters(counters) != 0) {       \
+                        printf("Failed to start counters\n");   \
+                        return 1;                               \
+                }                                               \
+} while (0)
+#define END_COUNTERS(counters) do {                 \
+        int ret = stop_perf_counters(counters);         \
+        if (ret != 0) {                                 \
+                    printf("Failed to stop counters, %d\n", ret);   \
+                    return 1;                                   \
+                }                                               \
+} while (0)
+#define PRINT_COUNTERS(counters) do {               \
+        if(print_perf_counters(counters) != 0) {        \
+                    printf("Failed to collect counter data");    \
+                    return 1;                                   \
+                }                                               \
+} while(0)
+#define FREE_COUNTERS(counters) free_perf_counters(counters)
+perf_counters_t *counters;
+#else
+#define START_COUNTERS(counters)
+#define END_COUNTERS(counters)
+#define PRINT_COUNTERS(counters)
+#define FREE_COUNTERS(counters)
+int counters;
+#endif
+
+ int whetstones(long xtra, long x100, int calibrate);  
  void pa(SPDP e[4], SPDP t, SPDP t2);
  void po(SPDP e1[4], long j, long k, long l);
  void p3(SPDP *x, SPDP *y, SPDP *z, SPDP t, SPDP t1, SPDP t2);
@@ -224,6 +259,13 @@ int main(int argc, char *argv[])
          }
       }
 
+#ifdef COUNTERS
+    if (init_perf_counters(&counters) != 0) {
+        printf("Failed to initialize perf counters\n");
+        return 1;
+    }
+#endif
+
     /*getDetails();
     for (i=1; i<10; i++)
     {
@@ -245,7 +287,8 @@ int main(int argc, char *argv[])
  
        exit (1);
       }*/
-            
+          
+  int ret;  
   printf("Calibrate\n");
   do
    {
@@ -290,8 +333,11 @@ int main(int argc, char *argv[])
                                 "     MOPS   Seconds\n\n");
 
    TimeUsed=0;
-   whetstones(xtra,x100,calibrate);
-
+   ret = whetstones(xtra,x100,calibrate);
+   if (ret != 0) {
+      printf("Failed whetstone\n");
+      return ret;
+   }
    printf("\nMWIPS            ");
    if (TimeUsed>0)
      {
@@ -354,6 +400,8 @@ int main(int argc, char *argv[])
                                              loop_mops[5], loop_mops[8]);
  fprintf (outfile, " %9.3f %9.3f %9.3f\n\n", loop_mops[4],
                                               loop_mops[3], loop_mops[7]);
+ PRINT_COUNTERS(counters);
+ FREE_COUNTERS(counters);
  fflush(outfile);
 
     
@@ -371,7 +419,7 @@ int main(int argc, char *argv[])
  return 0;             
 }
 
-    void whetstones(long xtra, long x100, int calibrate)
+    int whetstones(long xtra, long x100, int calibrate)
       {
 
         long n1,n2,n3,n4,n5,n6,n7,n8,i,ix,n1mult;
@@ -402,6 +450,7 @@ int main(int argc, char *argv[])
         e1[1] = -1.0;
         e1[2] = -1.0;
         e1[3] = -1.0;
+        if (calibrate == 0) START_COUNTERS(counters);
        start_time();
          {
             for (ix=0; ix<xtra; ix++)
@@ -418,12 +467,13 @@ int main(int argc, char *argv[])
             t =  t0;                    
          }
         end_time();
+        if (calibrate == 0) END_COUNTERS(counters);
         secs = secs/(SPDP)(n1mult);
         pout("N1 floating point\0",(float)(n1*16)*(float)(xtra),
                              1,e1[3],secs,calibrate,1);
 
         /* Section 2, Array as parameter */
-
+        if (calibrate == 0) START_COUNTERS(counters);
        start_time();
          {
             for (ix=0; ix<xtra; ix++)
@@ -437,11 +487,13 @@ int main(int argc, char *argv[])
             t =  t0;
          }
         end_time();
+        if (calibrate == 0) END_COUNTERS(counters);
         pout("N2 floating point\0",(float)(n2*96)*(float)(xtra),
                              1,e1[3],secs,calibrate,2);
 
         /* Section 3, Conditional jumps */
         j = 1;
+        if (calibrate == 0) START_COUNTERS(counters);
        start_time();
          {
             for (ix=0; ix<xtra; ix++)
@@ -458,6 +510,7 @@ int main(int argc, char *argv[])
               }
          }
         end_time();
+        if (calibrate == 0) END_COUNTERS(counters);
         pout("N3 if then else  \0",(float)(n3*3)*(float)(xtra),
                         2,(SPDP)(j),secs,calibrate,3);
 
@@ -467,6 +520,7 @@ int main(int argc, char *argv[])
         l = 3;
         e1[0] = 0.0;
         e1[1] = 0.0;
+        if (calibrate == 0) START_COUNTERS(counters);
        start_time();
          {
             for (ix=0; ix<xtra; ix++)
@@ -483,6 +537,7 @@ int main(int argc, char *argv[])
               }
          }
         end_time();
+        if (calibrate == 0) END_COUNTERS(counters);
         x = (e1[0]+e1[1])/(SPDP)n4/(SPDP)xtra;   // was x = e1[0]+e1[1];
         pout("N4 fixed point   \0",(float)(n4*15)*(float)(xtra),
                                  2,x,secs,calibrate,4);
@@ -490,6 +545,7 @@ int main(int argc, char *argv[])
         /* Section 5, Trig functions */
         x = 0.5;
         y = 0.5;
+        if (calibrate == 0) START_COUNTERS(counters);
        start_time();
          {
             for (ix=0; ix<xtra; ix++)
@@ -504,6 +560,7 @@ int main(int argc, char *argv[])
             t = t0;
          }
         end_time();
+        if (calibrate == 0) END_COUNTERS(counters);
         pout("N5 sin,cos etc.  \0",(float)(n5*26)*(float)(xtra),
                                  2,y,secs,calibrate,5);
   
@@ -513,6 +570,7 @@ int main(int argc, char *argv[])
 
         y = 1.0;
         z = 1.0;
+        if (calibrate == 0) START_COUNTERS(counters);
        start_time();
          {
             for (ix=0; ix<xtra; ix++)
@@ -524,6 +582,7 @@ int main(int argc, char *argv[])
               }
          }
         end_time();
+        if (calibrate == 0) END_COUNTERS(counters);
         pout("N6 floating point\0",(float)(n6*6)*(float)(xtra),
                                 1,z,secs,calibrate,6);
   
@@ -534,6 +593,7 @@ int main(int argc, char *argv[])
         e1[0] = 1.0;
         e1[1] = 2.0;
         e1[2] = 3.0;
+        if (calibrate == 0) START_COUNTERS(counters);
        start_time();
          {
             for (ix=0; ix<xtra; ix++)
@@ -545,11 +605,13 @@ int main(int argc, char *argv[])
               }
          }
         end_time();
+        if (calibrate == 0) END_COUNTERS(counters);
         pout("N7 assignments   \0",(float)(n7*3)*(float)(xtra),
                             2,e1[2],secs,calibrate,7);
         
         /* Section 8, Standard functions */
         x = 0.75;
+        if (calibrate == 0) START_COUNTERS(counters);
        start_time();
          {
             for (ix=0; ix<xtra; ix++)
@@ -561,10 +623,11 @@ int main(int argc, char *argv[])
               }
          }
         end_time();
+        if (calibrate == 0) END_COUNTERS(counters);
         pout("N8 exp,sqrt etc. \0",(float)(n8*4)*(float)(xtra),
                                 2,x,secs,calibrate,8);
 
-        return;
+        return 0;
       }
 
 

@@ -32,6 +32,51 @@
     #define opt ""
  #endif
  
+/**
+ * Custom PAPI performance counters are only reported
+ * if requested upon compilation
+ */
+#ifdef COUNTERS
+#include "perf_counters.h"
+#define INIT_COUNTERS(counters) do {                \
+    if (init_perf_counters(&(counters)) != 0) {     \
+        printf("Failed to init counters\n");        \
+        return 1;                                   \
+    }                                               \
+} while (0)
+#define START_COUNTERS(counters) do {               \
+    if (start_perf_counters(counters) != 0) {       \
+        printf("Failed to start counters\n");       \
+        return 1;                                   \
+    }                                               \
+} while (0)
+#define END_COUNTERS(counters) do {                 \
+        int ret = stop_perf_counters(counters);         \
+        if (ret != 0) {                                 \
+                    printf("Failed to stop counters, %d\n", ret);   \
+                    return 1;                                   \
+                }                                               \
+} while (0)
+#define PRINT_COUNTERS(counters) do {               \
+        if(print_perf_counters(counters) != 0) {        \
+                    printf("Failed to collect counter data");    \
+                    return 1;                                   \
+                }                                               \
+} while(0)
+#define FREE_COUNTERS(counters) free_perf_counters(counters)
+#define RESET_COUNTERS(counters) reset_perf_counters(counters)
+perf_counters_t *counters;
+#else
+#define INIT_COUNTERS(counters)
+#define START_COUNTERS(counters)
+#define END_COUNTERS(counters)
+#define PRINT_COUNTERS(counters)
+#define FREE_COUNTERS(counters)
+#define RESET_COUNTERS(counters)
+int counters;
+#endif
+
+
 
 /* Global Variables: */
  
@@ -89,7 +134,7 @@ int             Int_Glob;
  /* end of variables for time measurement */
  
  
- void main (int argc, char *argv[])
+int main (int argc, char *argv[])
  /*****/
  
    /* main program, corresponds to procedures        */
@@ -126,6 +171,8 @@ int             Int_Glob;
          }
       }
  
+    INIT_COUNTERS(counters);
+
     Ap = stdout;
    /*if ((Ap = fopen("Dhry.txt","a+")) == NULL)
      {
@@ -219,7 +266,7 @@ int             Int_Glob;
        /***************/
        /* Start timer */
        /***************/
-  
+       START_COUNTERS(counters);  
        start_time();
    
        for (Run_Index = 1; Run_Index <= Number_Of_Runs; ++Run_Index)
@@ -273,6 +320,7 @@ int             Int_Glob;
        /**************/
  
        end_time();
+       END_COUNTERS(counters);
        User_Time = secs;
              
        printf ("%12.0f runs %6.2f seconds \n",(double) Number_Of_Runs, User_Time);
@@ -282,6 +330,7 @@ int             Int_Glob;
        }
        else
        {
+           RESET_COUNTERS(counters);
              if (User_Time < 0.05)
              {
                   Number_Of_Runs = Number_Of_Runs * 5;
@@ -442,6 +491,8 @@ int             Int_Glob;
      printf ("%12.2lf \n",Vax_Mips);
      printf ("\n");
 
+     PRINT_COUNTERS(counters);
+
 
 /************************************************************************
  *                Add results to output file Dhry.txt                   *
@@ -579,6 +630,7 @@ int             Int_Glob;
        printf(" Press Enter\n\n");
        //int g = getchar();
     }
+    return 0;
  }
  
  void Proc_1 (REG Rec_Pointer Ptr_Val_Par)

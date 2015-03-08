@@ -3,7 +3,7 @@ CPP = g++
 
 PAPI_PATH=/usr/lib/x86_64-linux-gnu/
 
-COMMON = -L$(PAPI_PATH)/libpapi.so -l:libpapi.so -Wl,-rpath,$(PAPI_PATH)
+COMMON = -L$(PAPI_PATH)/libpapi.so.5.3 -l:libpapi.so.5.3 -Wl,-rpath,$(PAPI_PATH)
 
 CFLAGS = -Wall -g
 CPPFLAGS = -Wall -std=c++11
@@ -16,8 +16,8 @@ METADATA_FLAGS = -lrt $(COMMON)
 MEMORY_FLAGS = -lrt $(COMMON)
 MEMORYV2_FLAGS = -lrt -DV2 -DREGULAR_STRIDE=64 -DRANDOM_STRIDE=512 -DBANDWIDTH_SCALE=100000 $(COMMON)
 
-DHRYSTONE_FLAGS = -m64 -lrt -lc -lm
-WHETSTONE_FLAGS = -m64 -lrt -lc -lm
+DHRYSTONE_FLAGS = -m64 -lrt -lc -lm -DCOUNTERS $(COMMON)
+WHETSTONE_FLAGS = -m64 -lrt -lc -lm -DCOUNTERS $(COMMON)
 LIVERMORE_FLAGS = -m64 -lrt -lc -lm
 LINPACK_FLAGS = -m64 -lrt -lc -lm
 
@@ -84,12 +84,12 @@ memoryV2_interfere.o: memory.cpp
 	$(CPP) $(CPPFLAGS) memory.cpp $(MEMORYV2_FLAGS) -DINTERFERE -c -o memoryV2_interfere.o
 
 # Dhrystone
-dhrystone: dhry_1.c dhry_2.c cpuidc64.o
-	$(CC) dhry_1.c dhry_2.c cpuidc64.o $(DHRYSTONE_FLAGS) -o dhrystone
+dhrystone: dhry_1.c dhry_2.c cpuidc64.o $(PAPI_OBJS)
+	$(CC) dhry_1.c dhry_2.c cpuidc64.o $(PAPI_OBJS) $(DHRYSTONE_FLAGS) -o dhrystone
 
 # Whetstone
-whetstone: whets.c cpuidc64.o
-	$(CC) whets.c cpuidc64.o $(WHETSTONE_FLAGS) -o whetstone
+whetstone: whets.c cpuidc64.o $(PAPI_OBJS)
+	$(CC) whets.c cpuidc64.o $(PAPI_OBJS) $(WHETSTONE_FLAGS) -o whetstone
 
 # Livermore loops
 lloops: lloops.c cpuidc64.o
@@ -110,8 +110,8 @@ papi_counters.o: papi_counters.c papi_util.h
 	$(CC) $(CFLAGS) papi_counters.c $(PAPI_FLAGS) -c -o papi_counters.o
 
 # Perf counters
-perf_counters.o: perf_counters.c perf_counters.h papi_util.h
-	$(CC) $(CFLAGS) perf_counters.c -c -o perf_counters.o
+perf_counters.o: perf_counters.c perf_counters.h papi_util.h papi_util.o
+	$(CC) $(CFLAGS) perf_counters.c $(PAPI_FLAGS) -c -o perf_counters.o
 
 test: test.c $(PAPI_OBJS)
 	$(CC) $(CFLAGS) $(PAPI_OBJS) test.c $(COMMON) -o test

@@ -60,6 +60,9 @@ int create_counters(struct papi_counters **counters, char **names, int *events, 
     for (int i = 0; i < len; i++) {
         (*counters)->accum[i] = 0.0;
     }
+
+    (*counters)->elapsed_time = 0;
+    (*counters)->temp_time = 0;
     (*counters)->state = INITIALIZED;
     return 0;
 
@@ -127,6 +130,8 @@ int start_counters(papi_counters_t *counters) {
     for (int i = 0; i < counters->n_counters; i++) {
         counters->values[i] = 0;
     }
+    
+    counters->temp_time = PAPI_get_virt_usec();
 
     int ret = PAPI_start_counters(counters->events, counters->n_counters);
     if (ret != PAPI_OK) {
@@ -152,6 +157,11 @@ int accum_counters(papi_counters_t *counters) {
     if (counters->state != RUNNING) {
         return -1;
     }
+
+    // Update the elapsed time
+    long long int temp = PAPI_get_virt_usec();
+    counters->elapsed_time += temp - counters->temp_time;
+    counters->temp_time = temp;
 
     int ret;
     ret = PAPI_read_counters(counters->values, counters->n_counters);
@@ -181,6 +191,10 @@ int stop_counters(papi_counters_t *counters) {
     if (counters->state != RUNNING) {
         return 0;
     }
+
+    long long int temp = PAPI_get_virt_usec();
+    counters->elapsed_time += temp - counters->temp_time;
+    counters->temp_time = temp;
 
     int ret;
     ret = PAPI_stop_counters(counters->values, counters->n_counters);

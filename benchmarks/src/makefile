@@ -12,7 +12,7 @@ PAPI_OBJS = papi_util.o papi_counters.o perf_counters.o
 
 STREAM_FLAGS = -O2 $(COMMON) -DCOUNTERS
 STREAMV2_FLAGS = -O0 $(COMMON)
-METADATA_FLAGS = -lrt $(COMMON)
+METADATA_FLAGS = -lrt $(COMMON) -DCOUNTERS
 MEMORY_FLAGS = -lrt -DCOUNTERS $(COMMON)
 MEMORYV2_FLAGS = -lrt -DCOUNTERS -DV2 -DREGULAR_STRIDE=64 -DRANDOM_STRIDE=512 -DBANDWIDTH_SCALE=100000 $(COMMON)
 
@@ -49,7 +49,7 @@ streamV2_interfere: stream.c $(PAPI_OBJS)
 
 # Metadata
 metadata: metadata.cpp $(PAPI_OBJS)
-	$(CPP) $(CPPFLAGS) metadata.cpp $(METADATA_FLAGS) -o metadata
+	$(CPP) $(CPPFLAGS) metadata.cpp $(PAPI_OBJS) $(METADATA_FLAGS) -o metadata
 
 metadata_interfere: metadata.cpp
 	$(CPP) $(CPPFLAGS) metadata.cpp $(METADATA_FLAGS) -DINTERFERE -o metadata_interfere

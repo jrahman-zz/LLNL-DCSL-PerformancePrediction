@@ -10,6 +10,52 @@
 #include <sstream>
 #include <iostream>
 
+/**
+ *  * Custom PAPI performance counters are only reported
+ *   * if requested upon compilation
+ *    */
+#ifdef COUNTERS
+#include "perf_counters.h"
+#define INIT_COUNTERS(counters) do {                \
+    if (init_perf_counters(&(counters)) != 0) {     \
+        printf("Failed to init counters\n");        \
+        return 1;                                   \
+    }                                               \
+} while (0)
+#define START_COUNTERS(counters) do {               \
+    if (start_perf_counters(counters) != 0) {       \
+        printf("Failed to start counters\n");       \
+        return 1;                                   \
+    }                                               \
+} while (0)
+#define END_COUNTERS(counters) do {                 \
+    int ret = stop_perf_counters(counters);         \
+    if (ret != 0) {                                 \
+        printf("Failed to stop counters, %d\n", ret);   \
+        return 1;                                   \
+    }                                               \
+} while (0)
+#define PRINT_COUNTERS(counters) do {               \
+    if(print_perf_counters(counters) != 0) {        \
+        printf("Failed to collect counter data");    \
+        return 1;                                   \
+    }                                               \
+} while(0)
+#define FREE_COUNTERS(counters) free_perf_counters(counters)
+#define RESET_COUNTERS(counters) reset_perf_counters(counters)
+perf_counters_t *counters;
+#else
+#define INIT_COUNTERS(counters)
+#define START_COUNTERS(counters)
+#define END_COUNTERS(counters)
+#define PRINT_COUNTERS(counters)
+#define FREE_COUNTERS(counters)
+#define RESET_COUNTERS(counters)
+int counters;
+#endif
+
+
+
 #define FILE_COUNT 1000
 #define MAX_NAME_LEN 1000
 
@@ -174,12 +220,16 @@ int run_benchmark(char *basedir, int repetitions) {
         }        
     }
 
+    INIT_COUNTERS(counters);
+
     struct timespec start, stop;
     for (int i = 0; i < repetitions; i++) {
         
+        START_COUNTERS(counters);
         clock_gettime(CLOCK_MONOTONIC, &start);
         ret = run_instance();
         clock_gettime(CLOCK_MONOTONIC, &stop);
+        END_COUNTERS(counters);
 
         if (ret != 0) {
             std::cout << "Run " << i << " failed" << std::endl;
@@ -212,8 +262,11 @@ int run_benchmark(char *basedir, int repetitions) {
                          << ", mean: " << mean
                          << ", p90: " << p90 << std::endl;
 
+    PRINT_COUNTERS(counters);
+
     ret = 0;
 cleanup:
+    FREE_COUNTERS(counters);
     if (results != NULL) {
         delete results;
     }

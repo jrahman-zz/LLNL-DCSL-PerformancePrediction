@@ -13,13 +13,13 @@ PAPI_OBJS = papi_util.o papi_counters.o perf_counters.o
 STREAM_FLAGS = -O2 $(COMMON) -DCOUNTERS
 STREAMV2_FLAGS = -O0 $(COMMON)
 METADATA_FLAGS = -lrt $(COMMON)
-MEMORY_FLAGS = -lrt $(COMMON)
-MEMORYV2_FLAGS = -lrt -DV2 -DREGULAR_STRIDE=64 -DRANDOM_STRIDE=512 -DBANDWIDTH_SCALE=100000 $(COMMON)
+MEMORY_FLAGS = -lrt -DCOUNTERS $(COMMON)
+MEMORYV2_FLAGS = -lrt -DCOUNTERS -DV2 -DREGULAR_STRIDE=64 -DRANDOM_STRIDE=512 -DBANDWIDTH_SCALE=100000 $(COMMON)
 
 DHRYSTONE_FLAGS = -m64 -lrt -lc -lm -DCOUNTERS $(COMMON)
 WHETSTONE_FLAGS = -m64 -lrt -lc -lm -DCOUNTERS $(COMMON)
 LIVERMORE_FLAGS = -m64 -lrt -lc -lm
-LINPACK_FLAGS = -m64 -lrt -lc -lm
+LINPACK_FLAGS = -m64 -lrt -lc -lm -DCOUNTERS $(COMMON)
 
 PAPI_FLAGS = -std=c99 $(COMMON)
 
@@ -56,7 +56,7 @@ metadata_interfere: metadata.cpp
 
 # Memory
 memory: memory.o identity.o $(PAPI_OBJS)
-	$(CPP) $(CPPFLAGS) $(PAPI_OBJS) memory.o identity.o $(MEMORY_FLAGS) -o memory
+	$(CPP) $(CPPFLAGS) memory.o identity.o $(PAPI_OBJS) $(MEMORY_FLAGS) -o memory
 
 memory_interfere: memory_interfere.o identity.o
 	$(CPP) $(CPPFLAGS) memory_interfere.o identity.o $(MEMORY_FLAGS) -o memory_interfere
@@ -96,8 +96,8 @@ lloops: lloops.c cpuidc64.o
 	$(CC) lloops.c cpuidc64.o $(LIVERMORE_FLAGS) -o lloops
 
 # Linpack
-linpack: linpack.c cpuidc64.o
-	$(CC) linpack.c cpuidc64.o $(LINPACK_FLAGS) -g -o linpack
+linpack: linpack.c cpuidc64.o $(PAPI_OBJS)
+	$(CC) linpack.c cpuidc64.o $(PAPI_OBJS) $(LINPACK_FLAGS) -g -o linpack
 
 cpuidc64.o:
 	$(CC) cpuidc64.c -c

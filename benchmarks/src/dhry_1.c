@@ -51,17 +51,17 @@
     }                                               \
 } while (0)
 #define END_COUNTERS(counters) do {                 \
-        int ret = stop_perf_counters(counters);         \
-        if (ret != 0) {                                 \
-                    printf("Failed to stop counters, %d\n", ret);   \
-                    return 1;                                   \
-                }                                               \
+    int ret = stop_perf_counters(counters);         \
+    if (ret != 0) {                                 \
+        printf("Failed to stop counters, %d\n", ret);   \
+        return 1;                                   \
+    }                                               \
 } while (0)
 #define PRINT_COUNTERS(counters) do {               \
-        if(print_perf_counters(counters) != 0) {        \
-                    printf("Failed to collect counter data");    \
-                    return 1;                                   \
-                }                                               \
+    if(print_perf_counters(counters) != 0) {        \
+        printf("Failed to collect counter data");    \
+        return 1;                                   \
+    }                                               \
 } while(0)
 #define FREE_COUNTERS(counters) free_perf_counters(counters)
 #define RESET_COUNTERS(counters) reset_perf_counters(counters)
@@ -491,9 +491,6 @@ int main (int argc, char *argv[])
      printf ("%12.2lf \n",Vax_Mips);
      printf ("\n");
 
-     PRINT_COUNTERS(counters);
-
-
 /************************************************************************
  *                Add results to output file Dhry.txt                   *
  ************************************************************************/
@@ -623,11 +620,12 @@ int main (int argc, char *argv[])
        fprintf (Ap, "\n");
    }
                  
-   fclose(Ap);
+   //fclose(Ap);
    }
+    PRINT_COUNTERS(counters);
     if (nopause)
     {
-       printf(" Press Enter\n\n");
+       //printf(" Press Enter\n\n");
        //int g = getchar();
     }
     return 0;

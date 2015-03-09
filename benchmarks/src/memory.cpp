@@ -13,8 +13,6 @@
 #include <sched.h>
 */
 
-#include "papi_util.h"
-#include "papi_counters.h"
 
 #include <stdio.h>
 #include <pthread.h>
@@ -30,6 +28,51 @@
 #include <string.h>
 #include <sstream>
 #include <iostream>
+
+
+/**
+ *  * Custom PAPI performance counters are only reported
+ *   * if requested upon compilation
+ *    */
+#ifdef COUNTERS
+#include "perf_counters.h"
+#define INIT_COUNTERS(counters) do {                \
+    if (init_perf_counters(&(counters)) != 0) {     \
+        printf("Failed to init counters\n");        \
+        return 1;                                   \
+    }                                               \
+} while (0)
+#define START_COUNTERS(counters) do {               \
+    if (start_perf_counters(counters) != 0) {       \
+        printf("Failed to start counters\n");       \
+        return 1;                                   \
+    }                                               \
+} while (0)
+#define END_COUNTERS(counters) do {                 \
+    int ret = stop_perf_counters(counters);         \
+    if (ret != 0) {                                 \
+        printf("Failed to stop counters, %d\n", ret);   \
+        return 1;                                   \
+    }                                               \
+} while (0)
+#define PRINT_COUNTERS(counters) do {               \
+    if(print_perf_counters(counters) != 0) {        \
+        printf("Failed to collect counter data");    \
+        return 1;                                   \
+    }                                               \
+} while(0)
+#define FREE_COUNTERS(counters) free_perf_counters(counters)
+#define RESET_COUNTERS(counters) reset_perf_counters(counters)
+perf_counters_t *counters;
+#else
+#define INIT_COUNTERS(counters)
+#define START_COUNTERS(counters)
+#define END_COUNTERS(counters)
+#define PRINT_COUNTERS(counters)
+#define FREE_COUNTERS(counters)
+#define RESET_COUNTERS(counters)
+int counters;
+#endif
 
 // Add tuning parameters
 
@@ -100,7 +143,7 @@ void printTimespec(struct timespec& ts_start, struct timespec& ts_stop, char* ap
 }
 
 
-void measurement_bandwidth(long long int n_, int CPU_, int repeat) {
+int measurement_bandwidth(long long int n_, int CPU_, int repeat) {
 
   // int n_counters = 3;
   // int Events[3] = { PAPI_L3_TCR, PAPI_L3_TCA,  PAPI_L3_TCM};
@@ -208,6 +251,7 @@ void measurement_bandwidth(long long int n_, int CPU_, int repeat) {
   // }
   
   struct timespec ts_start, ts_stop;
+  START_COUNTERS(counters);
   clock_gettime(CLOCK_MONOTONIC, &ts_start);
 
   for (int i=0; i<repeat; ++i) {
@@ -272,7 +316,9 @@ void measurement_bandwidth(long long int n_, int CPU_, int repeat) {
   // time_new = PAPI_get_real_usec();
   
   clock_gettime(CLOCK_MONOTONIC, &ts_stop);
+  END_COUNTERS(counters);
   printTimespec(ts_start, ts_stop, app);
+  PRINT_COUNTERS(counters);
   
   // //average_time += (time_new - time_old);
   // if(CPU_ == 0) {
@@ -348,11 +394,13 @@ void measurement_bandwidth(long long int n_, int CPU_, int repeat) {
   free(vec_42);
   free(vec_43);
   free(vec_44);
+
+  return 0;
 }
 
 // n_ is the length of the loop 
 // size_ is the size of the vectors being accessed in the contaminating routines
-void measurement_regular_access(long long int n_, int CPU_, int repeat) {
+int measurement_regular_access(long long int n_, int CPU_, int repeat) {
 
   // int n_counters = 3;
   // int Events[3] = {PAPI_L1_DCM, PAPI_L2_DCM, PAPI_L3_TCM};
@@ -390,28 +438,13 @@ void measurement_regular_access(long long int n_, int CPU_, int repeat) {
     vec_[k_] = 1;
   }
 
-// Only use the performance counters for benchmarks
-// Since we have a limited number of performance counters
-#ifndef INTERFERE
-  papi_counters_t *counters = create_miss_counters();
-  if (counters == NULL) {
-    fprintf(stderr, "Failed to create PAPI counters\n");
-    exit(1);
-  }
-#endif
-  
   fprintf(stderr, "CPU = %d n = %lld num_obs=%d\n", CPU_, n_, num_obs);
   
-#ifndef INTERFERE
-  // Start the HW counters
-  if (start_counters(counters) != 0) {
-    fprintf(stderr, "Failed to start counters\n");
-    exit(1);
-  }
-#endif
-
   struct timespec ts_start, ts_stop;
+  START_COUNTERS(counters);
   clock_gettime(CLOCK_MONOTONIC, &ts_start);
+
+  // Update the repeats based on the reduction in iterations from the 
 
   for (int j=0; j<repeat; ++j) {
     for(int i=0; i<num_obs; i++ ) {
@@ -420,7 +453,7 @@ void measurement_regular_access(long long int n_, int CPU_, int repeat) {
         // PAPI_read_counters(Values, n_counters);
         // time_old = PAPI_get_real_usec();
       // }
-      for( long long int k_=0; k_<n_; k_ += REGULAR_STRIDE) {
+      for( long long int k_=j; k_<n_; k_ += REGULAR_STRIDE) {
         //printf("%lld %lld %lld %lld\n", (k_*500)%n_, (k_*1000)%n_, 500*k_, n_);
         //Stride = 1 
         vec_[k_]++;
@@ -449,28 +482,21 @@ void measurement_regular_access(long long int n_, int CPU_, int repeat) {
     // average_time = 0;
   // }
   clock_gettime(CLOCK_MONOTONIC, &ts_stop);
+  END_COUNTERS(counters);
   printTimespec(ts_start, ts_stop, app);
-
-#ifndef INTERFERE
-  // Stop and print the PAPI counters
-  if(stop_counters(counters) != 0) {
-    fprintf(stderr, "Failed to stop counters");
-    exit(1);
-  }
-  print_counters(counters);
-  destroy_counters(counters);
-#endif
+  PRINT_COUNTERS(counters);
 
   free(vec_);
   // if(CPU_==0)
     // PAPI_shutdown();
+  return 0;
 }
 
 
 
 // n_ is the size of the vector 
 // size is the size of the vectors being accessed in the contaminating routines
-void measurement_random_access(long long int n_, int CPU_, int repeat) {
+int measurement_random_access(long long int n_, int CPU_, int repeat) {
 
   // int n_counters = 3;
   // int Events[3] = {PAPI_L1_DCM, PAPI_L2_DCM, PAPI_L3_TCM};
@@ -509,6 +535,7 @@ void measurement_random_access(long long int n_, int CPU_, int repeat) {
 
   int index;
   struct timespec ts_start, ts_stop;
+  START_COUNTERS(counters);
   clock_gettime(CLOCK_MONOTONIC, &ts_start);
 
   for (int j=0; j<repeat; ++j) {
@@ -561,15 +588,18 @@ void measurement_random_access(long long int n_, int CPU_, int repeat) {
 
   // }
   clock_gettime(CLOCK_MONOTONIC, &ts_stop);
+  END_COUNTERS(counters);
   printTimespec(ts_start, ts_stop, app);
+  PRINT_COUNTERS(counters);
 
   free(vec_);
+  return 0;
 }
 
 
 // n_ is the length of the loop 
 // size_ is the size of the vectors being accessed in the contaminating routines
-void compress_branch(long long int n_, int CPU_, int repeat) {
+int compress_branch(long long int n_, int CPU_, int repeat) {
 
   cpu_set_t mask;
   CPU_ZERO(&mask);
@@ -644,6 +674,7 @@ void compress_branch(long long int n_, int CPU_, int repeat) {
   fprintf(stderr, "CPU = %d n = %lld num_obs=%d\n", CPU_, n_, num_obs);
   
   struct timespec ts_start, ts_stop;
+  START_COUNTERS(counters);
   clock_gettime(CLOCK_MONOTONIC, &ts_start);
   
   for (int j=0; j<repeat; ++j) {
@@ -690,42 +721,49 @@ void compress_branch(long long int n_, int CPU_, int repeat) {
     // average_time = 0;
   // }
   clock_gettime(CLOCK_MONOTONIC, &ts_stop);
+  END_COUNTERS(counters);
   printTimespec(ts_start, ts_stop, app);
+  PRINT_COUNTERS(counters);
 
   free(vec_);
   free(positions);
   // if(CPU_==0)
     // PAPI_shutdown();
+  return 0;
 }
 
 int main(int argc, char **argv)
 {
-
-  app = (char*) malloc(strlen(argv[0]) + strlen(argv[1]) + 1);
-  strcpy(app, argv[0]);
-  strcat(app, argv[1]);
-
+ 
   if(argc!=4) {
     printf("%s <benchmark: 0 bandwidth, 1 regular access, 2 random access, 3 branches> <size>\n", argv[0]);
     exit(-1);
   }
 
+  app = (char*) malloc(strlen(argv[0]) + strlen(argv[1]) + 1);
+  strcpy(app, argv[0]);
+  strcat(app, argv[1]);
+
   int option;
   long long int size;
   int repeat;
 
-
   option = atoi(argv[1]);
   size   = atoll(argv[2]); 
   repeat = atoi(argv[3]);
+ 
+  INIT_COUNTERS(counters);
 
-  
+  int ret;
   if(option == 0)
-    measurement_bandwidth(size, 0, repeat);
+    ret = measurement_bandwidth(size, 0, repeat);
   else if (option == 1)
-    measurement_regular_access(size, 0, repeat);
+    ret = measurement_regular_access(size, 0, repeat);
   else if (option == 2)
-    measurement_random_access(size, 0, repeat);
+    ret = measurement_random_access(size, 0, repeat);
   else if (option == 3)
-    compress_branch(size, 0, repeat);
+    ret = compress_branch(size, 0, repeat);
+
+  FREE_COUNTERS(counters);
+  return ret;
 }

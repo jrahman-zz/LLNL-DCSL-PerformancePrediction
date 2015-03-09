@@ -5,6 +5,10 @@
 
 #define CACHE
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef papi_counters_t perf_counters_t;
 
 int init_perf_counters(perf_counters_t **counters);
@@ -34,5 +38,9 @@ int free_perf_counters(perf_counters_t *counters);
  * Print collected performance information
  */
 int print_perf_counters(perf_counters_t *counters);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

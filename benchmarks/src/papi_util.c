@@ -218,7 +218,7 @@ int print_counters(struct papi_counters *counters) {
     }
 
     for (int i = 0; i < counters->n_counters; i++) {
-        fprintf(stdout, "%s: %lld\n", counters->names[i], counters->values[i]);
+        fprintf(stdout, "%s: %f\n", counters->names[i], counters->accum[i]);
     }
     return 0;
 }

@@ -17,6 +17,51 @@
  ***************************************************************************
 */
 
+
+/**
+ *  * Custom PAPI performance counters are only reported
+ *   * if requested upon compilation
+ *    */
+#ifdef COUNTERS
+#include "perf_counters.h"
+#define INIT_COUNTERS(counters) do {                \
+    if (init_perf_counters(&(counters)) != 0) {     \
+        printf("Failed to init counters\n");        \
+        return 1;                                   \
+    }                                               \
+} while (0)
+#define START_COUNTERS(counters) do {               \
+    if (start_perf_counters(counters) != 0) {       \
+        printf("Failed to start counters\n");       \
+        return 1;                                   \
+    }                                               \
+} while (0)
+#define END_COUNTERS(counters) do {                 \
+    int ret = stop_perf_counters(counters);         \
+    if (ret != 0) {                                 \
+        printf("Failed to stop counters, %d\n", ret);   \
+        return 1;                                   \
+    }                                               \
+} while (0)
+#define PRINT_COUNTERS(counters) do {               \
+    if(print_perf_counters(counters) != 0) {        \
+        printf("Failed to collect counter data");    \
+        return 1;                                   \
+    }                                               \
+} while(0)
+#define FREE_COUNTERS(counters) free_perf_counters(counters)
+#define RESET_COUNTERS(counters) reset_perf_counters(counters)
+perf_counters_t *counters;
+#else
+#define INIT_COUNTERS(counters)
+#define START_COUNTERS(counters)
+#define END_COUNTERS(counters)
+#define PRINT_COUNTERS(counters)
+#define FREE_COUNTERS(counters)
+#define RESET_COUNTERS(counters)
+int counters;
+#endif
+
  
 
 #define UNROLL
@@ -110,6 +155,7 @@ int main (int argc, char *argv[])
          }
         printf("\n");
 
+        INIT_COUNTERS(counters);
         outfile = stdout;        
         /*getDetails();
         for (i=1; i<10; i++)
@@ -363,6 +409,7 @@ int main (int argc, char *argv[])
 
         for (j=7 ; j<12 ; j++)
         {
+            START_COUNTERS(counters);
             start_time();
             for (i = 0; i < ntimes; i++)
             {
@@ -370,14 +417,17 @@ int main (int argc, char *argv[])
                 dgefa(aa,ldaa,n,ipvt,&info  );
             }
             end_time();
+            END_COUNTERS(counters);
             atime[0][j] = (secs - tm2)/ntimes;
             
+            START_COUNTERS(counters);
             start_time();      
             for (i = 0; i < ntimes; i++)
             {
                 dgesl(aa,ldaa,n,ipvt,b,0);
             }
             end_time();
+            END_COUNTERS(counters);
             atime[1][j] = secs/ntimes;
             total       = atime[0][j] + atime[1][j];
             atime[2][j] = total;
@@ -500,7 +550,7 @@ int main (int argc, char *argv[])
     
     //fclose (outfile);
     printf ("\n");
-
+    PRINT_COUNTERS(counters);
     if (nopause)
     {
        printf(" Press Enter\n\n");

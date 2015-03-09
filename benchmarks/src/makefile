@@ -38,21 +38,21 @@ stream: stream.c $(PAPI_OBJS)
 	$(CC) $(CFLAGS) stream.c $(PAPI_OBJS) $(STREAM_FLAGS) -o stream
 
 stream_interfere: stream.c $(PAPI_OBJS)
-	$(CC) $(CFLAGS) stream.c $(STREAM_FLAGS) -DINTERFERE -o stream_interfere
+	$(CC) $(CFLAGS) stream.c $(PAPI_OJBS) $(STREAM_FLAGS) -DINTERFERE -o stream_interfere
 
 # Stream V2
 streamV2: stream.c $(PAPI_OBJS)
 	$(CC) $(CFLAGS) stream.c $(PAPI_OBJS) $(STREAMV2_FLAGS) -DNTIMES=100000 -o streamV2
 
 streamV2_interfere: stream.c $(PAPI_OBJS)
-	$(CC) $(CFLAGS) stream.c $(STREAMV2_FLAGS) -DINTERFERE -DNTIMES=100000 -o streamV2_interfere
+	$(CC) $(CFLAGS) stream.c $(PAPI_OBJS) $(STREAMV2_FLAGS) -DINTERFERE -DNTIMES=100000 -o streamV2_interfere
 
 # Metadata
 metadata: metadata.cpp $(PAPI_OBJS)
 	$(CPP) $(CPPFLAGS) metadata.cpp $(PAPI_OBJS) $(METADATA_FLAGS) -o metadata
 
-metadata_interfere: metadata.cpp
-	$(CPP) $(CPPFLAGS) metadata.cpp $(METADATA_FLAGS) -DINTERFERE -o metadata_interfere
+metadata_interfere: metadata.cpp $(PAPI_OBJS)
+	$(CPP) $(CPPFLAGS) metadata.cpp $(PAPI_OBJS) $(METADATA_FLAGS) -DINTERFERE -o metadata_interfere
 
 # Memory
 memory: memory.o identity.o $(PAPI_OBJS)

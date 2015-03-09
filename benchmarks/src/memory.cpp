@@ -30,6 +30,10 @@
 #include <iostream>
 
 
+#ifdef INTERFERE
+#undef COUNTERS
+#endif
+
 /**
  *  * Custom PAPI performance counters are only reported
  *   * if requested upon compilation

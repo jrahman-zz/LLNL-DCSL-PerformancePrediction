@@ -46,6 +46,10 @@
 # include <limits.h>
 # include <sys/time.h>
 
+#ifdef INTERFERE
+#undef COUNTERS
+#endif
+
 /**
  * Custom PAPI performance counters are only reported
  * if requested upon compilation

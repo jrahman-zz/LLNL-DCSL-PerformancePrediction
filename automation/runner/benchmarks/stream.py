@@ -40,6 +40,13 @@ class StreamInterfere(Interference):
         self._cmd = self._benchmark_dir + '/stream_interfere'
         self._name = 'stream_' + self._bmark.lower()
 
+class Stream(StreamBenchmark):
+    def __init__(self, environ, cores=[0], instance=1):
+        self._bmark = '' # Full stream suite
+        StreamBenchmark.__init__(self, environ, 0, cores)
+
+# TODO class StreamInterfere
+
 class StreamCopy(StreamBenchmark):
     def __init__(self, environ, cores=[0], instance=1):
         self._bmark = 'Copy'

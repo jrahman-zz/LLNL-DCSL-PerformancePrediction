@@ -85,8 +85,8 @@ class InterferenceThread(Greenlet):
             DEVNULL = open(os.devnull, 'wb')
 
         cores = ','.join(map(lambda x: str(x), self._cores))
-        args = ['nice', '-%s' % (self._nice), 'taskset', '-c', cores, self._cmd] + self._params
-        prog = args[5].split('/')[-1]
+        args = ['taskset', '-c', cores, 'nice', '-n', str(self._nice), self._cmd] + self._params
+        prog = args[6].split('/')[-1]
         while self._keep_running:
             logging.info('Starting new %s process...', prog)
             self._process = subprocess.Popen(args, stdout=DEVNULL, stderr=subprocess.STDOUT)

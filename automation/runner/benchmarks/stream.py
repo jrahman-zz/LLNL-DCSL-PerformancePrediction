@@ -114,7 +114,7 @@ Failed Validation on array a[]
 -------------------------------------------------------------
 """
 
-    benchmark = StreamCopy({'benchmark_dir': ''})
+    benchmark = StreamCopy({'benchmark_dir': '', 'data_dir': ''})
     output = benchmark._process_output(test)
 
     if not output['bandwidth'] == 11024.9489:

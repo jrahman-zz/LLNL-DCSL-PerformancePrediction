@@ -1,7 +1,7 @@
 {
     "Spec": {
-        "script_dir": "./../../..//applications/spec_cpu2006",
-        "application_dir": "/home/jprahman/llnl//SPEC2006",
+        "script_dir": "${SOURCE_BASE}/applications/spec_cpu2006",
+        "application_dir": "${APPLICATION_BASE}/SPEC2006",
         "subapplications": [
             "Perlbench",
             "Bzip",

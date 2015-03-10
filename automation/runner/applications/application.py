@@ -54,6 +54,7 @@ class Application():
 
         logging.info('Loading application: %s', str(self))
         try:
+            print cmd
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT )
         except subprocess.CalledProcessError as e:
             logging.error('Loading application %s failed, output: %s', str(self), e.output)

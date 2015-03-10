@@ -78,8 +78,13 @@ for INSTANCE in `seq ${INSTANCES}`; do
     fi
 done
 
+echo "Interference: ${INTERFERENCE}"
+echo "Apps: ${APPS}"
+echo "Output path: ${OUTPUT_PATH}"
+echo "Base directory: ${BASE_DIR}"
+
 echo "Starting run..."
-python ${BASE_DIR}/run.py --applications "${APPS}" --interference "${INTERFERENCE}" --output ${OUTPUT_PATH} --config "${BASE_DIR}/config.json"
+python ${BASE_DIR}/run.py --applications "${APPS}" --interference "${INTERFERENCE}" --output ${OUTPUT_PATH} --config "${BASE_DIR}"
 if [ $? -ne 0 ]; then
     echo "Run failed"
     exit 8

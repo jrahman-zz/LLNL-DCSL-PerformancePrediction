@@ -4,8 +4,8 @@ import benchmarks
 def load_thread(module, module_name, thread_name):
     """ Load a specfic interference thread class from a module """
 
-    thread_module = getattr(module, module_name)
-    thread_class = getattr(thread_module, thread_name)
+    module = getattr(module.runner.benchmarks, module_name)
+    thread_class = getattr(module, thread_name)
     
     return thread_class
 
@@ -22,13 +22,13 @@ def load_interference(environ):
     for thread_module in threads:
         
         logging.debug('Loading interfence module %s', thread_module)
-        module_name = 'benchmarks.' + thread_module.lower()
+        module_name = 'automation.runner.benchmarks.' + thread_module.lower()
         module = None
         try:
             module = __import__(module_name)
         except Exception as e:
             logging.warning('Failed to load interference module %s: %s', module_name, str(e))
-            break
+            raise
 
         # Collect all the thread names in this module
         # Then collect the classes at the end
@@ -59,7 +59,8 @@ def load_interference(environ):
                 cls = load_thread(module, thread_module.lower(), class_name)
                 interference[thread_name] = cls
             except Exception as e:
-                logging.warning('Failed to load benchmark %s: %s', thread_name, str(e))
+                logging.warning('Failed to load interference %s: %s', thread_name, str(e))
+                raise
 
     # Add dummy interference
     import benchmarks.dummy

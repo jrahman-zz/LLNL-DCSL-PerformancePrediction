@@ -2,7 +2,6 @@
 import importlib
 import logging
 import json
-import applications
 
 def load_applications(environ):
     logging.debug('Loading applications...')
@@ -10,12 +9,13 @@ def load_applications(environ):
     applications = {}
 
     appconfig = environ['applications']
+
     for application in appconfig.keys():
-        module_name = 'applications.' + application.lower()
+        module_name = 'automation.runner.applications.' + application.lower()
         if 'subapplications' not in appconfig[application]:
             logging.debug('Loading app %s from module %s', application, module_name)
             try:
-                module = __import__(module_name)
+                m = __import__(module_name)
                 app_module = getattr(module, application.lower())
                 app_class = getattr(app_module, application)
                 applications[application] = app_class

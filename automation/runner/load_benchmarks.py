@@ -6,7 +6,7 @@ import benchmarks
 def load_benchmark(module, module_name, benchmark_name):
     """ Load a specfic benchmark class from a module """
 
-    bmark_module = getattr(module, module_name)
+    bmark_module = getattr(module.runner.benchmarks, module_name)
     bmark_class = getattr(bmark_module, benchmark_name)
     
     return bmark_class
@@ -24,13 +24,13 @@ def load_benchmarks(environ):
     for bmark_module in benchmarks:
         
         logging.debug('Loading benchmark module %s', bmark_module)
-        module_name = 'benchmarks.' + bmark_module.lower()
+        module_name = 'automation.runner.benchmarks.' + bmark_module.lower()
         module = None
         try:
             module = __import__(module_name)
         except Exception as e:
             logging.warning('Failed to load benchmark module %s: %s', module_name, str(e))
-            break
+            raise
 
         # Collect all the benchmark names in this module
         # Then collect the classes at the end
@@ -61,5 +61,6 @@ def load_benchmarks(environ):
                 bmarks[bmark_name] = cls
             except Exception as e:
                 logging.warning('Failed to load benchmark %s: %s', bmark_name, str(e))
+                raise
 
     return bmarks

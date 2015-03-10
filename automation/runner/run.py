@@ -84,8 +84,8 @@ def create_interference_environment(interference_spec, environ, applications, in
 
 def parse_interference(interference_spec):
     """ Break the Name:Cores:Coloc:Nice quad into a tuple """
+    logging.info('Interference spec: %s', interference_spec)
     components = interference_spec.split(':')
-    print interference_spec
     name = str(components[0])
     cores = int(components[1])
     coloc_level = int(components[2])
@@ -123,10 +123,11 @@ def create_config(environ, application_list, interference_specs):
     applications = map(lambda key: apps[key](environ, app_cores, client_cores[0]), application_list)
     return (applications, benchmarks, threads)
     
-def run_experiement(interfence_specs, application_list, config_path, output_path):
+def run_experiement(interference_specs, application_list, config_path, output_path):
 
     modules=['applications.json', 'benchmarks.json', 'interference.json']
-    environ = load_environ(config_path, modules)
+    modules = map(lambda x: "%s/%s" % (config_path, x), modules)
+    environ = load_environ("%s/config.json" % config_path, modules)
    
     logging.info('Building configuration')
     (apps, bmarks, threads) = create_config(environ, application_list, interference_specs)

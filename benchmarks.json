@@ -1,0 +1,36 @@
+{
+    "Stream": {
+        "Copy": [],
+        "Scale": [],
+        "Triad": [],
+        "Add": []
+    },
+
+    "Memory": {
+        "Stream": [
+            "1K",
+            "1M",
+            "256M"
+        ],
+        "Random": [
+            "1K",
+            "1M"
+        ]
+    },
+
+    "IOBench": {
+        "Read": [
+            "1M",
+            "4M",
+            "128M"
+        ],
+        "Write": [
+            "1M",
+            "4M",
+            "128M"
+        ]
+    },
+
+    "Metadata": {        
+    }
+}

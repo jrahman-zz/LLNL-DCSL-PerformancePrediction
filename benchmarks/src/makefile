@@ -38,7 +38,7 @@ stream: stream.c $(PAPI_OBJS)
 	$(CC) $(CFLAGS) stream.c $(PAPI_OBJS) $(STREAM_FLAGS) -o stream
 
 stream_interfere: stream.c $(PAPI_OBJS)
-	$(CC) $(CFLAGS) stream.c $(PAPI_OJBS) $(STREAM_FLAGS) -DINTERFERE -o stream_interfere
+	$(CC) $(CFLAGS) stream.c $(PAPI_OJBS) $(STREAM_FLAGS) -DINTERFERE -DNTIMES=1000 -o stream_interfere
 
 # Stream V2
 streamV2: stream.c $(PAPI_OBJS)

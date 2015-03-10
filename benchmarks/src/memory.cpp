@@ -30,6 +30,14 @@
 #include <iostream>
 
 
+/**
+ * Super simple LSFR random number generator
+ */
+unsigned int lfsr = 11000;
+#define MASK 0xd0000001u
+#define rand (lfsr = (lfsr >> 1) ^ (unsigned int) \
+        (0 - (lfsr & 1u) & MASK))
+
 #ifdef INTERFERE
 #undef COUNTERS
 #endif
@@ -225,7 +233,7 @@ int measurement_bandwidth(long long int n_, int CPU_, int repeat) {
   if(vec_==0)
     printf("Error Allocating Memory\n");
 
-  long long int num_obs = 1000000000/n_;
+  long long int num_obs = 100000000/n_;
   long long int freq_bubbles = 10000;
   long long int bubble_size  = 1000; 
   double b=0;
@@ -433,7 +441,7 @@ int measurement_regular_access(long long int n_, int CPU_, int repeat) {
   if(vec_==0)
     printf("Error Allocating Memory\n");
 
-  int num_obs = 1000000000/n_;
+  int num_obs = 100000000/n_;
   if(num_obs<1)
     num_obs=1;
 
@@ -527,17 +535,17 @@ int measurement_random_access(long long int n_, int CPU_, int repeat) {
   if(vec_==0) 
     printf("Error Allocating Memory\n");
 
-  int num_obs = 10000000/n_;
+  int num_obs = 100000000/n_;
   if(num_obs<1)
     num_obs=1;
   //WARM-UP
   for(int k_=0; k_<n_; k_++) {
     vec_[k_] = 1;
   }
-  srand ( time(NULL) );
+  //srand ( time(NULL) );
   fprintf(stderr, "CPU = %d n = %lld num_obs=%d\n", CPU_, n_, num_obs);
 
-  int index;
+  unsigned index;
   struct timespec ts_start, ts_stop;
   START_COUNTERS(counters);
   clock_gettime(CLOCK_MONOTONIC, &ts_start);
@@ -556,9 +564,10 @@ int measurement_random_access(long long int n_, int CPU_, int repeat) {
 
         //Stride = 3000000 
         //vec_[(3736503*k_)%n_]++;
-        index = rand();
+        index = rand;
         vec_[index%n_] += index;
         #ifdef V2
+        // Induce additional pressure by triggering the prefetcher if in V2 config
         vec_[(index+RANDOM_STRIDE)%n_] += vec_[((unsigned int)vec_[index%n_])%n_];
         vec_[(index+2*RANDOM_STRIDE)%n_] += vec_[((unsigned int)vec_[2*index%n_])%n_];
         vec_[(index+3*RANDOM_STRIDE)%n_] += vec_[((unsigned int)vec_[3*index%n_])%n_];

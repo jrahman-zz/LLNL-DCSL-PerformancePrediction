@@ -397,16 +397,16 @@ checktick()
 
 /* A gettimeofday routine to give access to the wall
    clock timer on most UNIX-like systems.  */
-
+#define __USE_BSD
 #include <sys/time.h>
 
 double mysecond()
 {
         struct timeval tp;
-        struct timezone tzp;
+        //struct timezone tzp;
         int i;
 
-        i = gettimeofday(&tp,&tzp);
+        i = gettimeofday(&tp,NULL);
         return ( (double) tp.tv_sec + (double) tp.tv_usec * 1.e-6 );
 }
 

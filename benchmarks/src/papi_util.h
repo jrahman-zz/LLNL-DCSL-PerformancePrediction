@@ -4,7 +4,6 @@
 #ifndef __cplusplus
 #include <stdlib.h>
 #include <stdio.h>
-#include <papi.h>
 #endif
 
 #define RUNNING         1

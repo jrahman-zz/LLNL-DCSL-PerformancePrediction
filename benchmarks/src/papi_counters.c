@@ -1,5 +1,8 @@
 #include "papi_counters.h"
 
+typedef char * caddr_t;
+#include <papi.h>
+
 papi_counters_t *create_miss_counters() {
     
     int events[] = {PAPI_L1_DCM, PAPI_L2_TCA, PAPI_L2_TCM, PAPI_L3_TCA, PAPI_L3_TCM};

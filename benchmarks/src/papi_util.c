@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+typedef char * caddr_t;
 #include <papi.h>
 
 /**

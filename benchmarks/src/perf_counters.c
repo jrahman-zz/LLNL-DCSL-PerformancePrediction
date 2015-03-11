@@ -1,6 +1,9 @@
 #include "perf_counters.h"
 #include "papi_util.h"
 
+typedef char * caddr_t;
+#include <papi.h>
+
 int init_perf_counters(perf_counters_t **counters) {
     int events[] = {
         PAPI_L2_TCA,

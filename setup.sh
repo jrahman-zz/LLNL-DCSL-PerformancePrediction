@@ -1,31 +1,29 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: run.sh INSTANCES INTEFERENCE APPS MODE OUTPUT_PATH DATA_BASE APP_BASE"
+    echo "Usage: run.sh INSTANCES MODE OUTPUT_PATH DATA_BASE APP_BASE"
 }
 
-if [ $# -ne 7 ]; then
+if [ $# -ne 6 ]; then
     usage
     exit 1
 fi
 
 
 INSTANCES=${1} # For multi-instance application and benchmark support
-INTERFERENCE=${2}
-APPS=${3}
-MODE=${4} # Testing or training
-OUTPUT_PATH=${5}
-DATA_BASE=${6}
-APP_BASE=${7}
+MODE=${2} # Testing or training
+OUTPUT_PATH=${3}
+DATA_BASE=${4}
+APP_BASE=${5}
 
 BASE_DIR=$(dirname $0)
-SOURCE_BASE="${BASE_DIR}/../../"
+SOURCE_BASE="${BASE_DIR}"
 
 # Build customize json files
-cp "${BASE_DIR}/config.json.template" config.json
-cp "${BASE_DIR}/applications.json.template" applications.json
-cp "${BASE_DIR}/benchmarks.json.template" benchmarks.json
-cp "${BASE_DIR}/interference.json.${MODE}" interference.json
+cp "${BASE_DIR}automation/runner/config.json.template" config.json
+cp "${BASE_DIR}/automation/runner/applications.json.template" applications.json
+cp "${BASE_DIR}/automation/runner/benchmarks.json.template" benchmarks.json
+cp "${BASE_DIR}/automation/runner/interference.json.${MODE}" interference.json
 
 PATTERN="s \\\${DATA_BASE} ${DATA_BASE} g"
 echo "${PATTERN}"
@@ -77,18 +75,6 @@ for INSTANCE in `seq ${INSTANCES}`; do
         exit 7
     fi
 done
-
-echo "Interference: ${INTERFERENCE}"
-echo "Apps: ${APPS}"
-echo "Output path: ${OUTPUT_PATH}"
-echo "Base directory: ${BASE_DIR}"
-
-echo "Starting run..."
-python ${BASE_DIR}/run.py --applications "${APPS}" --interference "${INTERFERENCE}" --output ${OUTPUT_PATH} --config "${BASE_DIR}"
-if [ $? -ne 0 ]; then
-    echo "Run failed"
-    exit 8
-fi
 
 echo "Cleaning up data directory: ${DATA_BASE}"
 rm -rf "${DATA_BASE}"

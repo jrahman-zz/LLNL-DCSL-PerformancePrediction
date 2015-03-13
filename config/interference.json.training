@@ -1,5 +1,10 @@
 {
-    "StreamV2": {
+    
+	"Stream": {
+		"Add": []
+	},
+
+	"StreamV2": {
         "Scale": [],
         "Add": []
     },

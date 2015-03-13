@@ -1,29 +1,41 @@
 #!/bin/bash
 
+
+#
+# Performs setup for a given run
+# 
+# 1. Copies configs and replaces placeholders
+# 2. Creates empty folders for metadata benchmark (if needed)
+# 3. Creates benchmark files for IOBench (if needed)
+#
+
 usage() {
-    echo "Usage: run.sh INSTANCES MODE OUTPUT_PATH DATA_BASE APP_BASE"
+    echo "Usage: setup.sh INSTANCES CONFIG INTERFERENCE_CONFIG BENCHMARK_CONFIG APP_CONFIG DATA_BASE APP_BASE"
 }
 
-if [ $# -ne 6 ]; then
+if [ $# -ne 7 ]; then
     usage
     exit 1
 fi
 
-
 INSTANCES=${1} # For multi-instance application and benchmark support
-MODE=${2} # Testing or training
-OUTPUT_PATH=${3}
-DATA_BASE=${4}
-APP_BASE=${5}
+CONFIG=${2}
+INTERFERENCE_CONFIG=${3}
+BENCHMARK_CONFIG=${4}
+APP_CONFIG=${5}
+DATA_BASE=${6}
+APP_BASE=${7}
 
 BASE_DIR=$(dirname $0)
 SOURCE_BASE="${BASE_DIR}"
 
+echo "Source Base: ${SOURCE_BASE}"
+
 # Build customize json files
-cp "${BASE_DIR}automation/runner/config.json.template" config.json
-cp "${BASE_DIR}/automation/runner/applications.json.template" applications.json
-cp "${BASE_DIR}/automation/runner/benchmarks.json.template" benchmarks.json
-cp "${BASE_DIR}/automation/runner/interference.json.${MODE}" interference.json
+cp "${CONFIG}" config.json
+cp "${APP_CONFIG}" applications.json
+cp "${BENCHMARK_CONFIG}" benchmarks.json
+cp "${INTERFERENCE_CONFIG}" interference.json
 
 PATTERN="s \\\${DATA_BASE} ${DATA_BASE} g"
 echo "${PATTERN}"
@@ -59,6 +71,8 @@ if [ $? -ne 0 ]; then
     exit 5
 fi
 
+echo "${SOURCE_BASE}/benchmarks/bin/iobench.jar"
+
 # Build temp files and directories for the benchmark
 for INSTANCE in `seq ${INSTANCES}`; do
     mkdir -p "${DATA_BASE}/metadata.${INSTANCE}"
@@ -68,19 +82,14 @@ for INSTANCE in `seq ${INSTANCES}`; do
     fi
 
     FILE="${DATA_BASE}/iobench.${INSTANCE}"
-    echo "${SOURCE_BASE}/benchmarks/bin"
-    java -classpath "${SOURCE_BASE}/benchmarks/bin/iobench.jar" Main create "${FILE}" 256M
-    if [ $? -ne 0 ]; then
-        echo "Failed to create ${FILE}"
-        exit 7
+    if [ ! -r "${FILE}" ]; then
+        echo "${SOURCE_BASE}/benchmarks/bin"
+        java -classpath "${SOURCE_BASE}/benchmarks/bin/iobench.jar" Main create "${FILE}" 256M
+        if [ $? -ne 0 ]; then
+           echo "Failed to create ${FILE}"
+           exit 7
+        fi
     fi
 done
-
-echo "Cleaning up data directory: ${DATA_BASE}"
-rm -rf "${DATA_BASE}"
-if [ $? -ne 0 ]; then
-    echo "Failed to cleanup data directory"
-    exit 9
-fi
 
 exit 0

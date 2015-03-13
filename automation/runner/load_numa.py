@@ -183,7 +183,7 @@ def available_collocation():
     return set(policies)
 
 def main():
-    print get_cores_new(2, [(0, 1), (0, 2), (1, 2)], [2])
+    print get_cores_new(2, [(1, 0), (1, 1), (1, 2)], [2])
 
 if __name__ == '__main__':
     main()

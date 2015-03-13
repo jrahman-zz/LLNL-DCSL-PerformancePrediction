@@ -1,1 +1,3 @@
-localhost   run     /home/jprahman/LLNL-DCSL-PerformancePrediction/automation/runner/run.sh null null null
+pbs		main     /g/g19/rahmanj/DCSL/main.sh null null null
+pbs		hostname	/bin/hostname	null null null
+pbs		echo 	/bin/echo	null null null

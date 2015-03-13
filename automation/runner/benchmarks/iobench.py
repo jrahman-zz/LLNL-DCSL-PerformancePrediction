@@ -1,7 +1,8 @@
-
-import re
 from benchmark import Benchmark
 from interference import Interference
+
+import re
+import logging
 
 class IOBenchmark(Benchmark):
     """ Base class for IOBench benchmarks """
@@ -34,6 +35,7 @@ class IOBenchmark(Benchmark):
         regex = regex % (self._operation, self._size, self._size)
         result = re.search(regex, output)
         if result == None:
+            logging.warning('Mismatch: %s', output)
             raise Exception('No match')
 
         features = {

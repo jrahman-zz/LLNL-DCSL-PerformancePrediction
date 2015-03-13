@@ -1,17 +1,12 @@
 <config xmlns="http://www.ci.uchicago.edu/swift/SwiftSites">
     <pool handle="pbs">
-        <execution jobmanager="local:pbs" provider="coaster" url="none" />
+        <execution provider="coaster" jobmanager="local:pbs" url="none" />
         <profile namespace="globus" key="jobsPerNode">1</profile>
         <profile namespace="globus" key="slots">40</profile>
-        <profile namespace="globus" key="maxWallTime">02:00:00</profile>
-        <profile namespace="globus" key="queue">batch</profile>
+        <profile namespace="globus" key="maxWallTime">04:00:00</profile>
+        <profile namespace="globus" key="queue">pbatch</profile>
         <profile namespace="globus" key="nodeGranularity">1</profile>
-    </pool>
-    <pool handle="localhost">
-        <execution jobmanager="local:local" provider="coaster" url="none" />
-        <profile namespace="globus" key="jobsPerNode">1</profile>
-        <profile namespace="globus" key="slots">40</profile>
-        <profile namespace="globus" key="maxWallTime">02:00:00</profile>
-        <profile namespace="globus" key="nodeGranularity">1</profile>
-    </pool>
+        <filesystem provider="local"/>
+        <workdirectory>/p/lscratche/rahman3/swift</workdirectory>
+	</pool>
 </config>

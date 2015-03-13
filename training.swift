@@ -2,14 +2,10 @@
 
 string interference[] = ["StreamV2Scale", "StreamV2Add", "MemoryV2Stream1K", "MemoryV2Stream256M", "MemoryV2Random1M", "IOBenchV2Read1M", "IOBenchV2Read128M", "IOBenchV2Write4M", "Metadata"];
 
-string apps = "SpecHRef,SpecGromacs";
-string appPath = @arg("appPath");
-string dataPath = @arg("dataPath");
+int reps = 1;
 
-int reps = 10;
-
-app (file output, file log) run (int rep, string interSpec, string apps, string dataPath, string appPath) {
-    run 2 interSpec apps "training" @filename(output) dataPath appPath stderr=@filename(log);
+app (file output, file log) run (int rep, string interSpec, string apps) {
+    main interSpec @filename(output) stderr=@filename(log);
 }
 
 (string threadSpec) createInterfereSpec(string threadName, int colocLevel, int niceLevel) {
@@ -21,7 +17,7 @@ file[string] output;
 file[string] logs;
 
 int count = 0;
-int colocLevels[] = [0:1];
+int colocLevels[] = [0:2];
 
 foreach rep in [1:reps] {
     foreach thread in interference {
@@ -35,9 +31,13 @@ foreach rep in [1:reps] {
             foreach niceLevel in niceLevels {
                 string threadspec = createInterfereSpec(thread, colocLevel, niceLevel);
                 string runspec = rep + ":" + threadspec;
-                file simout <single_file_mapper; file=strcat("output/run_", runspec, ".json")>;
-                file simlog <single_file_mapper; file=strcat("output/run_", runspec, ".stdout")>;
-                (simout, simlog) = run(rep, threadspec, apps, dataPath, appPath);
+                
+                string oname = strcat("output/run_", runspec, ".json");
+                file simout <single_file_mapper; file=name>;
+                
+                string lname = strcat("output/run_", runspec, ".stdout");
+                file simlog <single_file_mapper; file=lname>;
+                (simout, simlog) = run(threadspec);
                 output[runspec] = simout;
                 logs[runspec] = simlog;
             }

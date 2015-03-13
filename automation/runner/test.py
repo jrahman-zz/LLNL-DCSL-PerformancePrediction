@@ -83,16 +83,18 @@ def main():
     bmarks = load_benchmarks(environ)
     threads = load_interference(environ)
 
-    bmark1 = bmarks['IOBenchWrite1M'](environ, [1, 2], 1)
-    bmark2 = bmarks['IOBenchWrite4M'](environ, [1, 2], 2)
-    bmark1.run()
-    bmark2.run()
+    #bmark1 = bmarks['IOBenchWrite1M'](environ, [1, 2], 1)
+    #bmark2 = bmarks['IOBenchWrite4M'](environ, [1, 2], 2)
+    #bmark1.run()
+    #bmark2.run()
+    bmark = bmarks['Whetstone'](environ, [1, 2], 2)
+    bmark.run()
 
-    interference1 = threads['Metadata'](environ, [1, 2], [1], -5, 1)
+    #interference1 = threads['Metadata'](environ, [1, 2], [1], -5, 1)
     interference2 = threads['StreamAdd'](environ, [2], [1], 10, 2)
     interference3 = threads['StreamAdd'](environ, [1], [1], 10, 1)
 
-    interference = [interference1, interference2, interference3]
+    interference = [interference2, interference3]
     with contexter.ExitStack() as top_stack:
         for thread in interference:
             top_stack.enter_context(thread)
@@ -100,7 +102,7 @@ def main():
             for thread in interference:
                 stack.enter_context(thread.interfere())
             print('Starting to sleep...')
-            gevent.sleep(20)
+            gevent.sleep(10)
             print('Woke up')
     
 

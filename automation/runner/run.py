@@ -2,8 +2,8 @@ from load_environ import load_environ
 from load_applications import load_applications
 from load_benchmarks import load_benchmarks
 from load_interference import load_interference
-import load_numa
 
+import load_numa
 import argparse
 import logging
 import json
@@ -61,7 +61,7 @@ def get_args():
     parser.add_argument('--interference', help='Comma separated list of interfering applications and benchmarks', default='Dummy:1:1:0', type=str)
     parser.add_argument('--applications', help='Comma separated list of applications to run', default='all', type=str)
     parser.add_argument('--output', help='Output file path', default='output.json', type=str)
-    parser.add_argument('--config', help='Config file path', default='config.json', type=str)
+    parser.add_argument('--config', help='Config file path', default='.', type=str)
     return parser.parse_args()
 
 
@@ -143,6 +143,7 @@ def main():
     interference_specs = args.interference.split(',')
     application_list = args.applications.split(',')
     output_path = args.output
+    config_path = args.config
     run_experiement(interference_specs, application_list, config_path, output_path)
 
 if __name__ == '__main__':

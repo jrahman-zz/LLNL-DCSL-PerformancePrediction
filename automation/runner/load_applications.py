@@ -11,7 +11,7 @@ def load_applications(environ):
     appconfig = environ['applications']
 
     for application in appconfig.keys():
-        module_name = 'automation.runner.applications.' + application.lower()
+        module_name = 'applications.' + application.lower()
         if 'subapplications' not in appconfig[application]:
             logging.debug('Loading app %s from module %s', application, module_name)
             try:
@@ -25,6 +25,7 @@ def load_applications(environ):
         else:
             module = None
             try:
+		logging.debug('Loading module %s', module_name)
                 module = __import__(module_name, fromlist=appconfig[application]['subapplications'])
             except Exception as e:
                 logging.warning('Failed to load app %s from %s: %s', application, module_name, str(e))

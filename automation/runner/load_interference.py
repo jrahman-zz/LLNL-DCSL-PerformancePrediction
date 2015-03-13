@@ -4,7 +4,7 @@ import benchmarks
 def load_thread(module, module_name, thread_name):
     """ Load a specfic interference thread class from a module """
 
-    module = getattr(module.runner.benchmarks, module_name)
+    module = getattr(benchmarks, module_name)
     thread_class = getattr(module, thread_name)
     
     return thread_class
@@ -22,7 +22,7 @@ def load_interference(environ):
     for thread_module in threads:
         
         logging.debug('Loading interfence module %s', thread_module)
-        module_name = 'automation.runner.benchmarks.' + thread_module.lower()
+        module_name = 'benchmarks.' + thread_module.lower()
         module = None
         try:
             module = __import__(module_name)

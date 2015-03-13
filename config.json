@@ -1,5 +1,0 @@
-{
-    "data_dir": "/srv/applications/",
-    "benchmark_dir": "./automation/runner/../..//benchmarks/bin/",
-    "ycsb_dir": "/home/jprahman/llnl//YCSB"
-}

@@ -11,7 +11,7 @@ class Linpack(Benchmark):
         self._name = 'linpack'
 
     def _process_output(self, output):
-        regex = r"Double Precision\s*(\d+(?:\.\d*))\s*Mflops"
+        regex = r"Double\s*Precision\s*(\d+(?:\.\d*))\s*Mflops"
         result = re.search(regex, output)
         if result == None:
             logging.error('Mismatch: %s', output)

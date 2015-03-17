@@ -83,7 +83,6 @@ class InterferenceThread(Greenlet):
         except ImportError:
             import os
             DEVNULL = open(os.devnull, 'wb')
-
         cores = ','.join(map(lambda x: str(x), self._cores))
         args = ['taskset', '-c', cores, 'nice', '-n', str(self._nice), self._cmd] + self._params
         prog = args[6].split('/')[-1]

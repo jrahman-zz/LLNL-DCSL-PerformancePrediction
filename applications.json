@@ -1,0 +1,35 @@
+{
+    "Spec": {
+        "script_dir": "./applications/spec_cpu2006",
+        "application_dir": "/p/lscratche/rahman3/apps//SPEC2006",
+        "subapplications": [
+            "Perlbench",
+            "Bzip",
+            "Gcc",
+            "Gobmk",
+            "HRef",
+            "HMMER",
+            "Sjeng",
+            "Libquantum",
+            "HRef",
+            "Omnetpp",
+            "Astar",
+            "Xalancbmk",
+            "Bwaves",
+            "Milc",
+            "Zeusmp",
+            "Gromacs",
+            "CactusADM",
+            "Leslie",
+            "Namd",
+            "Soplex",
+            "Povray",
+            "Calculix",
+            "GemsFDTD",
+            "Tonto",
+            "Lbm",
+            "Wrf",
+            "Sphinx"
+        ]
+    }
+}

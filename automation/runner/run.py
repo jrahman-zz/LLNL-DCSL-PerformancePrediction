@@ -147,5 +147,5 @@ def main():
     run_experiement(interference_specs, application_list, config_path, output_path)
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     main()

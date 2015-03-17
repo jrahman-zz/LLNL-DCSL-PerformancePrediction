@@ -6,7 +6,7 @@ import logging
 interference=["StreamV2Scale", "StreamV2Add"]
 #"MemoryV2Stream1K", "MemoryV2Stream1K", "MemoryV2Stream256M", "MemoryV2Random1M", "IOBenchV2Read1M", "IOBenchV2Read128M", "IOBenchV2Write4M", "Metadata"]
 
-reps = 2
+reps = 1
 
 applications = ["SpecGromacs", "SpecSjeng"]
 coloc_levels = [0, 1]

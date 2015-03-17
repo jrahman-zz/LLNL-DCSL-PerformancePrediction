@@ -83,7 +83,7 @@ class MemoryV2Stream256M(MemoryV2Benchmark):
 
 class MemoryV2Stream256MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryInterference.__init__(self, environ, 1, 1024*1024*256, 10, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 1, 1024*1024*256, 10, cores, nice)
 
 class MemoryV2Random1K(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):

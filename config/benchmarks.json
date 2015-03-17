@@ -1,17 +1,11 @@
 {
-    "Stream": {
-        "Copy": [],
-        "Scale": [],
-        "Triad": [],
-        "Add": []
-    },
+    "Whetstone": {},
+	"Dhrystone": {},
+	"Linpack": {},
+	"Livermore": {},
+	"Stream": {},
 
     "Memory": {
-        "Stream": [
-            "1K",
-            "1M",
-            "256M"
-        ],
         "Random": [
             "1K",
             "1M",

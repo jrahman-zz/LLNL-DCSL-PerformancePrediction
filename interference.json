@@ -1,8 +1,10 @@
 {
-    "Stream": {
-        "Add": []
-    },
-    "StreamV2": {
+    
+	"Stream": {
+		"Add": []
+	},
+
+	"StreamV2": {
         "Scale": [],
         "Add": []
     },
@@ -10,7 +12,7 @@
     "MemoryV2": {
         "Stream": [
             "1K",
-            "1M"
+            "256M"
         ],
         "Random": [
             "1M"

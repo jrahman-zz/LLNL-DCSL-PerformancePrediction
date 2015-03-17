@@ -1,3 +1,5 @@
-pbs		main     /g/g19/rahmanj/DCSL/main.sh null null null
+pbs		main     /g/g19/rahman3/DCSL/main.sh null null null
 pbs		hostname	/bin/hostname	null null null
 pbs		echo 	/bin/echo	null null null
+pbs		run		/g/g19/rahman3/DCSL/run.sh null null null
+pbs		run_test1 /g/g19/rahman3/DCSL/run_test1.sh null null null

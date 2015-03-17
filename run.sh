@@ -1,29 +1,38 @@
 #!/bin/bash
 
 usage() {
-	echo "Usage: run.sh apps interference output_path base_dir"
+	echo "Usage: main.sh app interference output_path"
 }
 
-if [ $# -ne 4 ]; then
+if [ $# -ne 3 ]; then
 	usage
 	exit 1
 fi
 
-APPS=$1
-INTERFERENCE=$2
-OUTPUT_PATH=$3
-BASE_DIR=$4
+APP_HOME=/p/lscratche/rahman3/apps/
+APP_DATA=/p/lscratche/rahman3/app_data/`hostname`/
+APP="${1}"
+INTERFERENCE="${2}"
+OUTPUT_PATH="${3}"
+BASE_DIR=$(dirname $0)
 
-echo "Interference: ${INTERFERENCE}"
-echo "Apps: ${APPS}"
-echo "Output path: ${OUTPUT_PATH}"
-echo "Base directory: ${BASE_DIR}"
 
-echo "Starting run..."
-~/python2/bin/python ${BASE_DIR}/run.py --applications "${APPS}" --interference "${INTERFERENCE}" --output ${OUTPUT_PATH} --config "${BASE_DIR}"
+CONFIG="${BASE_DIR}/config/config.json"
+APP_CONFIG="${BASE_DIR}/config/applications.json"
+BENCHMARK_CONFIG="${BASE_DIR}/config/benchmarks.json"
+INTERFERENCE_CONFIG="${BASE_DIR}/config/interference.json.training"
+
+# Perform pre-run setup
+"${BASE_DIR}/setup.sh" 2 "${CONFIG}" "${INTERFERENCE_CONFIG}" "${BENCHMARK_CONFIG}" "${APP_CONFIG}" "${APP_DATA}" "${APP_HOME}"
 if [ $? -ne 0 ]; then
-    echo "Run failed"
-    exit 8
+	echo "Setup failed"
+	exit 2
+fi
+
+~/python2/bin/python "${BASE_DIR}/automation/runner/run.py" --applications "${APP}" --interference "${INTERFERENCE}" --output "${OUTPUT_PATH}"
+if [ $? -ne 0 ]; then
+   echo "Run failed"
+   exit 3
 fi
 
 exit 0

@@ -16,14 +16,14 @@ INTERFERENCE="${2}"
 OUTPUT_PATH="${3}"
 BASE_DIR=$(dirname $0)
 
-
+INSTANCES=2
 CONFIG="${BASE_DIR}/config/config.json"
 APP_CONFIG="${BASE_DIR}/config/applications.json"
 BENCHMARK_CONFIG="${BASE_DIR}/config/benchmarks.json"
 INTERFERENCE_CONFIG="${BASE_DIR}/config/interference.json.testing"
 
 # Perform pre-run setup
-"${BASE_DIR}/setup.sh" 2 "${CONFIG}" "${INTERFERENCE_CONFIG}" "${BENCHMARK_CONFIG}" "${APP_CONFIG}" "${APP_DATA}" "${APP_HOME}"
+"${BASE_DIR}/setup.sh" "${INSTANCES}" "${CONFIG}" "${INTERFERENCE_CONFIG}" "${BENCHMARK_CONFIG}" "${APP_CONFIG}" "${APP_DATA}" "${APP_HOME}"
 if [ $? -ne 0 ]; then
 	echo "Setup failed"
 	exit 2
@@ -33,6 +33,12 @@ fi
 if [ $? -ne 0 ]; then
    echo "Run failed"
    exit 3
+fi
+
+"${BASE_DIR}/cleanup.sh" "${INSTANCES}" "${APP_DATA}"
+if [ $? -ne 0 ]; then
+	echo "Cleanup failed"
+	exit 4
 fi
 
 exit 0

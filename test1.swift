@@ -38,8 +38,8 @@ string interference[] = [
 
 int reps = 10;
 
-app (file output, file log) run (string application, string interSpec) {
-    run application interSpec @filename(output) stderr=@filename(log);
+app (file output, file log) run_test1 (string application, string interSpec) {
+    run_test1 application interSpec @filename(output) stderr=@filename(log);
 }
 
 (string threadSpec) createInterfereSpec(string threadName, int colocLevel, int niceLevel) {
@@ -69,7 +69,7 @@ foreach application in apps {
 					file simout <single_file_mapper; file=oname>;
 					string lname = @strcat(basename, runspec, ".stdout");
 					file simlog <single_file_mapper; file=lname>;
-					(simout, simlog) = run(application, threadspec);
+					(simout, simlog) = run_test1(application, threadspec);
 				}
 			}
 		}

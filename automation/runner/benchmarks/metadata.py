@@ -16,7 +16,9 @@ class Metadata(Benchmark):
         self._name = 'metadata'
 
     def _setup(self):
-        pass
+        """ We need to scrub the directory before we run """
+        globs = glob(self._data_dir + '/*')
+        subprocess.check_call(['rm', '-f'] + globs)
 
     def _teardown(self):
         pass

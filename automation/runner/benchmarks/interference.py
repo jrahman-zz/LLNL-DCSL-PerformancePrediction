@@ -88,7 +88,7 @@ class InterferenceThread(Greenlet):
         prog = args[6].split('/')[-1]
         while self._keep_running:
             logging.info('Starting new %s process...', prog)
-            self._process = subprocess.Popen(args, stdout=DEVNULL, stderr=subprocess.STDOUT)
+            self._process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             return_code = self._process.wait()
             logging.info('Interference process %s exited with return code %d', prog, return_code)
             
@@ -96,7 +96,8 @@ class InterferenceThread(Greenlet):
             if not (return_code == 0 or return_code == -9):
                 self._keep_running = False
                 self._obj._teardown()
-                raise Exception('Process failure, return code %d' % (return_code))
+                (stdout, _) = self._process.communicate()
+                raise Exception('Process failure, return code %d: %s' % (return_code, stdout))
         
         # Set ourself to None so that _stop doesn't try to do anything
         # with a completed process

@@ -1,31 +1,26 @@
 {
-    
-	"Stream": {
-		"Add": []
-	},
-
-	"StreamV2": {
-        "Scale": [],
-        "Add": []
+    "StreamV2": {
+        "Copy": [],
+        "Triad": []
     },
 
     "MemoryV2": {
         "Stream": [
-            "1K",
-            "256M"
+            "1M"
         ],
         "Random": [
-            "1M"
+            "1K",
+            "256M"
         ]
     },
 
     "IOBenchV2": {
         "Read": [
-            "1M",
-            "128M"
+            "4M"
         ],
         "Write": [
-            "4M"
+            "1M",
+            "128M"
         ]
     },
 

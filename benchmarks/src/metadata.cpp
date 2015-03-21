@@ -60,7 +60,7 @@ int counters;
 
 
 
-#define FILE_COUNT 1000
+#define FILE_COUNT 512
 #define MAX_NAME_LEN 1000
 
 // Store file names in BSS to save stack space, but still avoid dynamic allocation
@@ -176,9 +176,16 @@ cleanup:
     for (int i = 0; i < FILE_COUNT; i++) {
         if (fd[i] > 0) {
             close(fd[i]);
-            remove(buf[i]);
         }
     }
+
+	for (int i = 0; i < FILE_COUNT; i++) {
+		if (fd[i] > 0 && remove(buf[i]) != 0) {
+			std::cout << "Failed to remove file: " << std::string(buf[i])
+					  << ", errno: " << errno << std::endl;
+			remove(buf[i]); // Try again
+		}
+	}
 
     return ret;
 }

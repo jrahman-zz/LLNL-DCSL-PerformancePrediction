@@ -75,11 +75,19 @@ echo "${SOURCE_BASE}/benchmarks/bin/iobench.jar"
 
 # Build temp files and directories for the benchmark
 for INSTANCE in `seq ${INSTANCES}`; do
-    mkdir -p "${DATA_BASE}/metadata.${INSTANCE}"
+	DIR="${DATA_BASE}/metadata.${INSTANCE}/"
+    mkdir -p "${DIR}"
     if [ $? -ne 0 ]; then
-        echo "Failed to create ${DATA_BASE}/metadata.${INSTANCE}"
+        echo "Failed to create ${DIR}"
         exit 6
     fi
+
+	# Clean the directory out if it exists
+	rm -f "${DIR}/*"
+	if [ $? -ne 0 ]; then
+		echo "Failed to clean ${DIR}"
+		exit 7
+	fi
 
     FILE="${DATA_BASE}/iobench.${INSTANCE}"
     if [ ! -r "${FILE}" ]; then
@@ -87,7 +95,7 @@ for INSTANCE in `seq ${INSTANCES}`; do
         java -classpath "${SOURCE_BASE}/benchmarks/bin/iobench.jar" Main create "${FILE}" 256M
         if [ $? -ne 0 ]; then
            echo "Failed to create ${FILE}"
-           exit 7
+           exit 8
         fi
     fi
 done

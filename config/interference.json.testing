@@ -1,12 +1,12 @@
 {
     "StreamV2": {
         "Copy": [],
-        "Triad": [],
+        "Triad": []
     },
 
     "MemoryV2": {
         "Stream": [
-            "1M",
+            "1M"
         ],
         "Random": [
             "1K",

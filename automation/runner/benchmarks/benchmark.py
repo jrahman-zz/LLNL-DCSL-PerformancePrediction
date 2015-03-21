@@ -30,7 +30,11 @@ class Benchmark:
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)    
             logging.info('Finished running benchmark %s', str(self))
             features = self._process_output(output)
-        except:
+        except subprocess.CalledProcessError as e:
+            logging.exception('Benchmark failed: %s', e.output)
+            self._teardown()
+            raise
+        except Exception as e:
             # Teardown for cleanup, then rethrow for capture somewhere else
             self._teardown()
             raise

@@ -31,12 +31,32 @@
 
 
 /**
- * Super simple LSFR random number generator
+ * Super simple xorshift random number generator
  */
-unsigned int lfsr = 11000;
-#define MASK 0xd0000001u
-#define rand (lfsr = (lfsr >> 1) ^ (unsigned int) \
-        (0 - (lfsr & 1u) & MASK))
+#define RAND_COUNT 20
+uint32_t x[RAND_COUNT];
+uint32_t y[RAND_COUNT];
+uint32_t z[RAND_COUNT];
+uint32_t w[RAND_COUNT];
+
+#define RAND ([](uint32_t idx){				\
+	uint32_t i = idx;						\
+	uint32_t tmp = x[i] ^ (x[i] << 15);		\
+	x[i]=y[i];								\
+	y[i]=z[i];								\
+	z[i]=w[i];								\
+	return w[i]=(w[i]^(w[i]>>21))^(tmp^(tmp>>4));	\
+})
+
+#define INIT_RAND() [] {					\
+	srand(10);								\
+	for (int i = 0; i < RAND_COUNT; i++) {	\
+		x[i] = rand();						\
+		y[i] = rand();						\
+		z[i] = rand();						\
+		w[i] = rand();						\
+	}										\
+}			
 
 #ifdef INTERFERE
 #undef COUNTERS
@@ -542,31 +562,33 @@ int measurement_random_access(long long int n_, int CPU_, int repeat) {
   for(int k_=0; k_<n_; k_++) {
     vec_[k_] = 1;
   }
-  //srand ( time(NULL) );
+  INIT_RAND();
   fprintf(stderr, "CPU = %d n = %lld num_obs=%d\n", CPU_, n_, num_obs);
 
-  unsigned index;
+  #ifdef V2
+  unsigned int index;
+  #endif
   struct timespec ts_start, ts_stop;
   START_COUNTERS(counters);
   clock_gettime(CLOCK_MONOTONIC, &ts_start);
 
   for (int j=0; j<repeat; ++j) {
     for(int i=0; i<num_obs; i++ ) {
-
-      // if(CPU_==0) {
-        // PAPI_read_counters(Values, n_counters);
-        // time_old = PAPI_get_real_usec();
-      // }
-      for( long long int k_=0; k_<n_; k_++) {
-        //printf("%lld %lld %lld %lld\n", (k_*500)%n_, (k_*1000)%n_, 500*k_, n_);
-        //Stride = 1 
-        //vec_[k_]++;
-
-        //Stride = 3000000 
-        //vec_[(3736503*k_)%n_]++;
-        index = rand;
-        vec_[index%n_] += index;
-        #ifdef V2
+      // Increment by 10, since we have 10 accesses in the loop
+      for( long long int k_=0; k_<n_; k_ += 10) {
+        vec_[RAND(0) % n_]++;	
+        vec_[RAND(1) % n_]++;
+        vec_[RAND(2) % n_]++;
+        vec_[RAND(3) % n_]++;
+        vec_[RAND(4) % n_]++;
+        vec_[RAND(5) % n_]++;
+        vec_[RAND(6) % n_]++;
+        vec_[RAND(7) % n_]++;
+        vec_[RAND(8) % n_]++;
+        vec_[RAND(9) % n_]++;
+        vec_[RAND(10) % n_]++;
+		#ifdef V2
+		index = RAND(11);
         // Induce additional pressure by triggering the prefetcher if in V2 config
         vec_[(index+RANDOM_STRIDE)%n_] += vec_[((unsigned int)vec_[index%n_])%n_];
         vec_[(index+2*RANDOM_STRIDE)%n_] += vec_[((unsigned int)vec_[2*index%n_])%n_];

@@ -28,12 +28,8 @@ class MemoryV2Benchmark(Benchmark):
         pass
 
     def _process_output(self, output):
-        regex = r"CPU = \d+ n = %(size)s num_obs=(\d+)\nTime .+/memory%(operation)s: (\d*\.\d*)"
-        regex = regex % {
-                    'size': self._size,
-                    'repeat': self._repeat,
-                    'operation': self._operation
-                }
+        regex = r"CPU = \d+ n = \d+ num_obs=(\d+)\nTime .+/memory%(operation)s: (\d*\.\d*)"
+        regex = regex % {'operation': self._operation}
         result = re.search(regex, output)
         if result == None:
             logging.error('Mismatch: %s', output)

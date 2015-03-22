@@ -41,14 +41,15 @@ uint32_t w[RAND_COUNT];
 
 #define RAND ([](uint32_t idx){				\
 	uint32_t i = idx;						\
-	uint32_t tmp = x[i] ^ (x[i] << 15);		\
+	uint32_t t = x[i] ^ (x[i] << 15);		\
 	x[i]=y[i];								\
 	y[i]=z[i];								\
 	z[i]=w[i];								\
-	return w[i]=(w[i]^(w[i]>>21))^(tmp^(tmp>>4));	\
+	uint32_t r = w[i]=(w[i]^(w[i]>>21))^(t^(t>>4));	\
+	return r;								\
 })
 
-#define INIT_RAND() [] {					\
+#define INIT_RAND ([] {					\
 	srand(10);								\
 	for (int i = 0; i < RAND_COUNT; i++) {	\
 		x[i] = rand();						\
@@ -56,7 +57,7 @@ uint32_t w[RAND_COUNT];
 		z[i] = rand();						\
 		w[i] = rand();						\
 	}										\
-}			
+})
 
 #ifdef INTERFERE
 #undef COUNTERS
@@ -555,13 +556,13 @@ int measurement_random_access(long long int n_, int CPU_, int repeat) {
   if(vec_==0) 
     printf("Error Allocating Memory\n");
 
-  int num_obs = 100000000/n_;
-  if(num_obs<1)
-    num_obs=1;
+  int num_obs = 256000000/n_;
+  if(num_obs<2)
+    num_obs=2;
   //WARM-UP
-  for(int k_=0; k_<n_; k_++) {
-    vec_[k_] = 1;
-  }
+  //for(int k_=0; k_<n_; k_++) {
+  //  vec_[k_] = 1;
+  //}
   INIT_RAND();
   fprintf(stderr, "CPU = %d n = %lld num_obs=%d\n", CPU_, n_, num_obs);
 

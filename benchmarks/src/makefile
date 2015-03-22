@@ -5,7 +5,7 @@ PAPI_PATH=/usr/lib/x86_64-linux-gnu/
 
 COMMON = -L$(PAPI_PATH)/libpapi.so.5.3 -l:libpapi.so.5.3 -Wl,-rpath,$(PAPI_PATH)
 COMMON = -lpapi
-CFLAGS = -Wall -g -std=c99
+CFLAGS = -Wall -std=c99
 CPPFLAGS = -Wall -std=c++11
 
 PAPI_OBJS = papi_util.o papi_counters.o perf_counters.o

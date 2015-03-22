@@ -29,8 +29,14 @@ string interference[] = [
 					"StreamV2Scale",
 					"StreamV2Add",
 					"MemoryV2Stream1K",
-					"MemoryV2Stream256M",
+					"MemoryV2Stream4M",
+					"MemoryV2Stream12M",
+					"MemoryV2Stream24M",
+					"MemoryV2Stream128M",
 					"MemoryV2Random1M",
+					"MemoryV2Random8M",
+					"MemoryV2Random16M",
+					"MemoryV2Random32M",
 					"IOBenchV2Read1M",
 					"IOBenchV2Read128M",
 					"IOBenchV2Write4M",
@@ -63,7 +69,7 @@ foreach application in apps {
 				}
 				foreach niceLevel in niceLevels {
 					string threadspec = createInterfereSpec(thread, colocLevel, niceLevel);
-					string runspec = @strcat(rep, ":", threadspec);
+					string runspec = @strcat(rep, "_", threadspec);
 					string basename = @strcat("output/run_", application, "_");	
 					string oname = @strcat(basename, runspec, ".json");
 					file simout <single_file_mapper; file=oname>;

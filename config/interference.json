@@ -7,7 +7,7 @@
     "MemoryV2": {
         "Stream": [
             "1K",
-            "256M"
+            "128M"
         ],
         "Random": [
             "1M"

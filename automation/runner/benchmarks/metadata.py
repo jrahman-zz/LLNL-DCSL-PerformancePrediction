@@ -12,7 +12,7 @@ class Metadata(Benchmark):
         Benchmark.__init__(self, environ, cores)
         self._data_dir = '%s/metadata.%s' % (self._data_dir, instance)
         self._cmd = self._benchmark_dir + '/metadata'
-        self._params = [self._data_dir, '100'];
+        self._params = [self._data_dir, '50'];
         self._name = 'metadata'
 
     def _setup(self):

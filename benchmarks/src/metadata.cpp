@@ -60,7 +60,7 @@ int counters;
 
 
 
-#define FILE_COUNT 512
+#define FILE_COUNT 256
 #define MAX_NAME_LEN 1000
 
 // Store file names in BSS to save stack space, but still avoid dynamic allocation

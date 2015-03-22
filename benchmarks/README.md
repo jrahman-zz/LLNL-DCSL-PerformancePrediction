@@ -17,9 +17,22 @@ It exercises a sequential memory access pattern with an out of cache working set
 * Automation: [Memory Automation Source Code](https://github.com/jrahman/LLNL-DCSL-PerformancePrediction/tree/master/automation/runner/benchmarks/memory.py)
 * Metric Generated: runtime
 
-Memory is a general memory benchmark from Bowen's original tarball (Believe it came from Marc Casas).
+Memory is a general memory benchmark from Bowens original tarball (Believe it came from Marc Casas).
 It contains multiple operation modes stressing sequential and random access patterns.
-Since stream already measures sequential access, we only use the random access mode.
+Since stream already measures sequential access, we only use the random access mode for benchmarking purposes.
+The random access mode performs a fixed number of access operations, across a wide rande of working set sizes (4 byte elements):
+
+* 1K - Mainly for evaluating L1 Cache performance
+* 1M - Mainly for evaluating L2 Cache performance
+* 4M - L3 cache evaluation
+* 8M - L3 cache evaluation
+* 12M - L3 cache evaluation
+* 16M - L3 cache evaluation
+* 24M - L3 cache evaluation
+* 32M - For evaulating non-cached 
+* 128M - For evaluating non-cached random memory access
+
+Working sets 4M-32M are used to detect L3 cache size indirectly since a abnormally large increase in runtime between sizes indicates a change in cache utilization caused by an overflow.
 
 ## Dhrystone
 * Benchmark: [Dhrystone Benchmark Source Code](src/dhry_1.c)

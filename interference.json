@@ -6,7 +6,8 @@
 
     "MemoryV2": {
         "Stream": [
-            "1M"
+            "1M",
+			"12M"
         ],
         "Random": [
             "1K",
@@ -16,10 +17,12 @@
 
     "IOBenchV2": {
         "Read": [
-            "4M"
+            "1M",
+			"4M"
         ],
         "Write": [
             "1M",
+			"4M",
             "128M"
         ]
     },

@@ -17,8 +17,8 @@
     <execution provider="coaster" jobmanager="local:moab"/>
     <profile namespace="globus"  key="queue">pbatch</profile>
     <profile namespace="globus"	 key="maxtime">36000</profile>
-    <profile namespace="globus"  key="maxwalltime">01:05:00</profile>
-    <profile namespace="globus"  key="ppn">12</profile>
+    <profile namespace="globus"  key="maxwalltime">00:55:00</profile>
+    <profile namespace="globus"  key="ppn">16</profile>
     <profile namespace="globus"  key="slots">10</profile>
     <profile namespace="globus"  key="maxnodes">15</profile>
     <profile namespace="globus"  key="jobsPerNode">1</profile>

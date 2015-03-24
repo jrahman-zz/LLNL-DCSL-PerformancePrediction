@@ -29,20 +29,20 @@ string interference[] = [
 					"StreamV2Scale",
 					"StreamV2Add",
 					"MemoryV2Stream1K",
+					"MemoryV2Stream512K",
 					"MemoryV2Stream4M",
 					"MemoryV2Stream12M",
 					"MemoryV2Stream24M",
-					"MemoryV2Stream128M",
+					"MemoryV2Random256K",
 					"MemoryV2Random1M",
 					"MemoryV2Random8M",
 					"MemoryV2Random16M",
 					"MemoryV2Random32M",
 					"IOBenchV2Read1M",
 					"IOBenchV2Read128M",
-					"IOBenchV2Write4M",
-					"Metadata"];
+					"IOBenchV2Write4M"];
 
-int reps = 10;
+int reps = 3;
 
 app (file output, file log) run (string application, string interSpec) {
     run application interSpec @filename(output) stderr=@filename(log);

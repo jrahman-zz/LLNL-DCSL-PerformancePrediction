@@ -42,7 +42,7 @@ class MemoryV2Benchmark(Benchmark):
 
 class MemoryV2Interference(Interference):
 
-    def __init__(self, environ, operation=1, size=1024, repeat=100, cores=[0], nice=0):
+    def __init__(self, environ, operation=1, size=1024, repeat=1000, cores=[0], nice=0):
         Interference.__init__(self, environ, cores, nice)
         self._operation = operation
         if self._operation == 1:
@@ -64,7 +64,23 @@ class MemoryV2Stream1K(MemoryV2Benchmark):
 
 class MemoryV2Stream1KInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 1, 1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 1, 1024, 1000, cores, nice)
+
+class MemoryV2Stream256K(MemoryV2Benchmark):
+	def __init__(self, environ, cores=[0], instance=1):
+		MemoryV2Benchmark.__init__(self, environ, 1, 256 * 1024, 1, cores)
+
+class MemoryV2Stream256KInterfere(MemoryV2Interference):
+	def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
+		MemoryV2Interference.__init__(self, environ, 1, 256*1024, 1000, cores, nice)
+
+class MemoryV2Stream512K(MemoryV2Benchmark):
+	def __init__(self, environ, cores=[0], instance=1):
+		MemoryV2Benchmark.__init__(self, environ, 1, 512*1024, 1, cores)
+
+class MemoryV2Stream512KInterfere(MemoryV2Interference):
+	def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
+		MemoryV2Interference.__init__(self, environ, 1, 512*1024, 1000, cores, nice)
 
 class MemoryV2Stream1M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -72,7 +88,7 @@ class MemoryV2Stream1M(MemoryV2Benchmark):
 
 class MemoryV2Stream1MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 1, 1024 * 1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 1, 1024 * 1024, 1000, cores, nice)
 
 class MemoryV2Stream4M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -80,7 +96,7 @@ class MemoryV2Stream4M(MemoryV2Benchmark):
 
 class MemoryV2Stream4MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 1, 4*1024*1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 1, 4*1024*1024, 1000, cores, nice)
 
 class MemoryV2Stream8M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -88,7 +104,7 @@ class MemoryV2Stream8M(MemoryV2Benchmark):
 
 class MemoryV2Stream8MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 1, 8*1024*1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 1, 8*1024*1024, 1000, cores, nice)
 
 class MemoryV2Stream12M(MemoryV2Benchmark):
 	def __init__(self, environ, cores=[0], instance=1):
@@ -96,7 +112,7 @@ class MemoryV2Stream12M(MemoryV2Benchmark):
 
 class MemoryV2Stream12MInterfere(MemoryV2Interference):
 	def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-		MemoryV2Interference.__init__(self, environ, 1, 12*1024*1024, 100, cores)
+		MemoryV2Interference.__init__(self, environ, 1, 12*1024*1024, 1000, cores)
 
 class MemoryV2Stream16M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -104,7 +120,7 @@ class MemoryV2Stream16M(MemoryV2Benchmark):
 
 class MemoryV2Stream16MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 1, 16*1024*1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 1, 16*1024*1024, 1000, cores, nice)
 
 class MemoryV2Stream24M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -112,7 +128,7 @@ class MemoryV2Stream24M(MemoryV2Benchmark):
 
 class MemoryV2Stream24MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 1, 24*1024*1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 1, 24*1024*1024, 1000, cores, nice)
 
 class MemoryV2Stream32M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -120,7 +136,7 @@ class MemoryV2Stream32M(MemoryV2Benchmark):
 
 class MemoryV2Stream32MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 1, 32*1024*1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 1, 32*1024*1024, 1000, cores, nice)
 
 class MemoryV2Stream128M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -128,7 +144,7 @@ class MemoryV2Stream128M(MemoryV2Benchmark):
 
 class MemoryV2Stream128MInterfere(MemoryV2Interference):
 	def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-		MemoryV2Interference.__init__(self, environ, 1, 1024*1024*128, 100, cores, nice)
+		MemoryV2Interference.__init__(self, environ, 1, 1024*1024*128, 1000, cores, nice)
 
 class MemoryV2Random1K(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -136,7 +152,23 @@ class MemoryV2Random1K(MemoryV2Benchmark):
 
 class MemoryV2Random1KInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 2, 1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 2, 1024, 1000, cores, nice)
+
+class MemoryV2Random256K(MemoryV2Benchmark):
+	def __init__(self, environ, cores=[0], instance=1):
+		MemoryV2Benchmark.__init__(self, environ, 2, 256 * 1024, 1, cores)
+
+class MemoryV2Random256KInterfere(MemoryV2Interference):
+	def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
+		MemoryV2Interference.__init__(self, environ, 2, 256*1024, 1000, cores, nice)
+
+class MemoryV2Random512K(MemoryV2Benchmark):
+	def __init__(self, environ, cores=[0], instance=1):
+		MemoryV2Benchmark.__init__(self, environ, 2, 512*1024, 1, cores)
+
+class MemoryV2Random512KInterfere(MemoryV2Interference):
+	def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
+		MemoryV2Interference.__init__(self, environ, 2, 512*1024, 1000, cores, nice)
 
 class MemoryV2Random1M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -144,7 +176,7 @@ class MemoryV2Random1M(MemoryV2Benchmark):
 
 class MemoryV2Random1MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 2, 1024*1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 2, 1024*1024, 1000, cores, nice)
 
 class MemoryV2Random4M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -152,7 +184,7 @@ class MemoryV2Random4M(MemoryV2Benchmark):
 
 class MemoryV2Random4MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 2, 4*1024*1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 2, 4*1024*1024, 1000, cores, nice)
 
 class MemoryV2Random8M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -160,15 +192,15 @@ class MemoryV2Random8M(MemoryV2Benchmark):
 
 class MemoryV2Random8MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 2, 8*1024*1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 2, 8*1024*1024, 1000, cores, nice)
 
 class MemoryV2Random12M(MemoryV2Benchmark):
 	def __init__(self, environ, cores=[0], instance=1):
 		MemoryV2Benchmark.__init__(self, environ, 2, 12*1024*1024, 1, cores)
 
-class MemoryV2Random12MIntefere(MemoryV2Interference):
+class MemoryV2Random12MInterfere(MemoryV2Interference):
 	def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-		MemoryV2Interference.__init__(self, environ, 2, 12*1024*1024, 100, cores)
+		MemoryV2Interference.__init__(self, environ, 2, 12*1024*1024, 1000, cores)
 
 class MemoryV2Random16M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -176,7 +208,7 @@ class MemoryV2Random16M(MemoryV2Benchmark):
 
 class MemoryV2Random16MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 2, 16*1024*1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 2, 16*1024*1024, 1000, cores, nice)
 
 class MemoryV2Random24M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -184,7 +216,7 @@ class MemoryV2Random24M(MemoryV2Benchmark):
 
 class MemoryV2Random24MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 2, 24*1024*1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 2, 24*1024*1024, 1000, cores, nice)
 
 class MemoryV2Random32M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -192,7 +224,7 @@ class MemoryV2Random32M(MemoryV2Benchmark):
 
 class MemoryV2Random32MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 2, 32*1024*1024, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 2, 32*1024*1024, 1000, cores, nice)
 
 class MemoryV2Random128M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):
@@ -200,7 +232,7 @@ class MemoryV2Random128M(MemoryV2Benchmark):
 
 class MemoryV2Random128MInterfere(MemoryV2Interference):
     def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-        MemoryV2Interference.__init__(self, environ, 2, 1024*1024*128, 100, cores, nice)
+        MemoryV2Interference.__init__(self, environ, 2, 1024*1024*128, 1000, cores, nice)
 
 
 if __name__ == "__main__":

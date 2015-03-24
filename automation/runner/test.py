@@ -81,6 +81,7 @@ def main():
     apps = load_applications(environ)
     print apps
     bmarks = load_benchmarks(environ)
+    print bmarks
     threads = load_interference(environ)
 
     #bmark1 = bmarks['IOBenchV2Read1M'](environ, [1, 2], 1)
@@ -91,14 +92,15 @@ def main():
     #print bmark.run()
     #bmark = bmarks['Linpack'](environ, [1, 2], 2)
     #print bmark.run()
-    bmark = bmarks['Stream'](environ, [1, 2], 2)
+    bmark = bmarks['MemoryRandom12M'](environ, [1, 2], 2)
     print bmark.run()
 
     #interference1 = threads['Metadata'](environ, [1, 2], [1], -5, 1)
     interference2 = threads['IOBenchV2Read1M'](environ, [2], [1], 10, 2)
     interference3 = threads['IOBenchV2Write4M'](environ, [1], [1], 10, 1)
+    interference4 = threads['MemoryV2Stream12M'](environ, [3], [3], 10, 2)
 
-    interference = [interference2, interference3]
+    interference = [interference2, interference3, interference3]
     with contexter.ExitStack() as top_stack:
         for thread in interference:
             top_stack.enter_context(thread)
@@ -109,6 +111,12 @@ def main():
             gevent.sleep(10)
             print('Woke up')
     
+    interference = threads['Metadata'](environ, [2], [2], 10, 1)
+    bmark = bmarks['Metadata'](environ, [2], 2)
+    with interference:
+        with interference.interfere():
+            print bmark.run()
+            gevent.sleep(100)
 
     app = apps['SpecSoplex'](environ, [0, 1], [2, 3])
     

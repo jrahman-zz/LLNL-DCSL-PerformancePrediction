@@ -1,9 +1,10 @@
 
 from benchmark import Benchmark
 from interference import Interference
-
 from glob import glob
 from gevent import subprocess
+
+import logging
 import re
 
 class Metadata(Benchmark):
@@ -25,9 +26,10 @@ class Metadata(Benchmark):
 
     def _process_output(self, output):
 
-        regex = r"Final times, total: \d*\.\d*, median: (\d*\.\d*), mean: \d*\.\d*, p90: (\d*\.\d*)$"
+        regex = r"Final times, total: \d+(?:\.\d+)?, median: (\d+(?:\.\d+)?), mean: \d*\.\d*, p90: (\d+(?:\.\d+)?)$"
         result = re.search(regex, output)
         if result == None:
+            logging.warning('No match: %s', output)
             raise Exception('No match found')
         features = {
             'median': float(result.group(1)),

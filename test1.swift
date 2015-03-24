@@ -28,21 +28,22 @@ string apps[] =	[	"SpecBzip",
 string interference[] = [
 					"StreamV2Copy",
 					"StreamV2Triad",
+					"MemoryV2Stream256K",
 					"MemoryV2Stream1M",
 					"MemoryV2Stream8M",
 					"MemoryV2Stream16M",
-					"Memory2Stream32M",
+					"MemoryV2Stream32M",
 					"MemoryV2Random1K",
+					"MemoryV2Random512K",
 					"MemoryV2Random4M",
 					"MemoryV2Random12M",
 					"MemoryV2Random24M",
 					"MemoryV2Random128M",
 					"IOBenchV2Read4M",
 					"IOBenchV2Write1M",
-					"IOBenchV2Write128M",
-					"Metadata"];
+					"IOBenchV2Write128M"];
 
-int reps = 10;
+int reps = 3;
 
 app (file output, file log) run_test1 (string application, string interSpec) {
     run_test1 application interSpec @filename(output) stderr=@filename(log);

@@ -1,4 +1,3 @@
-
 import os
 import logging
 from gevent import Greenlet, GreenletExit
@@ -71,10 +70,14 @@ class InterferenceThread(Greenlet):
 
     def _stop(self):
         logging.info('Stopping %s', self._name)
-        self._keep_running = False
-        if self._process is not None:
-            self._process.kill()
-        self._process = None
+        try:
+            self._keep_running = False
+            if self._process is not None:
+                self._process.kill()
+            self._process = None
+        except subprocess.OSError as e:
+            logging.exception('Failed to stop interference, errno: %d', e.errno)
+            raise
 
 
     def _run(self):

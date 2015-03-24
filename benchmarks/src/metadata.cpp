@@ -60,7 +60,7 @@ int counters;
 
 
 
-#define FILE_COUNT 256
+#define FILE_COUNT 192
 #define MAX_NAME_LEN 1000
 
 // Store file names in BSS to save stack space, but still avoid dynamic allocation
@@ -136,8 +136,8 @@ int run_instance() {
     // Open files
     for (int i = 0; i < FILE_COUNT; i++) {
         
-        // Only open the file if it doesn't exist
-        fd[i] = open(buf[i], O_RDWR | O_CREAT | O_EXCL);
+        // Create the file
+        fd[i] = open(buf[i], O_RDWR | O_CREAT);
         if (fd[i] < 0) {
             std::cout << "Failed to create file: " << std::string(buf[i])
                       << ", errno: " << errno << std::endl;

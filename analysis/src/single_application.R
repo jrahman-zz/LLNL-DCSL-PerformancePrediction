@@ -10,6 +10,7 @@ library(lars)
 library(pls)
 library(glmnet)
 library(genalg)
+library(foreach)
 #library(caret)
 
 # Use parallelism
@@ -35,12 +36,12 @@ error.bar <- function(x, y, upper, lower=upper, length=0.1,...){
 train_data=read.csv('../data/train_single_sierra.csv',
 			head=T,
 			sep=',',
-			stringsAsFactors=T)
+			stringsAsFactors=F)
 
 test_data=read.csv('../data/test1_single_sierra.csv',
 			head=T,
 			sep=',',
-			stringsAsFactors=T)
+			stringsAsFactors=F)
 
 # Get configuration information
 application.names 	= unique(train_data$application)
@@ -52,21 +53,6 @@ nice.levels			= unique(train_data$nice)
 
 configs.data=list()
 configs.count=0
-# Look at clustering within a given interference config
-#for (interfere in interference.names) {
-#	for (level in coloc.levels) {
-#		for (nice in nice.levels) {
-#			data = train_data[train_data$interference == interfere,]
-#			data = data[data$coloc == level,]
-#			data = data[data$nice == nice,]
-#			if (length(data) > 0) {
-#				configs.count = configs.count + 1
-#			}
-#			configs.data[[interfere]][[level]][[nice]] = data
-#		}
-#	}
-#}
-
 # Plot clusters
 #pdf('single_application_', width=10, height=5)
 #par(mfrow=c(length(interference.names), 5))
@@ -81,11 +67,10 @@ configs.count=0
 
 # Remove non-benchmark columns
 drops = c('application', 'interference', 'coloc', 'rep', 'nice', 'time')
-predictors = train_data[, !(names(train_data) %in% drops)]
+predictors.data = train_data[, !(names(train_data) %in% drops)]
+predictors.names = colnames(predictors.data)
 
-length(predictors[,1])
-
-predictors.pca <- prcomp(predictors,
+predictors.pca <- prcomp(predictors.data,
 						center = TRUE,
 						scale = TRUE)
 
@@ -93,7 +78,7 @@ print(predictors.pca)
 plot(predictors.pca, type = "l")
 summary(predictors.pca)
 
-predictors.pca <- prcomp(predictors,
+predictors.pca <- prcomp(predictors.data,
 						center = FALSE,
 						scale = FALSE)
 
@@ -104,28 +89,10 @@ summary(predictors.pca)
 pdf("app_times.pdf", width=11.5, height=8)
 #par(mfrow=c(length(application.names), 5), xpd=T)
 for (app in application.names) {
-	#data = train_data[train_data$application == app,]
-	#l0 = data[data$coloc == 0,]
-	#l1 = data[data$coloc == 1,]
-	#l2 = data[data$coloc == 2,]
-	#d = l0[l0$nice == 0,]
-	#plot(, )
-	#plot()
-	#plot()
-	#plot()
-	#plot()
 	data = train_data[train_data$application == app,]
 	l0 = data[data$coloc == 0,]
 	l1 = data[data$coloc == 1,]
 	l2 = data[data$coloc == 2,]
-
-	print(paste("App: ", app))
-	print(paste("Coloc 0: ", length(l0$time)))
-	print(paste("Coloc 1: ", length(l1$time)))
-	print(paste("Coloc 2: ", length(l2$time)))
-
-	print(l1$time)
-	print(l2$time)
 
 	minimum = min(data$time)
 	maximum = max(data$time)
@@ -140,6 +107,70 @@ for (app in application.names) {
 	legend("topleft", legend=c("Same core, nice 0", "Same core, nice 5", "Same core, nice 10", "Same socket, different core", "Different socket"), text.col=c("red", "orange", "yellow", "blue", "green"))
 }
 dev.off()
+
+max_app_jitter = 0
+max_bmark_jitter = 0
+bmark_jitter_values = c()
+app_jitter_values = c()
+for (interfere in interference.names) {
+	for (coloc_level in coloc.levels) {
+		for (nice_level in nice.levels) {
+			print(interfere)
+			data = train_data
+			data = data[data$interference == interfere,]
+			data = data[data$coloc == coloc_level,]
+			data = data[data$nice == nice_level,]
+	
+			for (name in predictors.names) {
+				d = data[,name]
+				if (length(d) > 0) {
+					minimum = min(d)
+					maximum = max(d)
+					mean = mean(d)
+					jitter = (maximum-minimum)/mean
+					bmark_jitter_values = c(bmark_jitter_values, jitter)
+					max_bmark_jitter = max(max_bmark_jitter, jitter)
+					if (jitter > 0.01) {
+						print(paste("Benchmark: ", name))
+						print(paste("Interference: ", interfere))
+						print(paste("Coloc: ", coloc_level))
+						print(paste("Nice: ", nice_level))
+						print(paste("Measurements: ", length(d)))
+						print(paste("Jitter: ", jitter))
+					}
+				}
+			}	
+			for (app in application.names) {
+				d = data[data$application==app,'time']
+				if (length(d) > 0) {
+					minimum = min(d)
+					maximum = max(d)
+					mean = mean(d)
+					jitter = (maximum-minimum)/mean
+					app_jitter_values = c(app_jitter_values, jitter)
+					max_app_jitter = max(max_app_jitter, jitter)
+					if (jitter > 0.01) {
+						print(paste("Application: ", app))
+						print(paste("Interference: ", interfere))
+						print(paste("Coloc: ", coloc_level))
+						print(paste("Nice: ", nice_level))
+						print(paste("Measurements: ", length(d)))
+						print(paste("Jitter: ", jitter))
+					}	
+				}
+			}
+		}
+	}
+}
+print(paste("App: ", max_app_jitter, ", Bmark: ", max_bmark_jitter))
+pdf('jitter.pdf', height=8.5, width=11)
+hist(app_jitter_values, xlab="(max-min)/mean", main="App runtime jitter")
+hist(bmark_jitter_values, xlab="(max-min)/mean", main="Benchmark runtime jitter")
+dev.off()
+
+# Extract intra-config variation
+# Look at clustering within a given interference config
+
 
 # Compute training error
 compute.error = function(y0, y1) {
@@ -166,21 +197,19 @@ formula=as.formula('time~.')
 ci=list()
 
 # Build models and use test set for error analysis
-for (application in application.names) %dopar% {
+foreach (application = application.names) %dopar% {
   
   # Select all rows for our application
   training.set = train_data[train_data$application == application, ]
   test.set = test_data[test_data$application == application, ]
 
-  print(application)
-  
   # Truncate columns that we do not want to be used in the fitting
   drops = c('application', 'interference', 'coloc', 'rep', 'nice')
   training.data = training.set[, !(names(training.set) %in% drops)]
   testing.data = test.set[, !(names(test.set) %in% drops)]
  
   # Sweep over models
-  for (model in model.names) %dopar% {
+  foreach (model = model.names) %dopar% {
     
     control.object=trainControl(
 						method='repeatedcv',

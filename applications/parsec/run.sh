@@ -30,7 +30,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Run: Starting now..."
-"${PARSEC_DIR}/bin/parsecmgmt" -a run -i "${SIZE}" -p "${BMARK_NAME}" -n "${NTHREADS}"
+"${PARSEC_DIR}/bin/parsecmgmt" -a run -p "${BMARK_NAME}" -d "${DATA_DIR}" -i "${SIZE}" -n "${NTHREADS}"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to run the benchmark"
     exit 3

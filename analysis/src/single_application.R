@@ -108,6 +108,7 @@ for (app in application.names) {
 }
 dev.off()
 
+# Check for runtime stability, no point in predicting a moving target
 max_app_jitter = 0
 max_bmark_jitter = 0
 bmark_jitter_values = c()
@@ -167,9 +168,6 @@ pdf('jitter.pdf', height=8.5, width=11)
 hist(app_jitter_values, xlab="(max-min)/mean", main="App runtime jitter")
 hist(bmark_jitter_values, xlab="(max-min)/mean", main="Benchmark runtime jitter")
 dev.off()
-
-# Extract intra-config variation
-# Look at clustering within a given interference config
 
 
 # Compute training error

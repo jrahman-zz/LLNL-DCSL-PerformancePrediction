@@ -34,7 +34,7 @@ def run(applications, benchmarks, interference):
                         logging.exception('Failed, %s', str(e)) # DEBUG
                         raise
         except Exception as e:
-            logging.exception('Failed to run application: %s', str(application))
+            logging.exception('Failed to run application: %s, exception: %s', str(application), str(e))
             raise
     return times
 

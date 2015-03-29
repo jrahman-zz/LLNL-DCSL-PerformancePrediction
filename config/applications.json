@@ -31,5 +31,20 @@
             "Wrf",
             "Sphinx"
         ]
+    }, "Parsec": {
+        "script_dir": "${SOURCE_BASE}/applications/parsec",
+        "application_dir": "${APPLICATION_BASE}/parsec-3.0",
+        "subapplications": [
+            "Blackscholes",
+            "Bodytrack",
+            "Facesim",
+            "Ferret",
+            "Fluidanimate",
+            "Freqmine",
+            "Raytrace",
+            "Swaptions",
+            "Vips",
+            "X264"
+        ]
     }
 }

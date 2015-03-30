@@ -87,7 +87,9 @@ class Application():
 
     def interfere(self):
         if not self._started or not self._loaded:
+            logging.error('Not started or loaded yet') 
             raise ValueError('Not started or loaded yet')
+  
 
         # Create list of allowable cores
         cores = ','.join(map(lambda x: str(x), self._run_cores))
@@ -171,8 +173,9 @@ class BackgroundProcess(greenlet.Greenlet):
     def __init__(self, args, application_name):
         greenlet.Greenlet.__init__(self)
         self._args = args
-        self._application_name
+        self._application_name = application_name
         self._keep_running = True
+        self._process = None
 
     def __str__(self):
         return self._application_name

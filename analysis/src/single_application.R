@@ -17,6 +17,7 @@ library(foreach)
 library(doMC)
 registerDoMC(8)
 
+args = commandArgs(trailingOnly=TRUE)
 
 # Perform single application prediction
 #
@@ -33,12 +34,12 @@ error.bar <- function(x, y, upper, lower=upper, length=0.1,...){
 }
 
 # Read in data
-train_data=read.csv('../data/train_single_sierra.csv',
+train_data=read.csv(args[1],
 			head=T,
 			sep=',',
 			stringsAsFactors=F)
 
-test_data=read.csv('../data/test1_single_sierra.csv',
+test_data=read.csv(args[2],
 			head=T,
 			sep=',',
 			stringsAsFactors=F)
@@ -108,6 +109,7 @@ for (app in application.names) {
 }
 dev.off()
 
+# Check for runtime stability, no point in predicting a moving target
 max_app_jitter = 0
 max_bmark_jitter = 0
 bmark_jitter_values = c()
@@ -130,7 +132,7 @@ for (interfere in interference.names) {
 					jitter = (maximum-minimum)/mean
 					bmark_jitter_values = c(bmark_jitter_values, jitter)
 					max_bmark_jitter = max(max_bmark_jitter, jitter)
-					if (jitter > 0.01) {
+					if (jitter > 1) {
 						print(paste("Benchmark: ", name))
 						print(paste("Interference: ", interfere))
 						print(paste("Coloc: ", coloc_level))
@@ -149,7 +151,7 @@ for (interfere in interference.names) {
 					jitter = (maximum-minimum)/mean
 					app_jitter_values = c(app_jitter_values, jitter)
 					max_app_jitter = max(max_app_jitter, jitter)
-					if (jitter > 0.01) {
+					if (jitter > 1) {
 						print(paste("Application: ", app))
 						print(paste("Interference: ", interfere))
 						print(paste("Coloc: ", coloc_level))
@@ -164,12 +166,9 @@ for (interfere in interference.names) {
 }
 print(paste("App: ", max_app_jitter, ", Bmark: ", max_bmark_jitter))
 pdf('jitter.pdf', height=8.5, width=11)
-hist(app_jitter_values, xlab="(max-min)/mean", main="App runtime jitter")
-hist(bmark_jitter_values, xlab="(max-min)/mean", main="Benchmark runtime jitter")
+hist(app_jitter_values, breaks=10, xlab="(max-min)/mean", main="App runtime jitter")
+hist(bmark_jitter_values, breaks=10, xlab="(max-min)/mean", main="Benchmark runtime jitter")
 dev.off()
-
-# Extract intra-config variation
-# Look at clustering within a given interference config
 
 
 # Compute training error

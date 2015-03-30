@@ -10,32 +10,31 @@ import json
 
 from contexter import ExitStack
 
-def run(applications, benchmarks, interference):
-    """ Run a given set of applications in interference conditions """
+def run(application, benchmarks, interference):
+    """ Run a given application in interference conditions """
 
     times = []
-    for application in applications:
-        try:
-            application.load()
-            with ExitStack() as top_stack:
+    try:
+        application.load()
+        with ExitStack() as top_stack:
+            for thread in interference:
+                top_stack.enter_context(thread)
+            with ExitStack() as stack:
                 for thread in interference:
-                    top_stack.enter_context(thread)
-                with ExitStack() as stack:
-                    for thread in interference:
-                        stack.enter_context(thread.interfere())
-                    try:
-                        t = dict()
-                        t['application'] = str(application)
-                        t['interference'] = str(thread)
-                        t.update(run_benchmarks(benchmarks))
-                        t.update(run_application(application))
-                        times.append(t)
-                    except Exception as e:
-                        logging.exception('Failed, %s', str(e)) # DEBUG
-                        raise
-        except Exception as e:
-            logging.exception('Failed to run application: %s', str(application))
-            raise
+                    stack.enter_context(thread.interfere())
+                try:
+                    t = dict()
+                    t['application'] = str(application)
+                    t['interference'] = str(thread)
+                    t.update(run_benchmarks(benchmarks))
+                    t.update(run_application(application))
+                    times.append(t)
+                except Exception as e:
+                    logging.exception('Failed, %s', str(e)) # DEBUG
+                    raise
+    except Exception as e:
+        logging.exception('Failed to run application: %s', str(application))
+        raise
     return times
 
 def run_application(application):
@@ -92,22 +91,23 @@ def parse_interference(interference_spec):
     nice_level = int(components[3])
     return (name, cores, coloc_level, nice_level)
    
-def create_config(environ, application_list, interference_specs):
+def create_config(environ, application, interference_specs):
     """ For a given application and interference listing, create the config """
     
     benchmarks = load_benchmarks(environ)
     interfere_threads = load_interference(environ)
     apps = load_applications(environ)
 
-    if application_list == ['all']:
-        application_list = apps.keys()
-
     # Parse the interference specs, and extract core request counts
     specs = map(lambda x: parse_interference(x), interference_specs)
     requests = map(lambda x: (x[1], x[2]), specs)
+    
+    # Applications are defined as Name:Cores
+    application = application.split(':')
+    application = (application[0], int(application[1]))
 
     # Get our core assignments from the numa detection
-    (app_cores, interference_cores, client_cores) = load_numa.get_cores_new(1, requests, [1])
+    (app_cores, interference_cores, client_cores) = load_numa.get_cores_new(length(application[1]), requests, [1])
     
     # Set up dictionary with both apps and interfere threads
     interfere = apps.copy()
@@ -120,8 +120,8 @@ def create_config(environ, application_list, interference_specs):
 
     # Process benchmarks for use
     benchmarks = map(lambda key: benchmarks[key](environ, app_cores), benchmarks.keys())
-    applications = map(lambda key: apps[key](environ, app_cores, client_cores[0]), application_list)
-    return (applications, benchmarks, threads)
+    app = apps[application[0]](environ, app_cores, client_cores[0])
+    return (app, benchmarks, threads)
     
 def run_experiement(interference_specs, application_list, config_path, output_path):
 
@@ -129,11 +129,12 @@ def run_experiement(interference_specs, application_list, config_path, output_pa
     modules = map(lambda x: "%s/%s" % (config_path, x), modules)
     environ = load_environ("%s/config.json" % config_path, modules)
    
-    logging.info('Building configuration')
-    (apps, bmarks, threads) = create_config(environ, application_list, interference_specs)
-    
-    logging.info('Starting run')
-    output = run(apps, bmarks, threads)
+    for app in application_list.split(','):
+        logging.info('Building configuration')
+        (apps, bmarks, threads) = create_config(environ, application_list, interference_specs)
+        
+        logging.info('Starting run')
+        output = run(apps, bmarks, threads)
 
     with open(output_path, 'w') as f:
         json.dump(output, f)

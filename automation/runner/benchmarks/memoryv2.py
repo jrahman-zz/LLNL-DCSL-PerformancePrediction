@@ -200,7 +200,7 @@ class MemoryV2Random12M(MemoryV2Benchmark):
 
 class MemoryV2Random12MInterfere(MemoryV2Interference):
 	def __init__(self, environ, cores=[0], extra_cores=[1], nice=0, instance=1):
-		MemoryV2Interference.__init__(self, environ, 2, 12*1024*1024, 1000, cores)
+		MemoryV2Interference.__init__(self, environ, 2, 12*1024*1024, 1000, cores, nice)
 
 class MemoryV2Random16M(MemoryV2Benchmark):
     def __init__(self, environ, cores=[0], instance=1):

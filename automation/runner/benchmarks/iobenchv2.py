@@ -77,7 +77,7 @@ class IOBenchV2Interfere(Interference):
         else:
             self._operation = 'writeFlush'
             self._type = 'write'
-        self._name = 'iobenchv2_%s_%s' % (self._type, '1K')
+        self._name = 'iobenchv2_%s_%s' % (self._type, self._size)
         self._path = '%s/iobench.%d' % (environ['data_dir'], instance)
         self._cmd = 'java'
         self._runstring = ','.join([self._operation, '1', self._size, self._size])

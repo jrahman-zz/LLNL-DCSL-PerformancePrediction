@@ -42,7 +42,7 @@ string interference[] = [
 					"IOBenchV2Read128M",
 					"IOBenchV2Write4M"];
 
-int reps = 3;
+int reps[] = [4:10];
 
 app (file output, file log) run (string application, string interSpec) {
     run application interSpec @filename(output) stderr=@filename(log);
@@ -58,7 +58,7 @@ int count = 0;
 int colocLevels[] = [0:2];
 
 foreach application in apps {
-	foreach rep in [1:reps] {
+	foreach rep in reps {
 		foreach thread in interference {
 			foreach colocLevel in colocLevels {
 				int niceLevels[];

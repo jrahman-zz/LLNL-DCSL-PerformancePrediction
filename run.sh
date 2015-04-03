@@ -20,7 +20,7 @@ INSTANCES=2
 CONFIG="${BASE_DIR}/config/config.json"
 APP_CONFIG="${BASE_DIR}/config/applications.json"
 BENCHMARK_CONFIG="${BASE_DIR}/config/benchmarks.json"
-INTERFERENCE_CONFIG="${BASE_DIR}/config/interference.json.training"
+INTERFERENCE_CONFIG="${BASE_DIR}/config/interference.json"
 
 # Perform pre-run setup
 "${BASE_DIR}/setup.sh" "${INSTANCES}" "${CONFIG}" "${INTERFERENCE_CONFIG}" "${BENCHMARK_CONFIG}" "${APP_CONFIG}" "${APP_DATA}" "${APP_HOME}"

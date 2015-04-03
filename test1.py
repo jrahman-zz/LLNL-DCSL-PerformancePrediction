@@ -2,7 +2,7 @@
 
 import sys
 
-apps =	["SpecBzip",
+apps = ["SpecBzip",
 		"SpecGcc",
 		"SpecGobmk",
 		"SpecHMMER",
@@ -28,23 +28,24 @@ apps =	["SpecBzip",
 		"SpecWrf",
 		"SpecSphinx"];
 
-interference = ["StreamV2Scale",
-				"StreamV2Add",
-				"MemoryV2Stream1K",
-				"MemoryV2Stream512K",
-				"MemoryV2Stream4M",
-				"MemoryV2Stream12M",
-				"MemoryV2Stream24M",
-				"MemoryV2Random256K",
-				"MemoryV2Random1M",
-				"MemoryV2Random8M",
-				"MemoryV2Random16M",
-				"MemoryV2Random32M",
-				"IOBenchV2Read1M",
-				"IOBenchV2Read128M",
-				"IOBenchV2Write4M"];
+interference = ["StreamV2Copy",
+				"StreamV2Triad",
+				"MemoryV2Stream256K",
+				"MemoryV2Stream1M",
+				"MemoryV2Stream8M",
+				"MemoryV2Stream16M",
+				"MemoryV2Stream32M",
+				"MemoryV2Random1K",
+				"MemoryV2Random512K",
+				"MemoryV2Random4M",
+				"MemoryV2Random12M",
+				"MemoryV2Random24M",
+				"MemoryV2Random128M",
+				"IOBenchV2Read4M",
+				"IOBenchV2Write1M",
+				"IOBenchV2Write128M"];
 
-reps = range(0, 11)
+reps = range(1, 11)
 
 def create_interfere_spec(thread_name, coloc_level, nice_level):
     return "%s:1:%d:%d" % (thread_name, coloc_level, nice_level)

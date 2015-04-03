@@ -4,3 +4,5 @@
 *.jar
 *.pyc
 *.R
+*.kml
+*.swiftx

@@ -84,7 +84,7 @@ def generate_list():
 				tspecs = map(lambda app, conf: "%s:1:%d:%d" % (app, conf['coloc_level'], conf['nice_level']), perm, config)
 				
 				# Pad with dummy interference
-				tspec = ','.join(padding + tspecs)
+				tspec = ','.join(tspecs + padding)
 				for rep in reps:
 					runspec = "%d_%s" % (rep, tspec)
 					basename = "output/run_" + application + "_"	

@@ -213,7 +213,7 @@ class BackgroundProcess(greenlet.Greenlet):
         prog = self._args[5].split('/')[-1]
         while self._keep_running:
             logging.info('Starting new %s process...', prog)
-            self._process = subprocess(self._args, stdout=DEVNULL, stderr=subprocess.STDOUT)
+            self._process = subprocess.Popen(self._args, stdout=DEVNULL, stderr=subprocess.STDOUT)
             return_code = self._process.wait()
             logging.info('Interference application %s exited with return code %d', prog, return_code)
         

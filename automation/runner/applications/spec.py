@@ -10,7 +10,7 @@ class Spec(Application):
         self._load_params = [self._bmark_name, 'train']
         self._cleanup_params = [self._bmark_name]
         self._run_params = [self._bmark_name, 'train', '0']
-        self._intefere_params = [self._bmark_name, 'train', '1']
+        self._interfere_params = [self._bmark_name, 'train', '1']
 
     def _process_output(self, output):
         regex = r"%s[^-]*--\s*(\d*(?:\.\d*)?)[^-]*--\s*S.*\n" % self._bmark_name

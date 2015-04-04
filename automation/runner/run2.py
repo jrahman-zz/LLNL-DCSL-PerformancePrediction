@@ -30,8 +30,8 @@ def run(applications, benchmarks, interference):
                         t['application'] = str(application)
                         for i in range(0, len(interference)):
 							t['interference%d' % (i+1)] = str(interference[i])
-                        t.update(run_benchmarks(benchmarks))
                         t.update(run_application(application))
+                        t.update(run_benchmarks(benchmarks))
                         times.append(t)
                     except Exception as e:
                         logging.exception('Failed, %s', str(e)) # DEBUG

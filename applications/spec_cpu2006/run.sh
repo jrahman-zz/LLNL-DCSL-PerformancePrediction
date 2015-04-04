@@ -22,14 +22,14 @@ echo "Run: Starting now..."
     cd "${SPEC_DIR}"
     source shrc
     if [ "x${INTERFERENCE}" == "x1" ]; then 
-        ./bin/specinvoke -d "${SPEC_DIR}/benchspec/CPU2006/${BMARK_NAME}/run/run_base_${SIZE}_x86-64.0000"
+        ./bin/specinvoke -d "${SPEC_DIR}/benchspec/CPU2006/${BMARK_NAME}/run/run_base_${SIZE}_x86-64.0001"
     else
-            ./bin/runspec -c custom-linux64.cfg --nobuild --iterations 1 --noreportable --size ${SIZE} --action run "${BMARK_NAME}"
+        ./bin/runspec -c custom-linux64.cfg --nobuild --iterations 1 --noreportable --size ${SIZE} --action run "${BMARK_NAME}"
     fi
 )
 if [ $? -ne 0 ]; then
     echo "Error: Failed to run the benchmark"
-    exit 1
+    exit 2
 fi
 echo "Run: Completed"
 

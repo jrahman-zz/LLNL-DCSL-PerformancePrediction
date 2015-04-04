@@ -29,7 +29,7 @@ if [ $? -ne 0 ]; then
 	exit 2
 fi
 
-~/python2/bin/python "${BASE_DIR}/automation/runner/run1.py" --applications "${APP}" --interference "${INTERFERENCE}" --output "${OUTPUT_PATH}"
+~/python2/bin/python "${BASE_DIR}/automation/runner/run2.py" --applications "${APP}" --interference "${INTERFERENCE}" --output "${OUTPUT_PATH}"
 if [ $? -ne 0 ]; then
    echo "Run failed"
    exit 3

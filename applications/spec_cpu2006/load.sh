@@ -76,4 +76,18 @@ if [ $? -ne 0 ]; then
     exit 8
 fi
 
+# Make a 2nd copy of the SPEC benchmark for interference use
+cp -r "${SPEC_DIR}/benchspec/CPU2006/${BMARK_NAME}/run/run_base_${SIZE}_x86-64.0000" "${SPEC_DIR}/benchspec/CPU2006/${BMARK_NAME}/run/run_base_${SIZE}_x86-64.0001"
+if [ $? -ne 0 ]; then
+	echo "Error: Failed to duplicate benchmark"
+	exit 9
+fi
+
+# Perform a rewrite of rules based on the new directory
+sed -i s/run_base_${SIZE}_x86-64.0000/run_base_${SIZE}_x86-64.0001/ "${SPEC_DIR}/benchspec/CPU2006/${BMARK_NAME}/run/run_base_${SIZE}_x86-64.0001/"*.cmd
+if [ $? -ne 0 ]; then
+	echo "Error: Failed to rewrite run dir"
+	exit 10
+fi
+
 exit 0

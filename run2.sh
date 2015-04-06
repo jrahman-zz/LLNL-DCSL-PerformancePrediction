@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-	echo "Usage: main.sh app interference output_path"
+	echo "Usage: run2.sh app interference output_path"
 }
 
 if [ $# -ne 3 ]; then
@@ -9,8 +9,8 @@ if [ $# -ne 3 ]; then
 	exit 1
 fi
 
-APP_HOME=/p/lscratche/rahman3/apps/
-APP_DATA=/p/lscratche/rahman3/app_data/`hostname`/
+APP_HOME=/p/lscratche/rahman3/apps
+APP_DATA=/p/lscratche/rahman3/app_data/`hostname`
 APP="${1}"
 INTERFERENCE="${2}"
 OUTPUT_PATH="${3}"

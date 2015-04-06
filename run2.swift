@@ -8,7 +8,7 @@ type RunConfig {
 type file;
 
 app (file output, file log) run (string application, string interference) {
-	run application interference @filename(output) stderr=@filename(log);
+	run2 application interference @filename(output) stderr=@filename(log);
 }
 
 string runFile = @arg("run.file");

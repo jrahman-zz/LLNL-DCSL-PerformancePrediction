@@ -45,7 +45,7 @@ class SpecGobmk(Spec):
         self._bmark_name = '445.gobmk'
         Spec.__init__(self, environ, app_cores, client_cores, nice, instance)
 
-class SpecHMMER(Spec):
+class SpecHmmer(Spec):
     def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
         self._bmark_name = '456.hmmer'
         Spec.__init__(self, environ, app_cores, client_cores, nice, instance)

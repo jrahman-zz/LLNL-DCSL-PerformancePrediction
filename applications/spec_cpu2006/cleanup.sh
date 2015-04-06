@@ -10,10 +10,11 @@ if [ $# -ne 3 ]; then
     exit 1
 fi
 
+HOSTNAME=`hostname`
 SPEC_DIR=${1}
 
 # Remove temp dir
-DATA_DIR="${2}/spec_data_${3}"
+DATA_DIR="${2}/spec/${3}"
 if [ -d "${DATA_DIR}" ]; then
     echo "Cleanup: Removing ${DATA_DIR}..."
     rm -rf "${DATA_DIR}"
@@ -30,7 +31,7 @@ RUN_DIR="${SPEC_DIR}/benchspec/CPU2006/${3}/"
 echo "Cleanup: Checking for ${RUN_DIR}/run/"
 if [ -d "${RUN_DIR}/run/" ]; then
     echo "Cleanup: Removing ${RUN_DIR}/run/"
-    rm -rf "${RUN_DIR}"/run/*
+    rm -rf "${RUN_DIR}"/run/*"${HOSTNAME}"*
     if [ $? -ne 0 ]; then
         echo "Error: Failed to cleanup run directory"
         exit 3

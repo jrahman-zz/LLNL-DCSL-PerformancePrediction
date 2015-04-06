@@ -6,7 +6,7 @@ import itertools
 apps = ["SpecBzip",
 		"SpecGcc",
 		"SpecGobmk",
-		"SpecHMMER",
+		"SpecHmmer",
 		"SpecSjeng",
 		"SpecLibquantum",
 		"SpecHRef",
@@ -27,7 +27,7 @@ apps = ["SpecBzip",
 		"SpecTonto",
 		"SpecLbm",
 		"SpecWrf",
-		"SpecSphinx"];
+		"SpecSphinx"]
 
 interference = apps
 
@@ -40,6 +40,7 @@ count = 0
 coloc_levels = range(0, 3)
 
 def generate_list():
+	global apps
 	output = {'interference': [], 'application': [], 'output_file': [], 'log_file': []}
 	configs = []
 	for coloc_level in coloc_levels:
@@ -54,7 +55,7 @@ def generate_list():
 
 	# Sample over number of interfering applications
 	max_interfere = 3
-	for count in range(1, max_interfere+1):
+	for count in range(1, max_interfere):
 		unique_configs = itertools.combinations_with_replacement(configs, count)
 	
 		# Build dummy padding
@@ -68,35 +69,31 @@ def generate_list():
 
 		# Sample over combination of different configurations
 		for config in filtered:
-			print(config)
-			app_combinations = itertools.combinations(interference, count + 1)
+			app_combinations = itertools.combinations(interference, count)
 
 			# Sample over different assignments of interference threads to configurations
 			for perm in app_combinations:
 				total = total + 1
 
 				# Uniformly sample every 500th configuration
-				if total % 500 != 0:
+				if total % (30) != 0:
 					continue
-
-				application = perm[0]
-				perm = perm[1:len(perm)]
+				
 				tspecs = map(lambda app, conf: "%s:1:%d:%d" % (app, conf['coloc_level'], conf['nice_level']), perm, config)
 				
 				# Pad with dummy interference
 				tspec = ','.join(tspecs + padding)
-				for rep in reps:
-					runspec = "%d_%s" % (rep, tspec)
-					basename = "output/run_" + application + "_"	
-					oname = basename + runspec + ".json"
-					lname = basename + runspec + ".stdout"
-					output['interference'].append(tspec)
-					output['output_file'].append(oname)
-					output['log_file'].append(lname)
-					output['application'].append(application)
+				for application in apps:
+					for rep in reps:
+						runspec = "%d_%s" % (rep, tspec)
+						basename = "output/run_" + application + "_"	
+						oname = basename + runspec + ".json"
+						lname = basename + runspec + ".stdout"
+						output['interference'].append(tspec)
+						output['output_file'].append(oname)
+						output['log_file'].append(lname)
+						output['application'].append(application)
 
-	print(total)
-	print(len(output['application']))
 	return output
 					
 def write_to_file(filename, data):

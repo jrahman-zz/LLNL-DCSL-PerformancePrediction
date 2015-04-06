@@ -36,6 +36,10 @@ def run(applications, benchmarks, interference):
                     except Exception as e:
                         logging.exception('Failed, %s', str(e)) # DEBUG
                         raise
+            # Take out the trash (and there is a LOT of trash)
+            for thread in interference:
+			    thread.cleanup()
+            application.cleanup()
         except Exception as e:
             logging.exception('Failed to run application: %s', str(application))
             raise

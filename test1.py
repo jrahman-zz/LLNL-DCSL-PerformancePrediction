@@ -5,7 +5,7 @@ import sys
 apps = ["SpecBzip",
 		"SpecGcc",
 		"SpecGobmk",
-		"SpecHMMER",
+		"SpecHmmer",
 		"SpecSjeng",
 		"SpecLibquantum",
 		"SpecHRef",

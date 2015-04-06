@@ -97,7 +97,14 @@ for INSTANCE in `seq ${INSTANCES}`; do
            echo "Failed to create ${FILE}"
            exit 8
         fi
-    fi
+    fi	
 done
+
+DIR="${DATA_BASE}/spec/"
+mkdir -p "${DIR}"
+if [ $? -ne 0 ]; then
+	echo "Failed to create spec dir"
+	exit 9
+fi
 
 exit 0

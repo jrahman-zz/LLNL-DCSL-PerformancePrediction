@@ -69,10 +69,10 @@ def generate_list():
 		# Sample over combination of different configurations
 		for config in filtered:
 			print(config)
-			app_permutations = itertools.combinations(interference, count + 1)
+			app_combinations = itertools.combinations(interference, count + 1)
 
 			# Sample over different assignments of interference threads to configurations
-			for perm in app_permutations:
+			for perm in app_combinations:
 				total = total + 1
 
 				# Uniformly sample every 500th configuration

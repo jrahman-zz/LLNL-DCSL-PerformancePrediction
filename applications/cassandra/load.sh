@@ -1,10 +1,10 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: load.sh CASSANDRA_DIR DATA_DIR YCSB_DIR PID_FILE CASSANDRA_INCLUDE"
+    echo "Usage: load.sh CASSANDRA_DIR DATA_DIR INSTANCE YCSB_DIR PID_FILE CASSANDRA_INCLUDE"
 }
 
-if [ $# -ne 5 ]; then
+if [ $# -ne 6 ]; then
     usage
     exit 1
 fi
@@ -34,8 +34,10 @@ if [ ! -d "${DATA_DIR}" ]; then
 fi
 export DATA_DIR
 
+INSTANCE=${3}
+
 # Path to base of YCSB dir
-YCSB_DIR=${3}
+YCSB_DIR=${4}
 if [ ! -d "${YCSB_DIR}" ]; then
     echo "Error: YCSB directory doesn't exist"
     usage
@@ -49,9 +51,9 @@ if [ ! -x "${YCSB_DIR}/bin/ycsb" ]; then
 fi
 
 # Name of PID file
-PID_FILE=${4}
+PID_FILE=${5}
 
-CASSANDRA_INCLUDE=${5}
+CASSANDRA_INCLUDE=${6}
 if [ ! -r "${CASSANDRA_INCLUDE}" ]; then
     echo "Error: Bad cassandra include config file"
     usage

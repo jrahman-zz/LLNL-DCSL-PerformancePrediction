@@ -1,19 +1,20 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: run.sh PARSEC_DIR DATA_DIR BMARK_NAME SIZE NTHREADS"
+    echo "Usage: run.sh PARSEC_DIR DATA_DIR INSTANCE BMARK_NAME SIZE NTHREADS"
 }
 
-if [ $# -ne 5 ]; then
+if [ $# -ne 6 ]; then
     usage
     exit 1
 fi
 
 PARSEC_DIR=${1}
 DATA_DIR=${2}
-BMARK_NAME=${3}
-SIZE=${4}
-export NTHREADS=${5}
+INSTANCE=${3}
+BMARK_NAME=${4}
+SIZE=${5}
+export NTHREADS=${6}
 export OMP_NUM_THREADS=${NTHREADS}
 
 BASE_DIR=$(dirname $0)/

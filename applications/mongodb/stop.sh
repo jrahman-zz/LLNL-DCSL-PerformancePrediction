@@ -1,10 +1,10 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: stop.sh MONGODB_DIR DATA_DIR"
+    echo "Usage: stop.sh MONGODB_DIR DATA_DIR INSTANCE"
 }
 
-if [ $# -ne 2 ]; then
+if [ $# -ne 3 ]; then
     usage
     exit 1
 fi
@@ -23,6 +23,7 @@ if [ ! -d "${DBLOCATION}" ]; then
     exit 1
 fi
 
+INSTANCE=${3}
 
 ${MONGODB_DIR}/bin/mongod --shutdown --dbpath="${DBLOCATION}"
 exit ${SUCCESS}

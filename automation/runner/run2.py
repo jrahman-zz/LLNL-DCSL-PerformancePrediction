@@ -127,7 +127,7 @@ def create_config(environ, application_list, interference_specs):
 
     # Process benchmarks for use
     benchmarks = map(lambda key: benchmarks[key](environ, app_cores), benchmarks.keys())
-    applications = map(lambda key: apps[key](environ, app_cores, client_cores[0]), application_list)
+    applications = map(lambda key: apps[key](environ, app_cores, client_cores[0], 1), application_list)
     return (applications, benchmarks, threads)
     
 def run_experiement(interference_specs, application_list, config_path, output_path):

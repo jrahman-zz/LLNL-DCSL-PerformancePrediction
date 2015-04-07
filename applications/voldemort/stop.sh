@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO, update parameters
+
 if [ $# -ne 1 -o ! -r "${1}" ]; then
     echo "Error: Bad pid file"
     exit 1

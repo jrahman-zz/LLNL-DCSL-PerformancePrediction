@@ -1,9 +1,10 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: run.sh YCSB_DIR [OPERATION_COUNT]"
+    echo "Usage: run.sh VOLDEMORT_DIR DATA_DIR INSTANCE YCSB_DIR [OPERATION_COUNT]"
 }
 
+# TODO, update this
 if [ $# -eq 1 ]; then
     YCSB_DIR=${1}
     OPERATIONS=""

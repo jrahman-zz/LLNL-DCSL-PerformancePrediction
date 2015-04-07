@@ -1,13 +1,15 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: stop.sh MEMCACHED_DIR DATA_DIR PID_FILE"
+    echo "Usage: stop.sh MEMCACHED_DIR DATA_DIR INSTANCE PID_FILE"
 }
 
-if [ $# -ne 3 ]; then
+if [ $# -ne 4 ]; then
     usage
     exit 1
 fi
+
+PID_FILE=${4}
 
 if [ ! -r "${PID_FILE}" -o `wc -l ${PID_FILE}` -ne 1 ]; then
     echo "Bad PID file"

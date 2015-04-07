@@ -1,17 +1,18 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: cleanup.sh PARSEC_DIR DATA_DIR BMARK_NAME"
+    echo "Usage: cleanup.sh PARSEC_DIR DATA_DIR INSTANCE BMARK_NAME"
 }
 
-if [ $# -ne 3 ]; then
+if [ $# -ne 4 ]; then
     echo "Error: Invalid arguments"
     usage
     exit 1
 fi
 
 PARSEC_DIR=${1}
-BMARK_NAME=${3}
+INSTANCE=${3}
+BMARK_NAME=${4}
 
 # Remove temp dir
 DATA_DIR="${2}/parsec_data_${BMARK_NAME}"

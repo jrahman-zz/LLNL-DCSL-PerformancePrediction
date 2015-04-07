@@ -1,10 +1,10 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: cleanup.sh SPEC_DIR DATA_DIR BMARK_NAME"
+    echo "Usage: cleanup.sh SPEC_DIR DATA_DIR INSTANCE BMARK_NAME"
 }
 
-if [ $# -ne 3 ]; then
+if [ $# -ne 4 ]; then
     echo "Error: Invalid arguments"
     usage
     exit 1
@@ -12,9 +12,11 @@ fi
 
 HOSTNAME=`hostname`
 SPEC_DIR=${1}
+INSTANCE=${3}
+BMARK_NAME=${4}
 
 # Remove temp dir
-DATA_DIR="${2}/spec/${3}"
+DATA_DIR="${2}/spec/${BMARK_DIR}"
 if [ -d "${DATA_DIR}" ]; then
     echo "Cleanup: Removing ${DATA_DIR}..."
     rm -rf "${DATA_DIR}"
@@ -27,14 +29,18 @@ fi
 
 # Remove run files
 
-RUN_DIR="${SPEC_DIR}/benchspec/CPU2006/${3}/"
+RUN_DIR="${SPEC_DIR}/benchspec/CPU2006/${BMARK_NAME}/"
 echo "Cleanup: Checking for ${RUN_DIR}/run/"
 if [ -d "${RUN_DIR}/run/" ]; then
     echo "Cleanup: Removing ${RUN_DIR}/run/"
-    rm -rf "${RUN_DIR}"/run/*"${HOSTNAME}"*
+    rm -rf "${RUN_DIR}"/run/*"${HOSTNAME}_${INSTANCE}"*
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to cleanup run directory"
-        exit 3
+        sleep 1
+		rm -rf "${RUN_DIR}"/run/*"${HOSTNAME}_${INSTANCE}"*
+		if [ $? -ne 0 ]; then
+			echo "Error: Failed to cleanup run directory"
+    	    exit 3
+		fi
     fi
 else
     echo "Error: No run directory found"

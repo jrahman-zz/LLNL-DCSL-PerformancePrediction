@@ -1,10 +1,10 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: start.sh VOLDEMORT_HOME DATA_DIR PIDFILE"
+    echo "Usage: start.sh VOLDEMORT_HOME DATA_DIR INSTANCE PIDFILE"
 }
 
-if [ $# -ne 3 ]; then
+if [ $# -ne 4 ]; then
     usage
     exit 1
 fi
@@ -22,6 +22,8 @@ if [ ! -d "${DATA_DIR}/voldemort_data" ]; then
     usage
     exit 1
 fi
+
+INSTANCE=${3}
 
 PID_FILE=${4}
 

@@ -2,10 +2,10 @@
 
 
 usage() {
-    echo "Usage: start.sh MEMCACHED_DIR DATA_DIR PID_FILE MEMORY(MB) [THREADS]"
+    echo "Usage: start.sh MEMCACHED_DIR DATA_DIR INSTANCE PID_FILE MEMORY(MB) [THREADS]"
 }
 
-if [ $# -lt 4 ]; then
+if [ $# -lt 5 ]; then
     usage
     exit 1
 fi
@@ -40,12 +40,13 @@ if [ ! -d "${DATA_DIR}" ]; then
     exit 1
 fi
 
-PID_FILE=${3}
+INSTANCE=${3}
+PID_FILE=${4}
 
-MEMORY=${4}
+MEMORY=${5}
 
-if [ $# -gt 4 ]; then
-    THREADS=${5}
+if [ $# -gt 5 ]; then
+    THREADS=${6}
 else
     THREADS=4
 fi

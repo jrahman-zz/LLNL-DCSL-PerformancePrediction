@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: run.sh MONGODB_DIR DATA_DIR YCSB_DIR OPERATION_COUNT"
+    echo "Usage: run.sh MONGODB_DIR DATA_DIR INSTANCE YCSB_DIR OPERATION_COUNT"
 }
 
 if [ $# -eq 4 ]; then

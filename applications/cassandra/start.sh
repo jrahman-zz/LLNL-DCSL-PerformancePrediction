@@ -1,10 +1,10 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: start.sh CASSANDRA_HOME DATA_DIR PIDFILE CASSANDRA_INCLUDE"
+    echo "Usage: start.sh CASSANDRA_HOME DATA_DIR INSTANCE PIDFILE CASSANDRA_INCLUDE"
 }
 
-if [ $# -ne 4 ]; then
+if [ $# -ne 5 ]; then
     usage
     exit 1
 fi
@@ -24,9 +24,10 @@ if [ ! -d "${DATA_DIR}/cassandra_data" ]; then
 fi
 export DATA_DIR
 
-PID_FILE=${3}
+INSTANCE=${3}
+PID_FILE=${4}
 
-CASSANDRA_INCLUDE=${4}
+CASSANDRA_INCLUDE=${5}
 if [ ! -r "${CASSANDRA_INCLUDE}" ]; then
     echo "Error: Bad cassandra include config file"
     usage

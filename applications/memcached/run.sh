@@ -1,17 +1,18 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: run.sh MEMCACHED_DIR DATA_DIR OPERATION_COUNT"
+    echo "Usage: run.sh MEMCACHED_DIR DATA_DIR INSTANCE OPERATION_COUNT"
 }
 
-if [ $# -ne 3 ]; then
+if [ $# -ne 4 ]; then
     usage
     exit 1
 fi
 
 MEMCACHED_DIR=${1}
 DATA_DIR=${2}
-OPERATIONS=${3}
+INSTANCE=${3}
+OPERATIONS=${4}
 
 BASE_DIR=$(dirname $0)/
 

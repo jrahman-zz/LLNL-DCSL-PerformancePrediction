@@ -1,13 +1,13 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: run.sh CASSANDRA_DIR DATA_DIR YCSB_DIR OPERATION_COUNT"
+    echo "Usage: run.sh CASSANDRA_DIR DATA_DIR INSTANCE YCSB_DIR OPERATION_COUNT"
 }
 
-if [ $# -eq 4 ]; then
+if [ $# -eq 5 ]; then
     # Ignore the first two arguments, they are dummy arguments for the interface
-    YCSB_DIR=${3}
-    OPERATIONS="-p \"operationcount=${4}\""
+    YCSB_DIR=${4}
+    OPERATIONS="-p \"operationcount=${5}\""
 else
     usage
     exit 1

@@ -8,12 +8,13 @@ class Application():
     def __init__(self, environ, application_name, start_cores, run_cores, nice=0, instance=1):
         
         # Basic information for an application module
+        self._instance = str(instance)
         self._application_name = application_name
         self._script_dir = environ['applications'][self._application_name]['script_dir']
         self._application_dir = environ['applications'][self._application_name]['application_dir']
         self._data_dir = environ['data_dir']
 
-        self._interface_params = [self._application_dir, self._data_dir]
+        self._interface_params = [self._application_dir, self._data_dir, self._instance]
 
         # TODO, clarify how this works
         self._run_cores = run_cores
@@ -213,7 +214,7 @@ class BackgroundProcess(greenlet.Greenlet):
         prog = self._args[5].split('/')[-1]
         while self._keep_running:
             logging.info('Starting new %s process...', prog)
-            self._process = subprocess(self._args, stdout=DEVNULL, stderr=subprocess.STDOUT)
+            self._process = subprocess.Popen(self._args, stdout=DEVNULL, stderr=subprocess.STDOUT)
             return_code = self._process.wait()
             logging.info('Interference application %s exited with return code %d', prog, return_code)
         

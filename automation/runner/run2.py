@@ -17,8 +17,10 @@ def run(applications, benchmarks, interference):
     for application in applications:
         try:
             application.load()
+
             with ExitStack() as top_stack:
                 for thread in interference:
+                    thread.load()
                     top_stack.enter_context(thread)
                 with ExitStack() as stack:
                     for thread in interference:
@@ -26,13 +28,18 @@ def run(applications, benchmarks, interference):
                     try:
                         t = dict()
                         t['application'] = str(application)
-                        t['interference'] = str(thread)
-                        t.update(run_benchmarks(benchmarks))
+                        for i in range(0, len(interference)):
+							t['interference%d' % (i+1)] = str(interference[i])
                         t.update(run_application(application))
+                        t.update(run_benchmarks(benchmarks))
                         times.append(t)
                     except Exception as e:
                         logging.exception('Failed, %s', str(e)) # DEBUG
                         raise
+            # Take out the trash (and there is a LOT of trash)
+            for thread in interference:
+			    thread.cleanup()
+            application.cleanup()
         except Exception as e:
             logging.exception('Failed to run application: %s', str(application))
             raise
@@ -120,7 +127,7 @@ def create_config(environ, application_list, interference_specs):
 
     # Process benchmarks for use
     benchmarks = map(lambda key: benchmarks[key](environ, app_cores), benchmarks.keys())
-    applications = map(lambda key: apps[key](environ, app_cores, client_cores[0]), application_list)
+    applications = map(lambda key: apps[key](environ, app_cores, client_cores[0], 1), application_list)
     return (applications, benchmarks, threads)
     
 def run_experiement(interference_specs, application_list, config_path, output_path):

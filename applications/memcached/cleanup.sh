@@ -1,16 +1,16 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: cleanup.sh MEMCACHED_DIR DATA_DIR"
+    echo "Usage: cleanup.sh MEMCACHED_DIR DATA_DIR INSTANCE"
 }
 
-if [ $# -ne 2 ]; then
+if [ $# -ne 3 ]; then
     echo "Error: Invalid arguements"
     usage
     exit 1
 fi
 
-DATA_DIR="${2}/memcached_data"
+DATA_DIR="${3}/memcached_data"
 if [ -d "${DATA_DIR}" ]; then
     echo "Cleanup: Removing ${DATA_DIR}..."
     rm -rf "${DATA_DIR}"

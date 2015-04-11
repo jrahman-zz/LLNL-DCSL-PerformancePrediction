@@ -2,10 +2,10 @@
 
 
 usage() {
-    echo "Usage: load.sh MEMCACHED_DIR DATA_DIR PID_FILE MEMORY"
+    echo "Usage: load.sh MEMCACHED_DIR DATA_DIR INSTANCE PID_FILE MEMORY"
 }
 
-if [ $# -ne 4 ]; then
+if [ $# -ne 5 ]; then
     usage
     exit 1
 fi
@@ -40,9 +40,10 @@ if [ ! -d "${DATA_DIR}" ]; then
     exit 1
 fi
 
-PID_FILE=${3}
+INSTANCE=${3}
+PID_FILE=${4}
 
-MEMORY=${4}
+MEMORY=${5}
 
 SCALE_FACTOR=`expr ${MEMORY} / 300`
 if [ $? -ne 0 ]; then

@@ -1,10 +1,10 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: load.sh VOLDEMORT_DIR DATA_DIR YCSB_DIR"
+    echo "Usage: load.sh VOLDEMORT_DIR DATA_DIR INSTANCE YCSB_DIR"
 }
 
-if [ $# -ne 3 ]; then
+if [ $# -ne 4 ]; then
     usage
     exit 1
 fi
@@ -31,8 +31,10 @@ if [ ! -d "${DATA_DIR}" ]; then
     exit 1
 fi
 
+INSTANCE=${3}
+
 # Path to base of YCSB dir
-YCSB_DIR=${3}
+YCSB_DIR=${4}
 if [ ! -d "${YCSB_DIR}" ]; then
     echo "Error: YCSB directory doesn't exist"
     usage

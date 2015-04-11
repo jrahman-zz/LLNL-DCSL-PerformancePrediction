@@ -2,10 +2,10 @@
 
 
 usage() {
-    echo "Usage: load.sh PARSEC_DIR DATA_DIR BMARK_NAME"
+    echo "Usage: load.sh PARSEC_DIR DATA_DIR INSTANCE BMARK_NAME"
 }
 
-if [ $# -ne 3 ]; then
+if [ $# -ne 4 ]; then
     usage
     exit 1
 fi
@@ -34,7 +34,8 @@ if [ ! -d "${DATA_DIR}" ]; then
     exit 4
 fi
 
-BMARK_NAME=${3}
+INSTANCE=${3}
+BMARK_NAME=${4}
 
 # Delete old datadir
 DATA="${DATA_DIR}/parsec_data_${BMARK_NAME}"

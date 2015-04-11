@@ -2,7 +2,7 @@
 
 
 usage() {
-    echo "Usage: start.sh SPEC_DIR DATA_DIR BMARK_NAME"
+    echo "Usage: start.sh SPEC_DIR DATA_DIR INSTANCE BMARK_NAME"
 }
 
 exit 0

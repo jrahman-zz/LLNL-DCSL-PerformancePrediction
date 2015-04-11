@@ -1,5 +1,5 @@
 from application import Application
-import re
+import math
 import logging
 import re
 
@@ -63,7 +63,7 @@ class ParsecFluidanimate(Parsec):
         self._bmark_name = 'fluidanimate'
         # Cores must be power of 2
         power = int(math.log(len(app_cores), 2) + 0.5)
-        if 2 ** power != num:
+        if 2 ** power != len(app_cores):
             raise Exception('Core count must be power of 2')
         Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
 

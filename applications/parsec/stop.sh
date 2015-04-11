@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: stop.sh PARSEC_DIR DATA_DIR"
+    echo "Usage: stop.sh PARSEC_DIR DATA_DIR INSTANCE"
 }
 
 if [ $# -ne 2 ]; then

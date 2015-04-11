@@ -1,10 +1,10 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: start.sh MONGODB_HOME DATA_DIR"
+    echo "Usage: start.sh MONGODB_HOME DATA_DIR INSTANCE"
 }
 
-if [ $# -ne 2 ]; then
+if [ $# -ne 3 ]; then
     usage
     exit 1
 fi
@@ -22,6 +22,8 @@ if [ ! -d "${DATA_DIR}/mongodb_data" ]; then
     usage
     exit 1
 fi
+
+INSTANCE=${3}
 
 # Setup our data directory info
 DBLOCATION="${DATA_DIR}/mongodb_data"

@@ -58,19 +58,10 @@ nice.levels			= unique(scrubbed$nice)
 
 interference.test.names = unique(test_data[test_data$interference != 'dummy', ]$interference)
 
-configs.data=list()
-configs.count=0
-# Plot clusters
-#pdf('single_application_', width=10, height=5)
-#par(mfrow=c(length(interference.names), 5))
-#for (interfere in interference.names) {
-#	boxplot()
-#	boxplot()
-#	boxplot()
-#	boxplot()
-#	boxplot()
-#}
-#dev.off()
+# Remove non-benchmark columns
+drops = c('application', 'interference', 'coloc', 'rep', 'nice', 'time')
+predictors.data = train_data[train_data$interference != 'dummy', !(names(train_data) %in% drops)]
+predictors.names = colnames(predictors.data)
 
 pdf("app_times.pdf", width=11.5, height=8)
 #par(mfrow=c(length(application.names), 5), xpd=T)
@@ -206,15 +197,8 @@ boot.pred_mean = function(data, indices) {
 }
 
 print('Loading models...')
-load('models.data')
+load(args[3])
 print('Loaded models')
-
-print("Models: ")
-print(models)
-
-#application.names = names(models)
-#model.names = names(models[[1]])
-
 
 # Plot results
 
@@ -286,7 +270,7 @@ pdf('base_pred_rmse.pdf', width=11, height=8.5)
 xyplot(pred_rmse ~ base_rmse,
        group=model,
        data=err.points,
-       auto.key=TRUE,
+       auto.key=list(space='right'),
        xlab="Mean RMSE",
        ylab="Prediction RMSE",
        main="Prediction RMSE v.s. Runtime RMSE",
@@ -297,7 +281,7 @@ xyplot(pred_rmse ~ base_rmse,
 xyplot(pred_rmse ~ base_rmse,
        group=application,
        data=err.points,
-       auto.key=TRUE,
+       auto.key=list(space='right'),
        xlab="Mean RMSE",
        ylab="Prediction RMSE",
        main="Prediciton RMSE vs. Runtime RMSE",
@@ -305,8 +289,6 @@ xyplot(pred_rmse ~ base_rmse,
     )
 dev.off()
 
-# Sort the rows of error based first on application then group by model
-error <- error[order(error$application, error$model),]
 #range = extendrange(c(error$error, error$upp, error$low))[2]
 
 # Split data into four sets
@@ -315,14 +297,12 @@ error <- error[order(error$application, error$model),]
 #print("Sets")
 #print(sets)
 
-error = data.frame(application = character(),
-                   model = character(),
-                   error = numeric(),
-                   low = numeric(),
-                   upp = numeric()
-                )
-
 # Generate prediction errors from the test set
+applications = c()
+models.used = c()
+err = c()
+upp = c()
+low = c()
 for (app in names(models)) {
     
   # Select all rows for our application
@@ -340,17 +320,32 @@ for (app in names(models)) {
   for (model in names(models[[app]])) {
     
     fit = models[[app]][[model]]
-    fit.boot = boot(data=test.data, statistic=boot.pred, R=999, model=fit)
+    fit.boot = boot(data=test.data,
+                    statistic=boot.pred,
+                    R=999,
+                    model=fit,
+                    parallel=c('multicore'),
+                    ncpus=4)
+
     # see for bca: "Better Bootstrap Confidence Intervals" by Efron 1987.
     # see "Bootstrapping Regression Models" by John Fox 2002.  
     bootstrap = boot.ci(fit.boot, type='bca')
-    err = bootstrap$t0
-    low = bootstrap$bca[4]
-    upp = bootstrap$bca[5]
-    ci[[app]][[model]] = bootstrap
-    error <- rbind(error, data.frame(application=app, model=model, error=err, upp=upp, low=low))
+    err = c(err, bootstrap$t0)
+    low = c(low, bootstrap$bca[4])
+    upp = c(upp, bootstrap$bca[5])
+    applications = c(applications, app)
+    models.used = c(models.used, model)
   }
 }
+
+# Sort the rows of error based first on application then group by model
+error = data.frame(application=applications,
+                   model=models.used,
+                   error=err,
+                   low=low,
+                   upp=upp)
+
+error <- error[order(error$application, error$model),]
 
 pdf("prediction_single_application.pdf", width=11, height=8.5)
 barchart(error~application,

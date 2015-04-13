@@ -5,6 +5,7 @@ library(rpart)
 library(boot)
 library(e1071)
 library(gbm)
+library(elasticnet)
 library(MASS)
 library(lars)
 library(pls)
@@ -65,7 +66,7 @@ boot.pred_mean = function(data, indices) {
     median(abs(data)) * 100
 }
 
-model.names = c("lm", "svmRadial", "gbm")
+model.names = c("lm", "ridge", "svmRadial", "svmPoly", "gbm")
 #model.names = c('lm', 'svmRadial')
 #model.names = c('lm')
 

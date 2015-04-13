@@ -47,17 +47,6 @@ interference.test.names = unique(test_data[test_data$interference != 'dummy', ]$
 
 configs.data=list()
 configs.count=0
-# Plot clusters
-#pdf('single_application_', width=10, height=5)
-#par(mfrow=c(length(interference.names), 5))
-#for (interfere in interference.names) {
-#   boxplot()
-#   boxplot()
-#   boxplot()
-#   boxplot()
-#   boxplot()
-#}
-#dev.off()
 
 # Remove non-benchmark columns
 drops = c('application', 'interference', 'coloc', 'rep', 'nice', 'time')

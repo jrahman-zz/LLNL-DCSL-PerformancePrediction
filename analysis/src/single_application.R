@@ -47,8 +47,8 @@ test_data=read.csv(args[2],
 			sep=',',
 			stringsAsFactors=T)
 
-# Get configuration informationi
-# We don't want dummy inteference data here, since that is only fir baselin
+# Get configuration information
+# We don't want dummy inteference data here, since that is only for baseline
 scrubbed = train_data[train_data$interference != 'dummy', ]
 application.names 	= unique(scrubbed$application)
 interference.names 	= unique(scrubbed$interference)
@@ -71,27 +71,6 @@ configs.count=0
 #	boxplot()
 #}
 #dev.off()
-
-# Remove non-benchmark columns
-drops = c('application', 'interference', 'coloc', 'rep', 'nice', 'time')
-predictors.data = train_data[train_data$interference != 'dummy', !(names(train_data) %in% drops)]
-predictors.names = colnames(predictors.data)
-
-predictors.pca <- prcomp(predictors.data,
-						center = TRUE,
-						scale = TRUE)
-
-print(predictors.pca)
-plot(predictors.pca, type = "l")
-summary(predictors.pca)
-
-predictors.pca <- prcomp(predictors.data,
-						center = FALSE,
-						scale = FALSE)
-
-print(predictors.pca)
-plot(predictors.pca, type="l")
-summary(predictors.pca)
 
 pdf("app_times.pdf", width=11.5, height=8)
 #par(mfrow=c(length(application.names), 5), xpd=T)
@@ -189,6 +168,21 @@ hist(bmark_jitter_values, breaks=10, xlab="(max-min)/mean", main="Benchmark runt
 dev.off()
 
 
+for (app in application.names) {
+  # Compute the error assuming the mean is our prediction
+  # Effectively determine the natural variance of the data
+  training.data = train_data[train_data$application == app, ]
+  training.data = training.data[training.data$interference == 'dummy', ]
+  accum = c()
+  times = training.data[,'time']
+  m = mean(times)
+  for (time in times) {
+    diff = (time - m) / time
+    accum = c(accum, diff)
+  }
+  print(paste("App: ", app, ", baseline sd: ", sd(accum)))
+}
+
 # Compute training error
 compute.error = function(y0, y1) {
   abs(y1-y0)/y0
@@ -211,96 +205,16 @@ boot.pred_mean = function(data, indices) {
     median(abs(data)) * 100
 }
 
-model.names = c("lm", "svmRadial", "gbm")
-#model.names = c('lm', 'svmRadial')
-#model.names = c('lm')
-
-# Define our formula for y in terms of others
-formula=as.formula('time~.')
-
-models = list()
-ci = list()
-error = data.frame(
-                    application = character(),
-                    model = character(),
-                    error = numeric(),
-                    low = numeric(),
-                    upp = numeric()
-                )
-
-# Build models and use test set for error analysis
-#application.names = c('spec_434.zeusmp') #, 'spec_434.zeusmp', 'spec_434.zeusmp', 'spec_434.zeusmp')
-for (app in application.names) {
-#for (app in c('spec_434.zeusmp')) { #, 'spec_445.gobmk')) {
-  # Select all rows for our application
-  training.set = train_data[train_data$application == app, ]
-  test.set = test_data[test_data$application == app, ]
-
-  training.set = training.set[training.set$interference != 'dummy', ]
-  test.set = test.set[test.set$interference != 'dummy', ]
-
-  # Truncate columns that we do not want to be used in the fitting
-  drops = c('application', 'interference', 'coloc', 'rep', 'nice')
-  training.data = training.set[, !(names(training.set) %in% drops)]
-  test.data = test.set[, !(names(test.set) %in% drops)]
-
-  # Sweep over models
-  for (model in model.names) {
-
-    print(paste("Application: ", app, ", model: ", model))
-    control.object=trainControl(method='repeatedcv',
-						repeats=5,
-						number=10
-					)
-    set.seed(1)
-    
-    # Create a fit mapping from features (no interference) to application performance
-    fit=train(form = time ~ .,
-              data=training.data,
-              method=model,
-              trControl=control.object,
-              preProcess=c("center", "scale"),
-              verbose=FALSE
-            )
-
-    # Save the model for later use
-    models[[app]][[model]] = fit
-
-    fit.boot=boot(data=test.data, statistic=boot.pred, R=999, model=fit)
-    # see for bca: "Better Bootstrap Confidence Intervals" by Efron 1987.
-    # see "Bootstrapping Regression Models" by John Fox 2002.  
-    bootstrap = boot.ci(fit.boot, type='bca')
-    err = bootstrap$t0
-    low = bootstrap$bca[4]
-    upp = bootstrap$bca[5]
-    ci[[app]][[model]] = bootstrap
-    error <- rbind(error, data.frame(application=app, model=model, error=err, upp=upp, low=low))
-  }
-
-  # Compute the error assuming the mean is our prediction
-  # Effectively determine the natural variance of the data
-  training.data = train_data[train_data$application == app, ]
-  training.data = training.data[training.data$interference == 'dummy', ]
-  accum = c()
-  times = training.data[,'time']
-  m = mean(times)
-  for (time in times) {
-    diff = (time - m) / time
-    accum = c(accum, diff)
-  }
-  print(paste("App: ", app, ", baseline sd: ", sd(accum)))
-#  err = median(abs(accum)) * 100
-  #fit.boot = boot(data=accum, statistic=boot.pred_mean, R=10000)
-  #bootstrap = boot.ci(fit.boot, type='bca')
-  #err = bootstrap$t0
-  #low = bootstrap$bca[4]
-  #upp = bootstrap$bca[5]
-  #ci[[app]][['mean']] = bootstrap
- # error <- rbind(error, data.frame(application=app, model='mean', error=err, upp=upp, low=low))
-}
+print('Loading models...')
+load('models.data')
+print('Loaded models')
 
 print("Models: ")
 print(models)
+
+#application.names = names(models)
+#model.names = names(models[[1]])
+
 
 # Plot results
 
@@ -314,7 +228,8 @@ models.used = c()
 
 # Filter out any column except for our predictors and the response variable
 drops = c('application', 'interference', 'coloc', 'rep', 'nice')
-for (app in application.names) {
+for (app in names(models)) {
+    print(app)
     application.data = test_data[test_data$application == app, ]
     for (interfere in interference.test.names) {
         interference.data = application.data[application.data$interference == interfere, ]
@@ -333,7 +248,7 @@ for (app in application.names) {
                 times.sd = sd(times.rel)
 
                 # Compute the error for each model, 
-                for (model in model.names) {
+                for (model in names(models[[app]])) {
                     mod = models[[app]][[model]]
                     print(paste("Model: ", model, ", app: ", app))
                     pred = predict(mod, data)
@@ -395,10 +310,47 @@ error <- error[order(error$application, error$model),]
 #range = extendrange(c(error$error, error$upp, error$low))[2]
 
 # Split data into four sets
-i = 0
-sets = split(application.names, cut(seq_along(application.names), 2, labels=FALSE))
-print("Sets")
-print(sets)
+#i = 0
+#sets = split(application.names, cut(seq_along(application.names), 2, labels=FALSE))
+#print("Sets")
+#print(sets)
+
+error = data.frame(application = character(),
+                   model = character(),
+                   error = numeric(),
+                   low = numeric(),
+                   upp = numeric()
+                )
+
+# Generate prediction errors from the test set
+for (app in names(models)) {
+    
+  # Select all rows for our application
+  training.set = train_data[train_data$application == app, ]
+  test.set = test_data[test_data$application == app, ]
+
+  training.set = training.set[training.set$interference != 'dummy', ]
+  test.set = test.set[test.set$interference != 'dummy', ]
+
+  # Truncate columns that we do not want to be used in the fitting
+  drops = c('application', 'interference', 'coloc', 'rep', 'nice')
+  training.data = training.set[, !(names(training.set) %in% drops)]
+  test.data = test.set[, !(names(test.set) %in% drops)]
+
+  for (model in names(models[[app]])) {
+    
+    fit = models[[app]][[model]]
+    fit.boot = boot(data=test.data, statistic=boot.pred, R=999, model=fit)
+    # see for bca: "Better Bootstrap Confidence Intervals" by Efron 1987.
+    # see "Bootstrapping Regression Models" by John Fox 2002.  
+    bootstrap = boot.ci(fit.boot, type='bca')
+    err = bootstrap$t0
+    low = bootstrap$bca[4]
+    upp = bootstrap$bca[5]
+    ci[[app]][[model]] = bootstrap
+    error <- rbind(error, data.frame(application=app, model=model, error=err, upp=upp, low=low))
+  }
+}
 
 pdf("prediction_single_application.pdf", width=11, height=8.5)
 barchart(error~application,

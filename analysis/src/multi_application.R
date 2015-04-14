@@ -48,42 +48,12 @@ test_data=read.csv(args[2],
 			stringsAsFactors=T)
 
 # Get configuration informationi
-# We don't want dummy inteference data here, since that is only fir baselin
+# We don't want dummy inteference data here, since that is only for baseline
 scrubbed = train_data[train_data$interference != 'dummy', ]
-application.names 	= unique(scrubbed$application)
-interference.names 	= unique(scrubbed$interference)
-reps.indices		= unique(scrubbed$rep)
-coloc.levels		= unique(scrubbed$coloc)
-nice.levels			= unique(scrubbed$nice)
-
-interference.test.names = unique(test_data[test_data$interference != 'dummy', ]$interference)
-
-configs.data=list()
-configs.count=0
-
-# Remove non-benchmark columns
-drops = c('application', 'interference', 'coloc', 'rep', 'nice', 'time')
-predictors.data = train_data[train_data$interference != 'dummy', !(names(train_data) %in% drops)]
-predictors.names = colnames(predictors.data)
-
-predictors.pca <- prcomp(predictors.data,
-						center = TRUE,
-						scale = TRUE)
-
-print(predictors.pca)
-plot(predictors.pca, type = "l")
-summary(predictors.pca)
-
-predictors.pca <- prcomp(predictors.data,
-						center = FALSE,
-						scale = FALSE)
-
-print(predictors.pca)
-plot(predictors.pca, type="l")
-summary(predictors.pca)
+application.names = unique(scrubbed$application)
+counts            = unique(scrubbed$interference_counts)  
 
 pdf("app_times.pdf", width=11.5, height=8)
-#par(mfrow=c(length(application.names), 5), xpd=T)
 for (app in application.names) {
 	data = train_data[train_data$application == app, ]
     
@@ -129,92 +99,9 @@ boot.pred_mean = function(data, indices) {
     median(abs(data)) * 100
 }
 
-model.names = c("lm", "svmRadial", "gbm")
-#model.names = c('lm', 'svmRadial')
-#model.names = c('lm')
-
-# Define our formula for y in terms of others
-formula=as.formula('time~.')
-
-models = list()
-ci = list()
-error = data.frame(
-                    application = character(),
-                    model = character(),
-                    error = numeric(),
-                    low = numeric(),
-                    upp = numeric()
-                )
-
-# Build models and use test set for error analysis
-#application.names = c('spec_434.zeusmp') #, 'spec_434.zeusmp', 'spec_434.zeusmp', 'spec_434.zeusmp')
-for (app in application.names) {
-  # Select all rows for our application
-  training.set = train_data[train_data$application == app, ]
-  test.set = test_data[test_data$application == app, ]
-
-  training.set = training.set[training.set$interference != 'dummy', ]
-  test.set = test.set[test.set$interference != 'dummy', ]
-
-  # Truncate columns that we do not want to be used in the fitting
-  drops = c('application', 'interference', 'coloc', 'rep', 'nice')
-  training.data = training.set[, !(names(training.set) %in% drops)]
-  test.data = test.set[, !(names(test.set) %in% drops)]
-
-  # Sweep over models
-  for (model in model.names) {
-
-    print(paste("Application: ", app, ", model: ", model))
-    control.object=trainControl(method='repeatedcv',
-						repeats=10,
-						number=10
-					)
-    set.seed(1)
-    
-    # Create a fit mapping from features (no interference) to application performance
-    fit=train(form = time ~ .,
-              data=training.data,
-              method=model,
-              trControl=control.object,
-              preProcess=c("center", "scale"),
-              verbose=FALSE
-            )
-
-    # Save the model for later use
-    models[[app]][[model]] = fit
-
-    fit.boot=boot(data=test.data, statistic=boot.pred, R=999, model=fit)
-    # see for bca: "Better Bootstrap Confidence Intervals" by Efron 1987.
-    # see "Bootstrapping Regression Models" by John Fox 2002.  
-    bootstrap = boot.ci(fit.boot, type='bca')
-    err = bootstrap$t0
-    low = bootstrap$bca[4]
-    upp = bootstrap$bca[5]
-    ci[[app]][[model]] = bootstrap
-    error <- rbind(error, data.frame(application=app, model=model, error=err, upp=upp, low=low))
-  }
-
-  # Compute the error assuming the mean is our prediction
-  # Effectively determine the natural variance of the data
-  training.data = train_data[train_data$application == app, ]
-  training.data = training.data[training.data$interference == 'dummy', ]
-  accum = c()
-  times = training.data[,'time']
-  m = mean(times)
-  for (time in times) {
-    diff = (time - m) / time
-    accum = c(accum, diff)
-  }
-  print(paste("App: ", app, ", baseline sd: ", sd(accum)))
-#  err = median(abs(accum)) * 100
-  #fit.boot = boot(data=accum, statistic=boot.pred_mean, R=10000)
-  #bootstrap = boot.ci(fit.boot, type='bca')
-  #err = bootstrap$t0
-  #low = bootstrap$bca[4]
-  #upp = bootstrap$bca[5]
-  #ci[[app]][['mean']] = bootstrap
- # error <- rbind(error, data.frame(application=app, model='mean', error=err, upp=upp, low=low))
-}
+print('Loading models...')
+load(args[3])
+print('Loaded models')
 
 print("Models: ")
 print(models)
@@ -224,50 +111,76 @@ print(models)
 # Create scatter plot of group variance v.s. prediction error
 # Group by interference level, colocation level, and nice level
 
-applications = c()
-base_rmse = c()
-pred_rmse = c()
-models.used = c()
+count.used = c()
+application.used = c()
+model.used = c()
+upp.used = c()
+low.used = c()
+err.used = c()
+
+count.rmse = c()
+application.rmse = c()
+model.rmse = c()
+pred.rmse = c()
+base.rmse = c()
 
 # Filter out any column except for our predictors and the response variable
-drops = c('application', 'interference', 'coloc', 'rep', 'nice')
-for (app in application.names) {
-    application.data = test_data[test_data$application == app, ]
-    for (interfere in interference.test.names) {
-        interference.data = application.data[application.data$interference == interfere, ]
-	    for (coloc_level in coloc.levels) {
-            colocation.data = interference.data[interference.data$coloc == coloc_level, ]
-		    for (nice_level in nice.levels) {
-                data = colocation.data[colocation.data$nice == nice_level, ]
-                data = data[ ,!(names(data) %in% drops)]
-                
-                times = data$time
+drops = c('application', 'interference_count', 'rep', 'interference')
+for (count in counts) {
+  count.data = test_data[test_data$interference_count == count, ]
+  for (app in application.names) {
+    application.data = count.data[count.data$application == app, ]
+    
+    for (model in names(models[[app]])) {
+      fit = models[[app]][[model]]
+      fit.boot = boot(data=test.data,
+                      statistic=boot.pred,
+                      R=999,
+                      model=fit,
+                      parallel=c('multicore'),
+                      ncpus=4)
+      ci = boot.ci(fit.boot, type='bca')
 
-                # Grab the mean as the baseline
-                times.mean = mean(times)
-                times.abs = times - times.mean
-                times.rel = times.abs / times
-                times.sd = sd(times.rel)
-
-                # Compute the error for each model, 
-                for (model in model.names) {
-                    mod = models[[app]][[model]]
-                    print(paste("Model: ", model, ", app: ", app))
-                    pred = predict(mod, data)
-                    err.diff = (data$time - pred)
-                    err.abs = abs(err.diff)
-                    err.rel = err.abs / data$time
-                    print(err.abs)
-                    print(err.rel)
-                    err.sd = sd(err.rel)
-                    applications = c(applications, app)
-                    models.used = c(models.used, model)
-                    base_rmse = c(base_rmse, times.sd)
-                    pred_rmse = c(pred_rmse, err.sd)
-                }
-            }
-        }
+      application.used = c(application.used, app)
+      count.used = c(count.used, count)
+      model.used = c(model.used, model)
+      err.used = c(err.used, ci$t0)
+      low.used = c(low.used, ci$bca[4])
+      upp.used = c(upp.used, ci$bca[5])
     }
+
+    for (interference in unique(application.data$interference) {
+      interference.data = application.data[application.data$interference == interference, ]
+      data = application.data[ ,!(names(application.data) %in% drops)]
+    
+      times = data$time
+
+      # Grab the mean as the baseline
+      times.mean = mean(times)
+      times.abs = times - times.mean
+      times.rel = times.abs / times
+      times.sd = sd(times.rel)
+
+      # Compute the error for each model, 
+      for (model in model.names) {
+        mod = models[[app]][[model]]
+        print(paste("Model: ", model, ", app: ", app))
+        mod_pred = predict(mod, data)
+        err.diff = (data$time - pred)
+        err.abs = abs(err.diff)
+        err.rel = err.abs / data$time
+        print(err.abs)
+        print(err.rel)
+        err.sd = sd(err.rel)
+        
+        application.rmse = c(application.rmse, app)
+        models.rmse = c(model.rmse, model)
+        base.rmse = c(base.rmse, times.sd)
+        pred.rmse = c(pred.rmse, err.sd)
+        count.rmse = c(count.rmse, count)
+      }        
+    }
+  }  
 }
 
 # Prepare plot configuration
@@ -279,13 +192,13 @@ plot.settings <- list(
 )
 
 
-err.points = data.frame(application=applications, model=models.used, base_rmse=base_rmse, pred_rmse=pred_rmse)
+rmse.points = data.frame(application=applications.rmse, count=count.rmse, model=models.rmse, base_rmse=base.rmse, pred_rmse=pred.rmse)
 
 # Plot the base RMSE vs. the prediction RMSE
 pdf('base_pred_rmse.pdf', width=11, height=8.5)
 
 # Group by model first
-xyplot(pred_rmse ~ base_rmse,
+xyplot(pred_rmse ~ base_rmse | count,
        group=model,
        data=err.points,
        auto.key=TRUE,
@@ -296,7 +209,7 @@ xyplot(pred_rmse ~ base_rmse,
     )
 
 # Group by application
-xyplot(pred_rmse ~ base_rmse,
+xyplot(pred_rmse ~ base_rmse | count,
        group=application,
        data=err.points,
        auto.key=TRUE,
@@ -307,17 +220,13 @@ xyplot(pred_rmse ~ base_rmse,
     )
 dev.off()
 
+error = data.frame(application=application.used, count=count.used, model=model.used, err=err.used, low=low.used, upp=upp.used)
+
 # Sort the rows of error based first on application then group by model
 error <- error[order(error$application, error$model),]
 #range = extendrange(c(error$error, error$upp, error$low))[2]
 
-# Split data into four sets
-i = 0
-sets = split(application.names, cut(seq_along(application.names), 2, labels=FALSE))
-print("Sets")
-print(sets)
-
-pdf("prediction_single_application.pdf", width=11, height=8.5)
+pdf("prediction_multi_application.pdf", width=11, height=8.5)
 barchart(error~application,
                 data=error,
                 groups=model,

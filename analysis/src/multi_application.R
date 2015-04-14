@@ -158,25 +158,23 @@ for (count in counts) {
       # Grab the mean as the baseline
       times.mean = mean(times)
       times.abs = times - times.mean
-      times.rel = times.abs / times
-      times.sd = sd(times.rel)
+      times.sd = sd(times.abs)
+      times.rel = times.sd / times.mean
 
       # Compute the error for each model, 
       for (model in model.names) {
         mod = models[[app]][[model]]
         print(paste("Model: ", model, ", app: ", app))
-        mod_pred = predict(mod, data)
+        pred = predict(mod, data)
         err.diff = (data$time - pred)
         err.abs = abs(err.diff)
-        err.rel = err.abs / data$time
-        print(err.abs)
-        print(err.rel)
-        err.sd = sd(err.rel)
-        
+        err.sd = sd(err.abs)
+        err.rel = err.sd / times.mean
+
         application.rmse = c(application.rmse, app)
         models.rmse = c(model.rmse, model)
-        base.rmse = c(base.rmse, times.sd)
-        pred.rmse = c(pred.rmse, err.sd)
+        base.rmse = c(base.rmse, times.rel)
+        pred.rmse = c(pred.rmse, err.rel)
         count.rmse = c(count.rmse, count)
       }        
     }

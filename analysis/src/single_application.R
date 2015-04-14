@@ -206,9 +206,9 @@ print('Loaded models')
 # Group by interference level, colocation level, and nice level
 
 applications = c()
-base_rmse = c()
-pred_rmse = c()
-models.used = c()
+base.rmse = c()
+pred.rmse = c()
+models.rmse = c()
 
 # Filter out any column except for our predictors and the response variable
 drops = c('application', 'interference', 'coloc', 'rep', 'nice')
@@ -227,25 +227,24 @@ for (app in names(models)) {
 
                 # Grab the mean as the baseline
                 times.mean = mean(times)
-                times.abs = times - times.mean
-                times.rel = times.abs / times
-                times.sd = sd(times.rel)
-
+                times.abs = abs(times - times.mean)
+                times.rmse = sqrt(mean(times.abs^2))
+                times.rel = times.rmse / times.mean * 100
+                
                 # Compute the error for each model, 
                 for (model in names(models[[app]])) {
-                    mod = models[[app]][[model]]
-                    print(paste("Model: ", model, ", app: ", app))
-                    pred = predict(mod, data)
-                    err.diff = (data$time - pred)
-                    err.abs = abs(err.diff)
-                    err.rel = err.abs / data$time
-                    print(err.abs)
-                    print(err.rel)
-                    err.sd = sd(err.rel)
-                    applications = c(applications, app)
-                    models.used = c(models.used, model)
-                    base_rmse = c(base_rmse, times.sd)
-                    pred_rmse = c(pred_rmse, err.sd)
+                  mod = models[[app]][[model]]
+                  print(paste("Model: ", model, ", app: ", app))
+                  pred = predict(mod, data)
+                  err.diff = (data$time - pred)
+                  err.abs = abs(err.diff)
+                  err.rmse = sqrt(mean(err.abs^2))
+                  err.rel = err.rmse / times.mean * 100
+                    
+                  applications = c(applications, app)
+                  models.rmse = c(models.rmse, model)
+                  base.rmse = c(base.rmse, times.rel)
+                  pred.rmse = c(pred.rmse, err.rel)
                 }
             }
         }
@@ -261,19 +260,19 @@ plot.settings <- list(
 )
 
 
-err.points = data.frame(application=applications, model=models.used, base_rmse=base_rmse, pred_rmse=pred_rmse)
+err.points = data.frame(application=applications, model=models.rmse, base_rmse=base.rmse, pred_rmse=pred.rmse)
 
 # Plot the base RMSE vs. the prediction RMSE
-pdf('base_pred_rmse.pdf', width=11, height=8.5)
+pdf('single_prediction_rmse.pdf', width=11, height=8.5)
 
 # Group by model first
 xyplot(pred_rmse ~ base_rmse,
        group=model,
        data=err.points,
        auto.key=list(space='right'),
-       xlab="Mean RMSE",
-       ylab="Prediction RMSE",
-       main="Prediction RMSE v.s. Runtime RMSE",
+       xlab="Mean Difference Normalized RMSE",
+       ylab="Prediction Normalized RMSE",
+       main="Prediction RMSE vs. Mean Difference RMSE",
        par.settings=plot.settings
     )
 
@@ -282,9 +281,9 @@ xyplot(pred_rmse ~ base_rmse,
        group=application,
        data=err.points,
        auto.key=list(space='right'),
-       xlab="Mean RMSE",
-       ylab="Prediction RMSE",
-       main="Prediciton RMSE vs. Runtime RMSE",
+       xlab="Mean Difference Normalized RMSE", 
+       ylab="Prediction Normalized RMSE",
+       main="Prediciton RMSE vs. Mean Difference RMSE",
        par.settings=plot.settings
     )
 dev.off()
@@ -303,8 +302,11 @@ models.used = c()
 err = c()
 upp = c()
 low = c()
+group = c()
+
+i = 0
 for (app in names(models)) {
-    
+
   # Select all rows for our application
   training.set = train_data[train_data$application == app, ]
   test.set = test_data[test_data$application == app, ]
@@ -335,6 +337,8 @@ for (app in names(models)) {
     upp = c(upp, bootstrap$bca[5])
     applications = c(applications, app)
     models.used = c(models.used, model)
+    group = c(group, i %% 6)
+    i = i + 1
   }
 }
 
@@ -343,12 +347,13 @@ error = data.frame(application=applications,
                    model=models.used,
                    error=err,
                    low=low,
-                   upp=upp)
+                   upp=upp,
+                   group=group)
 
 error <- error[order(error$application, error$model),]
 
 pdf("prediction_single_application.pdf", width=11, height=8.5)
-barchart(error~application,
+barchart(error~application | group,
                 data=error,
                 groups=model,
                 auto.key = list(space = "right"),

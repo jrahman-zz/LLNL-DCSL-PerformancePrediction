@@ -31,7 +31,7 @@ apps = ["SpecBzip",
 
 interference = apps
 
-reps = range(1, 11)
+reps = range(1, 6)
 
 def create_interfere_spec(thread_name, coloc_level, nice_level):
     return "%s:1:%d:%d" % (thread_name, coloc_level, nice_level)
@@ -41,8 +41,14 @@ coloc_levels = range(0, 3)
 
 def generate_list():
 	global apps
+
+	# Track iterations per interference counts
+	counts = {}
+	fractions = {}
+
 	output = {'interference': [], 'application': [], 'output_file': [], 'log_file': []}
 	configs = []
+	coloc_levels = [0, 1, 2]
 	for coloc_level in coloc_levels:
 		if (coloc_level == 0):
 			nice_levels = [0, 5, 10]
@@ -53,32 +59,64 @@ def generate_list():
 
 	total = 0
 
-	# Sample over number of interfering applications
+	# Calculate the number of configurations and splittings first
 	max_interfere = 3
-	for count in range(1, max_interfere):
-		unique_configs = itertools.combinations_with_replacement(configs, count)
+	for count in range(1, max_interfere+1):
+		counts[count] = 0
+		unique_configs = itertools.permutations(configs, count)
+		
+		filtered = map(lambda entry: entry[1], filter(lambda agg: agg[0] <= 1, map(lambda config: reduce(lambda tup, x: tuple(map(lambda a, b: a + b, (x['coloc_level'] == 0, [x]), tup)), config, (0, [])), unique_configs)))
+		for config in filtered:
+			app_combinations = itertools.permutations(interference, count)
+			for perm in app_combinations:
+				counts[count] = counts[count] + 1
+				total = total + 1
+
+	target = 250
+	target_per_count = target / len(counts.keys())
+
+	for count in counts.keys():
+		fractions[count] = max(counts[count] / target_per_count, 1)
+
+	print(target_per_count)
+	print(counts)
+	print(fractions)
+
+	total = 0
+
+	# Sample over number of interfering applications
+	for count in range(1, max_interfere+1):
+	
+		# Reset counts
+		counts[count] = 0
+
+		unique_configs = itertools.permutations(configs, count)
 	
 		# Build dummy padding
 		padding = []
-		for i in range(0, max_interfere - count):
+		for i in range(0, max_interfere - count + 1):
 			padding.append("Dummy:1:0:0")
 		
 		# Filter out any configs with more than one entry with colocation level 0
 		# No, this is not a sick joke (ok, so it sort of is, but it actually works)
 		filtered = map(lambda entry: entry[1], filter(lambda agg: agg[0] <= 1, map(lambda config: reduce(lambda tup, x: tuple(map(lambda a, b: a + b, (x['coloc_level'] == 0, [x]), tup)), config, (0, [])), unique_configs)))
 
-		# Sample over combination of different configurations
+		# Sample over permations of different configurations
 		for config in filtered:
-			app_combinations = itertools.combinations(interference, count)
+			app_permutations = itertools.permutations(interference, count)
 
 			# Sample over different assignments of interference threads to configurations
-			for perm in app_combinations:
-				total = total + 1
-
-				# Uniformly sample every 500th configuration
-				if total % (30) != 0:
+			for perm in app_permutations:
+			
+				# Skip over counts
+				counts[count] = counts[count] + 1
+				if counts[count] % fractions[count] != 0:
 					continue
-				
+	
+				total = total + 1
+				if total % 100:
+					print('Done with %d' % total)
+
 				tspecs = map(lambda app, conf: "%s:1:%d:%d" % (app, conf['coloc_level'], conf['nice_level']), perm, config)
 				
 				# Pad with dummy interference
@@ -100,6 +138,7 @@ def write_to_file(filename, data):
 	with open(filename, 'w') as f:
 		keys = data.keys()
 		keys.sort()
+		print(len(data[keys[0]]))
 		header = " ".join(keys)
 		f.write(header + "\n")
 		while len(data[keys[0]]) > 0:

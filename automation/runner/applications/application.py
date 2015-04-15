@@ -45,7 +45,7 @@ class Application():
         self.stop()
 
     def load(self):
-        """ Load data ahead of any potential benchmark run """
+        """Load data ahead of any potential benchmark run."""
         if self._started or self._loaded:
             raise ValueError('Already loaded or started')
 
@@ -59,6 +59,9 @@ class Application():
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT )
         except subprocess.CalledProcessError as e:
             logging.error('Loading application %s failed, output: %s', str(self), e.output)
+            raise
+        except Exception as e:
+            logging.exception('Loading application %s failed', str(self))
             raise
 
         self._loaded = True
@@ -82,6 +85,9 @@ class Application():
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             logging.error('Failed to start application %s, output: %s', str(self), e.output)
+            raise
+        except Exception as e:
+            logging.exception('Failed to start application %s', str(self))
             raise
 
         self._started = True
@@ -124,6 +130,9 @@ class Application():
         except subprocess.CalledProcessError as e:
             logging.error('Failed to run application %s, output: %s', str(self), e.output)
             raise
+        except Exception as e:
+            logging.exception('Failed to run applicaiton %s', str(self))
+            raise
 
         features = self._process_output(output)
         return features
@@ -144,6 +153,9 @@ class Application():
         except subprocess.CalledProcessError as e:
             logging.error('Failed to stop application %s, output %s', str(self), e.output)
             raise
+        except Exception as e:
+            logging.exception('Failed to stop application %s', str(self))
+            raise
 
         self._started = False
 
@@ -162,6 +174,9 @@ class Application():
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             logging.error('Failed to cleanup application %s, output %s', str(self), e.output)
+            raise
+        except Exception as e:
+            logging.exception('Failed to cleanup application %s', str(self))
             raise
 
         self._loaded = False
@@ -200,8 +215,11 @@ class BackgroundProcess(greenlet.Greenlet):
     def _stop(self):
         logging.debug('Stopping application %s', self._application_name)
         self._keep_running = False
-        if self._process is not None:
-            self._process.kill()
+        try:
+            if self._process is not None:
+                self._process.kill()
+        except Exception as e:
+            logging.exception('Failed to stop application %s', self._application_name)
         self._process = None
 
     def _run(self):
@@ -211,16 +229,20 @@ class BackgroundProcess(greenlet.Greenlet):
             import os
             DEVNULL = open(os.devnull, 'wb')
     
-        prog = self._args[5].split('/')[-1]
-        while self._keep_running:
-            logging.info('Starting new %s process...', prog)
-            self._process = subprocess.Popen(self._args, stdout=DEVNULL, stderr=subprocess.STDOUT)
-            return_code = self._process.wait()
-            logging.info('Interference application %s exited with return code %d', prog, return_code)
+        try:
+            prog = self._args[5].split('/')[-1]
+            while self._keep_running:
+                logging.info('Starting new %s process...', prog)
+                self._process = subprocess.Popen(self._args, stdout=DEVNULL, stderr=subprocess.STDOUT)
+                return_code = self._process.wait()
+                logging.info('Interference application %s exited with return code %d', self._application_name, return_code)
         
-            # Return code of -9 means SIGKILL, this is ok
-            if not (return_code == 0 or return_code == -9):
-                self._keep_running = False
-                raise Exception('Process failure, return code %d' % (return_code))
-            
+                # Return code of -9 means SIGKILL, this is ok
+                if not (return_code == 0 or return_code == -9):
+                    self._keep_running = False
+                    raise Exception('Process failure, return code %d' % (return_code))
+        except Exception as e:
+            logging.exception('Interference application %s failed', self._application_name)
+            raise
+    
         self._process = None

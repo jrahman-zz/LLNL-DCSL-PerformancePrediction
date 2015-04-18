@@ -43,7 +43,6 @@ class ParsecCanneal(Parsec):
         Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
 
 class ParsecDedup(Parsec):
-    # NOTE: Doesn't compile
     def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
         self._bmark_name = 'dedup'
         Parsec.__init__(self, environ, app_cores, client_cores, 'simlarge', nice, instance)
@@ -59,6 +58,7 @@ class ParsecFerret(Parsec):
         Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
 
 class ParsecFluidanimate(Parsec):
+    # Note, needs power of 2 for core count
     def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
         self._bmark_name = 'fluidanimate'
         # Cores must be power of 2
@@ -84,7 +84,6 @@ class ParsecStreamcluster(Parsec):
         Parsec.__init__(self, environ, app_cores, client_cores, 'simlarge', nice, instance)
 
 class ParsecSwaptions(Parsec):
-    # NOTE: Doesn't compile, needs TBB
     def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
         self._bmark_name = 'swaptions'
         Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)

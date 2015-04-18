@@ -43,6 +43,7 @@ def get_cores_impl(app_request, interference_requests, client_requests, nodes):
 
     # Records the number of cores reserved for same core colocation
     same_core_requests = map(lambda x: x[0], filter(lambda x: x[1] == 0, interference_requests))
+    print(same_core_requests)
     if len(same_core_requests) > 0:
         app_cores_count = max(same_core_requests)
     else:

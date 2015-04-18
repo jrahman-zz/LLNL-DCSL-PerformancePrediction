@@ -9,8 +9,10 @@ if [ $# -ne 3 ]; then
 	exit 1
 fi
 
-APP_HOME=/p/lscratche/rahman3/apps
-APP_DATA=/p/lscratche/rahman3/app_data/`hostname`
+#APP_HOME=/p/lscratche/rahman3/apps
+#APP_DATA=/p/lscratche/rahman3/app_data/`hostname`
+APP_HOME=/home/jprahman/llnl
+APP_DATA=/tmp/apps
 APP="${1}"
 INTERFERENCE="${2}"
 OUTPUT_PATH="${3}"
@@ -29,7 +31,8 @@ if [ $? -ne 0 ]; then
 	exit 2
 fi
 
-~/python2/bin/python "${BASE_DIR}/automation/runner/run2.py" --applications "${APP}" --interference "${INTERFERENCE}" --output "${OUTPUT_PATH}"
+#~/python2/bin/python
+python "${BASE_DIR}/automation/runner/run2.py" --application "${APP}" --interference "${INTERFERENCE}" --output "${OUTPUT_PATH}"
 if [ $? -ne 0 ]; then
    echo "Run failed"
    exit 3

@@ -3,46 +3,48 @@ from load_applications import load_applications
 from load_benchmarks import load_benchmarks
 from load_interference import load_interference
 
+import gevent
+from gevent import Greenlet
 import load_numa
 import argparse
+import math
 import logging
 import json
 
 from contexter import ExitStack
 
-def run(applications, benchmarks, interference):
+def run(application, benchmarks, interference):
     """ Run a given set of applications in interference conditions """
 
     times = []
-    for application in applications:
-        try:
-            application.load()
+    try:
+        application.load()
 
-            with ExitStack() as top_stack:
-                for thread in interference:
-                    thread.load()
-                    top_stack.enter_context(thread)
-                with ExitStack() as stack:
-                    for thread in interference:
-                        stack.enter_context(thread.interfere())
-                    try:
-                        t = dict()
-                        t['application'] = str(application)
-                        for i in range(0, len(interference)):
-							t['interference%d' % (i+1)] = str(interference[i])
-                        t.update(run_application(application))
-                        t.update(run_benchmarks(benchmarks))
-                        times.append(t)
-                    except Exception as e:
-                        logging.exception('Failed, %s', str(e)) # DEBUG
-                        raise
-            # Take out the trash (and there is a LOT of trash)
+        with ExitStack() as top_stack:
             for thread in interference:
-			    thread.cleanup()
-            application.cleanup()
-        except Exception as e:
-            logging.exception('Failed to run application: %s', str(application))
-            raise
+                thread.load()
+                top_stack.enter_context(thread)
+            with ExitStack() as stack:
+                for thread in interference:
+                    stack.enter_context(thread.interfere())
+                try:
+                    t = dict()
+                    t['application'] = str(application)
+                    for i in range(0, len(interference)):
+                                                    t['interference%d' % (i+1)] = str(interference[i])
+                    t.update(run_application(application))
+                    t.update(run_benchmarks(benchmarks))
+                    times.append(t)
+                except Exception as e:
+                    logging.exception('Failed, %s', str(e)) # DEBUG
+                    raise
+        # Take out the trash (and there is a LOT of trash)
+        for thread in interference:
+                        thread.cleanup()
+        application.cleanup()
+    except Exception as e:
+        logging.exception('Failed to run application: %s', str(application))
+        raise
     return times
 
 def run_application(application):
@@ -56,8 +58,9 @@ def run_benchmarks(benchmarks):
     times = {}
     for benchmark in benchmarks:
         
-        logging.info('Launching %d copies', len(benchmark))
+        logging.info('Launching %d copies...', len(benchmark))
         greenlets = [Greenlet.spawn(lambda: bmark.run()) for bmark in benchmark]
+        logging.info('Launched %d copies', len(benchmark))
         gevent.joinall(greenlets)
         results = [greenlet.value for greenlet in greenlets]
 
@@ -84,7 +87,7 @@ def run_benchmarks(benchmarks):
 def get_args():
     parser = argparse.ArgumentParser(description='Run benchmarks and applications to collect data')
     parser.add_argument('--interference', help='Comma separated list of interfering applications and benchmarks', default='Dummy:1:1:0', type=str)
-    parser.add_argument('--applications', help='Comma separated list of applications to run', default='all', type=str)
+    parser.add_argument('--application', help='Name and core count for application to run', type=str)
     parser.add_argument('--output', help='Output file path', default='output.json', type=str)
     parser.add_argument('--config', help='Config file path', default='.', type=str)
     return parser.parse_args()
@@ -117,7 +120,7 @@ def parse_interference(interference_spec):
     nice_level = int(components[3])
     return (name, cores, coloc_level, nice_level)
    
-def create_config(environ, application_list, interference_specs):
+def create_config(environ, application, interference_specs):
     """ For a given application and interference listing, create the config """
     
     benchmarks = load_benchmarks(environ)
@@ -125,14 +128,13 @@ def create_config(environ, application_list, interference_specs):
     apps = load_applications(environ)
 
     (application_name, application_cores) = application.split(':')
-
+    application_cores = int(application_cores)
+    
     # Parse the interference specs, and extract core request counts
     specs = map(lambda x: parse_interference(x), interference_specs)
 
-
     # When running multi-threaded applications, we must ensure that we have
     # interference threads evenly spread across the multi-thread application cores
-   
     same_core_specs = filter(lambda x: x[2] == 0, specs)
     different_core_specs = filter(lambda x: x[2] != 0, specs)
 
@@ -141,11 +143,12 @@ def create_config(environ, application_list, interference_specs):
         raise Exception('Only one same core interference thread allowed')
 
     if len(same_core_specs) == 1:
-        cores = same_core_specs[0][1]
+        cores = int(same_core_specs[0][1])
         total = cores
         # We must have at least one interference thread
-        new_same_core_specs = [same_core_specs[0]]
-        while total < application_cores:
+        new_same_core_specs = []
+        new_same_core_specs.append(same_core_specs[0])
+        for i in range(0, int(math.ceil(application_cores / cores)) - 1):
             new_same_core_specs.append(same_core_specs[0])
 
     # Rejoin the specs
@@ -155,7 +158,7 @@ def create_config(environ, application_list, interference_specs):
     requests = map(lambda x: (x[1], x[2]), specs)
 
     # Get our core assignments from the numa detection
-    (app_cores, interference_cores, client_cores) = load_numa.get_cores_new(cores, requests, [1])
+    (app_cores, interference_cores, client_cores) = load_numa.get_cores_new(application_cores, requests, [1])
     
     # Set up dictionary with both apps and interfere threads
     interfere = apps.copy()
@@ -168,8 +171,8 @@ def create_config(environ, application_list, interference_specs):
 
     # Process benchmarks for use
     bmarks = []
-    for bmark in benchmarks.keys():
-        bmarks.append([benchmarks[bmark](environ, [app_cores[i]]) for i in len(app_cores)])
+    for bmark in benchmarks.keys():       
+        bmarks.append([benchmarks[bmark](environ, [app_cores[i]]) for i in range(0, len(app_cores))])
     application = apps[application_name](environ, app_cores, client_cores[0], 1)
     return (application, bmarks, threads)
     
@@ -191,10 +194,7 @@ def run_experiement(interference_specs, application_list, config_path, output_pa
 def main():
     args = get_args()
     interference_specs = args.interference.split(',')
-    application_list = args.applications.split(',')
-    output_path = args.output
-    config_path = args.config
-    run_experiement(interference_specs, application_list, config_path, output_path)
+    run_experiement(interference_specs, args.application, args.config, args.output)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

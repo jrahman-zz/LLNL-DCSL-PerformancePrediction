@@ -55,7 +55,25 @@ def run_benchmarks(benchmarks):
     """ Run each selected benchmark """
     times = {}
     for benchmark in benchmarks:
-        t = benchmark.run()
+        
+        logging.info('Launching %d copies', len(benchmark))
+        greenlets = [Greenlet.spawn(lambda: bmark.run()) for bmark in benchmark]
+        gevent.joinall(greenlets)
+        results = [greenlet.value for greenlet in greenlets]
+
+        # Perform a keywise sum across all results
+        t = {}
+        for res in results:
+            for key in res.keys():
+                if key not in t:
+                    t[key] = res[key]
+                else:
+                    t[key] = t[key] + res[key]
+        
+        # Now take the arithmetic average
+        for key in t.keys():
+            t[key] = t[key] / len(results)
+
         # Merge based on keys, benchmark name first, then the type of data
         for key in t.keys():
             times["%s_%s" % (str(benchmark), key)] = t[key]
@@ -106,15 +124,38 @@ def create_config(environ, application_list, interference_specs):
     interfere_threads = load_interference(environ)
     apps = load_applications(environ)
 
-    if application_list == ['all']:
-        application_list = apps.keys()
+    (application_name, application_cores) = application.split(':')
 
     # Parse the interference specs, and extract core request counts
     specs = map(lambda x: parse_interference(x), interference_specs)
+
+
+    # When running multi-threaded applications, we must ensure that we have
+    # interference threads evenly spread across the multi-thread application cores
+   
+    same_core_specs = filter(lambda x: x[2] == 0, specs)
+    different_core_specs = filter(lambda x: x[2] != 0, specs)
+
+    # Now replicate same core specs (Only one allowed by principle)
+    if len(same_core_specs) > 1:
+        raise Exception('Only one same core interference thread allowed')
+
+    if len(same_core_specs) == 1:
+        cores = same_core_specs[0][1]
+        total = cores
+        # We must have at least one interference thread
+        new_same_core_specs = [same_core_specs[0]]
+        while total < application_cores:
+            new_same_core_specs.append(same_core_specs[0])
+
+    # Rejoin the specs
+    specs = different_core_specs + new_same_core_specs
+
+    # (Count, Colocation)
     requests = map(lambda x: (x[1], x[2]), specs)
 
     # Get our core assignments from the numa detection
-    (app_cores, interference_cores, client_cores) = load_numa.get_cores_new(1, requests, [1])
+    (app_cores, interference_cores, client_cores) = load_numa.get_cores_new(cores, requests, [1])
     
     # Set up dictionary with both apps and interfere threads
     interfere = apps.copy()
@@ -126,9 +167,11 @@ def create_config(environ, application_list, interference_specs):
     threads = map(lambda x: interfere[x[0]](environ, x[2], client_cores[0], x[1], x[3]), threads)
 
     # Process benchmarks for use
-    benchmarks = map(lambda key: benchmarks[key](environ, app_cores), benchmarks.keys())
-    applications = map(lambda key: apps[key](environ, app_cores, client_cores[0], 1), application_list)
-    return (applications, benchmarks, threads)
+    bmarks = []
+    for bmark in benchmarks.keys():
+        bmarks.append([benchmarks[bmark](environ, [app_cores[i]]) for i in len(app_cores)])
+    application = apps[application_name](environ, app_cores, client_cores[0], 1)
+    return (application, bmarks, threads)
     
 def run_experiement(interference_specs, application_list, config_path, output_path):
 

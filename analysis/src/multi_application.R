@@ -37,25 +37,20 @@ error.bar <- function(x, y, upper, lower=upper, length=0.1,...){
 }
 
 # Read in data
-train_data=read.csv(args[1],
-			head=T,
-			sep=',',
-			stringsAsFactors=T)
-
-test_data=read.csv(args[2],
+test_data=read.csv(args[1],
 			head=T,
 			sep=',',
 			stringsAsFactors=T)
 
 # Get configuration informationi
 # We don't want dummy inteference data here, since that is only for baseline
-scrubbed = train_data[train_data$interference != 'dummy', ]
+scrubbed = test_data[test_data$interference != 'dummy', ]
 application.names = unique(scrubbed$application)
 counts            = unique(scrubbed$interference_counts)  
 
-pdf("app_times.pdf", width=11.5, height=8)
+pdf("multiple_app_times.pdf", width=11.5, height=8)
 for (app in application.names) {
-	data = train_data[train_data$application == app, ]
+	data = test_data[test_data$application == app, ]
     
     zero = data[data$interference_count ==0, ]
     one = data[data$interference_count == 1, ]
@@ -75,6 +70,11 @@ for (app in application.names) {
 
 	legend("topleft", legend=c("Zero interfering", "One interfering", "Two interfering", "Three interfering"), text.col=c("green", "yellow", "orange", "red"))
 }
+dev.off()
+
+# Examine the interference distribution
+pdf("interference_distribution.pdf", width=11.5, height=8)
+hist(test_data$interference_count)
 dev.off()
 
 # Compute training error
@@ -100,7 +100,7 @@ boot.pred_mean = function(data, indices) {
 }
 
 print('Loading models...')
-load(args[3])
+load(args[2])
 print('Loaded models')
 
 print("Models: ")
@@ -135,7 +135,7 @@ for (count in counts) {
       fit = models[[app]][[model]]
       fit.boot = boot(data=test.data,
                       statistic=boot.pred,
-                      R=999,
+                      R=500,
                       model=fit,
                       parallel=c('multicore'),
                       ncpus=4)
@@ -149,7 +149,7 @@ for (count in counts) {
       upp.used = c(upp.used, ci$bca[5])
     }
 
-    for (interference in unique(application.data$interference) {
+    for (interference in unique(application.data$interference)) {
       interference.data = application.data[application.data$interference == interference, ]
       data = application.data[ ,!(names(application.data) %in% drops)]
     
@@ -158,25 +158,23 @@ for (count in counts) {
       # Grab the mean as the baseline
       times.mean = mean(times)
       times.abs = times - times.mean
-      times.rel = times.abs / times
-      times.sd = sd(times.rel)
+      times.rmse = sqrt(mean(times.abs^2))
+      times.rel = times.rmse / times.mean * 100
 
       # Compute the error for each model, 
       for (model in model.names) {
         mod = models[[app]][[model]]
         print(paste("Model: ", model, ", app: ", app))
-        mod_pred = predict(mod, data)
+        pred = predict(mod, data)
         err.diff = (data$time - pred)
         err.abs = abs(err.diff)
-        err.rel = err.abs / data$time
-        print(err.abs)
-        print(err.rel)
-        err.sd = sd(err.rel)
-        
+        err.rmse = sqrt(mean(err.abs^2))
+        err.rel = err.rmse / times.mean * 100
+
         application.rmse = c(application.rmse, app)
-        models.rmse = c(model.rmse, model)
-        base.rmse = c(base.rmse, times.sd)
-        pred.rmse = c(pred.rmse, err.sd)
+        model.rmse = c(model.rmse, model)
+        base.rmse = c(base.rmse, times.rel)
+        pred.rmse = c(pred.rmse, err.rel)
         count.rmse = c(count.rmse, count)
       }        
     }
@@ -192,16 +190,16 @@ plot.settings <- list(
 )
 
 
-rmse.points = data.frame(application=applications.rmse, count=count.rmse, model=models.rmse, base_rmse=base.rmse, pred_rmse=pred.rmse)
+rmse.points = data.frame(application=application.rmse, count=count.rmse, model=model.rmse, base_rmse=base.rmse, pred_rmse=pred.rmse)
 
 # Plot the base RMSE vs. the prediction RMSE
-pdf('base_pred_rmse.pdf', width=11, height=8.5)
+pdf('multi_pred_rmse.pdf', width=11, height=8.5)
 
 # Group by model first
 xyplot(pred_rmse ~ base_rmse | count,
        group=model,
-       data=err.points,
-       auto.key=TRUE,
+       data=rmse.points,
+       auto.key=list(space='right'),
        xlab="Mean RMSE",
        ylab="Prediction RMSE",
        main="Prediction RMSE v.s. Runtime RMSE",
@@ -211,11 +209,11 @@ xyplot(pred_rmse ~ base_rmse | count,
 # Group by application
 xyplot(pred_rmse ~ base_rmse | count,
        group=application,
-       data=err.points,
-       auto.key=TRUE,
+       data=rmse.points,
+       auto.key=list(space='right'),
        xlab="Mean RMSE",
        ylab="Prediction RMSE",
-       main="Prediciton RMSE vs. Runtime RMSE",
+       main="Prediction RMSE vs. Runtime RMSE",
        par.settings=plot.settings
     )
 dev.off()
@@ -226,7 +224,7 @@ error = data.frame(application=application.used, count=count.used, model=model.u
 error <- error[order(error$application, error$model),]
 #range = extendrange(c(error$error, error$upp, error$low))[2]
 
-pdf("prediction_multi_application.pdf", width=11, height=8.5)
+pdf("multi_prediction_error.pdf", width=11, height=8.5)
 barchart(error~application,
                 data=error,
                 groups=model,

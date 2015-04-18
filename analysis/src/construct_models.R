@@ -1,5 +1,6 @@
 #!/usr/bin/Rscript
 
+
 library(Hmisc)
 library(rpart)
 library(boot)
@@ -28,11 +29,6 @@ train_data=read.csv(args[1],
                     head=T,
                     sep=',',
                     stringsAsFactors=T)
-
-test_data=read.csv(args[2],
-                   head=T,
-                   sep=',',
-                   stringsAsFactors=T)
 
 # Get configuration informationi
 # We don't want dummy inteference data here, since that is only fir baselin
@@ -75,46 +71,52 @@ formula=as.formula('time~.')
 
 models = list()
 
+total = length(unique(train_data$rep)) * length(application.names) * length(model.names)
+done = 0
+print(paste("Total: ", total))
+
 # Build models and use test set for error analysis
 #application.names = c('spec_434.zeusmp', 'spec_453.povray') # 'spec_434.zeusmp', 'spec_434.zeusmp')
-for (app in application.names) {
-  # Select all rows for our application
-  training.set = train_data[train_data$application == app, ]
-  test.set = test_data[test_data$application == app, ]
+for (count in unique(train_data$rep)) {
+  training.reduced = train_data[train_data$rep <= count, ]
+  models[[count]] = list()
+  for (app in application.names) {
+    
+    # Select all rows for our application
+    training.set = training.reduced[training.reduced$application == app, ]
+    training.set = training.set[training.set$interference != 'dummy', ]
 
-  training.set = training.set[training.set$interference != 'dummy', ]
-  test.set = test.set[test.set$interference != 'dummy', ]
+    # Truncate columns that we do not want to be used in the fitting
+    drops = c('application', 'interference', 'coloc', 'nice', 'rep')
+    training.data = training.set[, !(names(training.set) %in% drops)]
 
-  # Truncate columns that we do not want to be used in the fitting
-  drops = c('application', 'interference', 'coloc', 'rep', 'nice')
-  training.data = training.set[, !(names(training.set) %in% drops)]
-  test.data = test.set[, !(names(test.set) %in% drops)]
-
-  # Sweep over models
-  for (model in model.names) {
-
-    print(paste("Application: ", app, ", model: ", model))
     control.object=trainControl(method='repeatedcv',
                                 repeats=10,
                                 number=10)
-    set.seed(1)
 
-    # Create a fit mapping from features (no interference) to application performance
-    fit=train(form = time ~ .,
-              data=training.data,
-              method=model,
-              trControl=control.object,
-              preProcess=c("center", "scale"),
-              verbose=FALSE)
+    # Sweep over models
+    for (model in model.names) {
+      print(paste("Application: ", app, ", model: ", model))
+      set.seed(1) 
+      # Create a fit mapping from features (no interference) to application performance
+      fit = train(form = time ~ .,          
+                  data=training.data,
+                  method=model,
+                  trControl=control.object,
+                  preProcess=c("center", "scale"),
+                  verbose=FALSE)
 
-    # Save the model for later use
-    models[[app]][[model]] = fit
+      # Save the model for later use
+      models[[factor(count)]][[app]][[model]] = fit
+      done = done + 1
+      print(paste("Finished ", done, " of ", total))
+    }
   }
 }
 
 
 print("Saving models...")
-save(list=c('models', 'model.names'), file=args[3])
+save(list=c('models', 'model.names'), file=args[2])
 print("Saved models")
 
 warnings()

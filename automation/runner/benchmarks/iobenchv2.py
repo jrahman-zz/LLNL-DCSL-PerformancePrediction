@@ -34,7 +34,7 @@ class IOBenchmarkV2(Benchmark):
         self._seconds = seconds
         self._path = '%s/iobench.%d' % (environ['data_dir'], instance)
         self._cmd = 'java'
-        self._runstring = ','.join([self._operation, '1', self._size, self._size])
+        self._runstring = ','.join([self._operation, '1', self._size, '1K'])
         self._params = ['-classpath', self._benchmark_dir + '/iobench.jar', 'Main', 'run', '-h=20', self._path, str(self._seconds), self._runstring]
         self._name = 'iobenchv2_%s_%s' % (self._type, self._size)
 
@@ -46,7 +46,7 @@ class IOBenchmarkV2(Benchmark):
 
     def _process_output(self, output):
         regex = r"Total for \[%s,%s,%s\]: \d+\.\d+ events \(\d+\.\d+ errors\), mean (\d*(?:\.\d*)?)ms, 10th (\d*(?:\.\d*)?)ms, 50th (\d*(?:\.\d*)?)ms, 90th (\d*(?:\.\d*)?)ms, 99th (\d*(?:\.\d*)?)ms, 999th (\d*(?:\.\d*)?)ms, 9999th (\d*(?:\.\d*)?)ms, min (\d*(?:\.\d*)?)ms, max (\d*(?:\.\d*)?)ms$"
-        regex = regex % (self._operation, self._size, self._size)
+        regex = regex % (self._operation, self._size, '1K')
         result = re.search(regex, output)
         if result == None:
             logging.error('Mismatch: %s', output)

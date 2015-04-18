@@ -27,6 +27,7 @@
     <profile namespace="karajan" key="initialScore">10000</profile>
     <profile namespace="globus"  key="highOverAllocation">100</profile>
     <profile namespace="globus"  key="lowOverAllocation">100</profile>
+    <profile namespace="swift" key="retries">1</profile>
 
     <filesystem provider="local" url="none" />
     <workdirectory>/p/lscratche/rahman3/swift</workdirectory>

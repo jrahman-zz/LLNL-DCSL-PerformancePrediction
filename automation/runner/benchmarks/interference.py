@@ -64,7 +64,7 @@ class InterferenceThread(Greenlet):
         try:
             self._stop()
             Greenlet.kill(self, timeout)
-        except subprocess.OSError as e:
+        except OSError as e:
             logging.exception('Failed to stop interference, errno: %d', e.errno)
             raise
         except Exception as e:
@@ -75,7 +75,7 @@ class InterferenceThread(Greenlet):
         try:
             self._stop()
             Greenlet.join(self, timeout)
-        except subprocess.OSError as e:
+        except OSError as e:
             logging.exception('Failed to stop interference, errno: %d', e.errno)
             raise
         except Exception as e:
@@ -88,7 +88,10 @@ class InterferenceThread(Greenlet):
         process = self._process
         self._process = None
         if process is not None:
-           process.kill()
+           try:
+              process.kill()
+           except OSError as e:
+              logging.exception('Failed to kill interference')
 
     def _run(self):
         try:

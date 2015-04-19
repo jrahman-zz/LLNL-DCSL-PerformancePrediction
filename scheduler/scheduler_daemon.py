@@ -16,25 +16,29 @@ scheduler = None
 """
 Receive worker enviroment measurement information
 """
-@app.route('/measurements/update', methods=['POST'])
+@app.route(helpers.MEASUREMENT_UPDATE_ENDPOINT, methods=['POST'])
 def update_measurements():
-	pass
+	message = request.json
+	helpers.log_rpc(message)
+	return jsonify(scheduler.update_measurements(message['data']))
 
 """
 Receive worker status and load information
 """
-@app.route('/worker/update', methods=['POST'])
+@app.route(helpers.WORKER_UDPATE_ENDPOINT, methods=['POST'])
 def update_worker():
-	worker = request.json
-	scheduler.update_workers(workers)
-	return 200
+	message = request.json
+	helpers.log_rpc(message)
+	return jsonify(scheduler.update_workers(message['data']))
 
 """
 Receive notification that job status changed
 """
 @app.route('/jobs/<int:id>', methods=['PUT'])
 def job_update(id):
-	job_info = request.json
+	message = request.json
+	helpers.log_rpc(message)
+	job_info = message['data']
 	if not job_info or not 'status' in job_info:
 		return bad_request('Invalid job status message')
 
@@ -53,26 +57,25 @@ def job_update(id):
 								job_info['start_time'])
 
 	try:
-		scheduler.update_job(self, id, job_info)
-		return 200
+		return jsonify(scheduler.update_job(self, id, job_info))
 	except Exception as e:
 		return internal_error(str(e))
 
 """
 Submit a job for scheduling
 """
-@app.route('/jobs/submit', methods=['POST'])
-def schedule_jobs():
-	# TODO, deser the jobs from the request body
-	jobs = None
-	return jsonify(scheduler.queue_jobs(jobs))
+@app.route(helpers.JOB_SUBMIT_ENDPOINT, methods=['POST'])
+def submit_jobs():
+	message = request.json
+	helpers.log_rpc(message)
+	return jsonify(scheduler.queue_jobs(message['data']))
 
 """
 Get the schedulers global status
 """
-@app.route('/status', methods=['GET'])
+@app.route(helper.SCHEDULER_STATUS_ENDPOINT, methods=['GET'])
 def get_status():
-	return scheduler.get_status()
+	return jsonify(scheduler.get_status())
 
 # Configure error handlers
 @app.errorhandler(404)
@@ -94,9 +97,8 @@ if __name__ == '__main__':
 	server = WSGIServer(('', helpers.DAEMON_PORT), app)
 	server_greenlet = gevent.spawn(WSGIServer.serve_forever, server)
 
-	# TODO, scheduler impl here
 	while True:
-		gevent.sleep(1)
+		gevent.sleep(1.0/helpers.SCHEDULER_HERTZ)
 		scheduler.scheduling_pass()
 	
 	server.greenlet.join()

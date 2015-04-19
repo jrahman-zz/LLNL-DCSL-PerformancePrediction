@@ -209,6 +209,9 @@ applications = c()
 base.rmse = c()
 pred.rmse = c()
 models.rmse = c()
+coloc.rmse = c()
+interfere.rmse = c()
+err.rmse = c()
 
 # Filter out any column except for our predictors and the response variable
 drops = c('application', 'interference', 'coloc', 'rep', 'nice')
@@ -234,7 +237,7 @@ for (app in names(models)) {
                 # Compute the error for each model, 
                 for (model in names(models[[app]])) {
                   mod = models[[app]][[model]]
-                  print(paste("Model: ", model, ", app: ", app))
+#                  print(paste("Model: ", model, ", app: ", app))
                   pred = predict(mod, data)
                   err.diff = (data$time - pred)
                   err.abs = abs(err.diff)
@@ -243,8 +246,11 @@ for (app in names(models)) {
                     
                   applications = c(applications, app)
                   models.rmse = c(models.rmse, model)
+                  coloc.rmse = c(coloc.rmse, coloc_level)
+                  interfere.rmse = c(interfere.rmse, interfere)
                   base.rmse = c(base.rmse, times.rel)
                   pred.rmse = c(pred.rmse, err.rel)
+                  err.rmse = c(err.rmse, err.diff / times.mean * 100)
                 }
             }
         }
@@ -260,7 +266,7 @@ plot.settings <- list(
 )
 
 
-err.points = data.frame(application=applications, model=models.rmse, base_rmse=base.rmse, pred_rmse=pred.rmse)
+err.points = data.frame(application=applications, model=models.rmse, base_rmse=base.rmse, pred_rmse=pred.rmse, err=err.rmse)
 
 # Plot the base RMSE vs. the prediction RMSE
 pdf('single_prediction_rmse.pdf', width=11, height=8.5)
@@ -288,6 +294,8 @@ xyplot(pred_rmse ~ base_rmse,
     )
 
 histogram(~pred_rmse | model, data=err.points, group=model, xlab="Normalized Prediction RMSE")
+
+histogram(~err | model, data=err.points, group=model, xlab="Normalize Prediction Error")
 
 dev.off()
 
@@ -382,33 +390,4 @@ for (group in unique(error$group)) {
 }
 dev.off()
 
-#for (i in (1:length(sets))) {
-#  print(i)
-##  set = sets[[i]]
-#  print(set)
-#  plot.data = data.frame()
-#  for (app in set) {
-#    plot.data = rbind(plot.data, error[error$application == app, ])
-#  }
-#
-#  pdf(paste("predict_application_", i, ".pdf"), width=11, height=8.5)`
-#  par(mar=c(10,4,1,0), xpd=T)
-#
-#  print(set)
-#  print(plot.data$error)
-##  barchart(error~application,
-#                data=plot.data,
-#                groups=model,
-#                auto.key = list(space = "right"),
-#                xlab='Median Prediction Error %',
-#                main='Prediction Error',
-#                border='white',
-#                par.settings=plot.setting)
-  flush.console()
-#  dev.off()
-#}
-#error.bar(bars, error$error, error$upp-error$error, error$error-error$low)
-#text(bars, 0, round(err, 1), srt=90, adj=c(0,0.5), cex=0.8)
-
-# Print out final warnings as notification
 warnings()

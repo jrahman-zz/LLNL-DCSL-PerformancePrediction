@@ -13,46 +13,53 @@ class SchedulerPolicy(object):
 
 	def update_workers(self, worker):
 		""" Receive updated information about the worker status  """
-		pass
+		self._update_workers(worker)
 
 	def update_measurements(self, measurements):
 		""" Receive updated information about the measurements """
-		pass
+		self._update_measurements(measurements)
 
 	def update_job(self, id, job_info):
 		""" Receive updated information about a job completion """
-		job = lookup_job(id)
+		job = self.lookup_job(id)
 		
-		# TODO Find time string
 		now = None
-		job.finish_time = job_info['finish_time']
+		job['finish_time'] = job_info['finish_time']
 		if job_info['status'] == JobState.Completed:
-			logging.info('Job %d completed at %s, started at %s', id, job.finish_time, job.start_time)
+			logging.info('Job %d completed at %s, started at %s', id, job['finish_time'], job['start_time'])
 			# TODO, switch state to completed
 		else:
-			logging.info('Job %d failed at %s, started at %s', id, job.finish_time, job.start_time)
+			logging.info('Job %d failed at %s, started at %s', id, job['finish_time'], job['start_time'])
 			# TODO, switch state to failed
-		
+		return self._update_job(self, id, job_info)
 
 	def queue_jobs(self, jobs):
 		""" Add a new request for a job """
-		ids = []
+		# Allocate IDs for each new job	
 		for i in range(0, len(jobs)):
 			id = self._get_id()
-			jobs[i].id = id
-		self._queue_job(self, jobs)
-		
-		return jobs
+			jobs[i]['id'] = id
+
+		for job in jobs:
+			self.validate_job(job)
+
+		return self._queue_jobs(self, jobs)
 
 	def scheduling_pass(self):
 		""" Run the scheduling algorithm once """
-		pass
+		self._scheduling_pass()
 
 	def get_status(self):
 		""" Return JSON containing status information """
-		pass
+		self._get_status()
 
 	def lookup_job(self, id):
-		# Implement in subclass
-		pass
+		self._lookup_job(id)
+
+	def validate_job(self, job):
+		if 'application' not in job:
+			raise ValueError('No application given')
+		if 'cores' not in job:
+			raise ValueError('No cores given')
+		self._validate_job
 

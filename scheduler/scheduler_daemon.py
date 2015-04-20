@@ -82,9 +82,9 @@ def get_status():
 def not_found_error(e):
 	helper.not_found(e.args[0])
 
-#@app.errorhandler(ValidationError)
-#def validation_error(e):
-#	helper.bad_request(e.args[0])
+@app.errorhandler(ValueError)
+def value_error(e):
+	helper.bad_request(e.args[0])
 
 if __name__ == '__main__':
 	

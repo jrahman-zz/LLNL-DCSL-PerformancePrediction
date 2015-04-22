@@ -156,7 +156,7 @@ plot.settings <- list(
 err.points = data.frame(application=applications, model=models.rmse, base_rmse=base.rmse, pred_rmse=pred.rmse)
 
 # Plot the base RMSE vs. the prediction RMSE
-pdf('single_prediction_rmse.pdf', width=11, height=8.5)
+pdf(paste(args[4], '_prediction_rmse.pdf'), width=11, height=8.5)
 
 # Group by model first
 xyplot(pred_rmse ~ base_rmse,

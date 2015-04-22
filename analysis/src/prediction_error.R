@@ -77,7 +77,7 @@ boot.pred=function(data, indices, model) {
 
 boot.pred2 = function(data, indices, mean) {
     data=data[indices, ]
-    median(data$time - mean) / data$time * 100
+    median(abs(data$time - mean)) / data$time * 100
 }
 
 boot.pred_mean = function(data, indices) {
@@ -169,7 +169,7 @@ error = data.frame(application=applications,
 
 error <- error[order(error$application, error$model),]
 
-pdf("prediction_error.pdf", width=11, height=8.5)
+pdf(paste(args[4], '_prediction_error.pdf'), width=11, height=8.5)
 for (group in unique(error$group)) {
     print(paste("Group: ", group))
     print(paste("Group size: ", length(error[error$group == group, ]$error)))

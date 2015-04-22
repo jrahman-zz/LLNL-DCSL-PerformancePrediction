@@ -138,7 +138,7 @@ plot.settings <- list(
   strip.border=list(col="black")
 )
 
-pdf('error_skew.pdf', width=11, height=8.5)
+pdf(paste(args[4], '_prediction_bias.pdf'), width=11, height=8.5)
 
 skew.points = data.frame(application=application.skew, model=model.skew, err=err.skew, coloc=coloc.skew, interfere=interfere.skew)
 

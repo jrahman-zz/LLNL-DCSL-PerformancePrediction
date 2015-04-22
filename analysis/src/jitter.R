@@ -52,34 +52,9 @@ nice.levels			= unique(scrubbed$nice)
 
 interference.test.names = unique(test_data[test_data$interference != 'dummy', ]$interference)
 
-# Remove non-benchmark columns
 drops = c('application', 'interference', 'cores', 'coloc', 'rep', 'nice', 'time')
 predictors.data = train_data[train_data$interference != 'dummy', !(names(train_data) %in% drops)]
 predictors.names = colnames(predictors.data)
-
-pdf("application_times.pdf", width=11.5, height=8)
-for (app in application.names) {
-	data = train_data[train_data$application == app, ]
-    dummy= data[data$interference == 'dummy', ]
-	l0 = data[data$coloc == 0, ]
-    l0 = l0[l0$interference != 'dummy', ]
-	l1 = data[data$coloc == 1, ]
-	l2 = data[data$coloc == 2, ]
-
-	minimum = min(data$time)
-	maximum = max(data$time)
-	lim = c(minimum, maximum)
-
-	caption = paste("Runtimes: ", app)
-	stripchart(l0[l0$nice==0,]$time, method="jitter", main=caption, col="red", xlim=lim)
-	stripchart(l0[l0$nice==5,]$time, method="jitter", main="", col="orange", xlim=lim, add=TRUE)
-	stripchart(l0[l0$nice==10,]$time, method="jitter", main="", col="yellow", xlim=lim, add=TRUE)
-	stripchart(l1$time, method="jitter", main="", col="blue", xlim=lim, add=TRUE)
-	stripchart(l2$time, method="jitter", main="", col="green", xlim=lim, add=TRUE)
-    stripchart(dummy$time, method="jitter", main="", col="purple", xlim=lim, add=TRUE)
-	legend("topleft", legend=c("Same core, nice 0", "Same core, nice 5", "Same core, nice 10", "Same socket, different core", "Different socket", "Baseline"), text.col=c("red", "orange", "yellow", "blue", "green", "purple"))
-}
-dev.off()
 
 # Check for runtime stability, no point in predicting a moving target
 max_app_jitter = 0
@@ -128,7 +103,7 @@ for (interfere in interference.names) {
 	}
 }
 print(paste("App: ", max_app_jitter, ", Bmark: ", max_bmark_jitter))
-pdf('jitter.pdf', height=8.5, width=11)
+pdf(paste(args[4], '_jitter.pdf'), height=8.5, width=11)
 hist(app_dev_values, breaks=10, xlab="sd/mean", main="App runtime coefficient of variation")
 hist(bmark_dev_values, breaks=10, xlab="sd/mean", main="Benchmark runtime coefficient of variation")
 hist(app_jitter_values, breaks=10, xlab="(max-min)/mean", main="App runtime jitter")

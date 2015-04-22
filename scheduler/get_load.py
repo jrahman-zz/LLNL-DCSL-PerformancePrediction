@@ -103,5 +103,5 @@ def get_io_use():
 	#removexattr               2
 	#inode_permission          28202036
 
-	llstat /proc/fs/lustre/llite/lse-ffff88062a1dac00/stats
-pass	
+	#llstat /proc/fs/lustre/llite/lse-ffff88062a1dac00/stats
+	pass	

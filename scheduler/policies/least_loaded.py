@@ -36,9 +36,10 @@ class LeastLoaded(SchedulerPolicy):
 		job['start_time'] = None
 		job['end_time'] = None
 		job['state'] = JobState.Waiting
-		if 'cores' not in job:
-			raise ValueError('No core count given')
 		
 		self._waiting_job_queue.append(job)
 		self._job_dict[job['id']] = job
+
+	def _lookup_job(self, id):
+		return self._job_dict[id]
 

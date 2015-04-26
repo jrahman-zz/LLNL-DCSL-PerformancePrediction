@@ -44,6 +44,9 @@ class Application():
     def __exit__(self, type, value, traceback):
         self.stop()
 
+	def get_cores(self):
+		return len(self._run_cores)
+
     def load(self):
         """Load data ahead of any potential benchmark run."""
         if self._started or self._loaded:
@@ -127,6 +130,7 @@ class Application():
         logging.info('Running application: %s', str(self))
         try:
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            logging.info('Output: %s', output)
         except subprocess.CalledProcessError as e:
             logging.error('Failed to run application %s, output: %s', str(self), e.output)
             raise

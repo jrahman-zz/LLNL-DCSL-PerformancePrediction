@@ -45,7 +45,7 @@ class ParsecCanneal(Parsec):
 class ParsecDedup(Parsec):
     def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
         self._bmark_name = 'dedup'
-        Parsec.__init__(self, environ, app_cores, client_cores, 'simlarge', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
 
 class ParsecFacesim(Parsec):
     def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):

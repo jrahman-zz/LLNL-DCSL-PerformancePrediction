@@ -29,9 +29,10 @@ def run(application, benchmarks, interference):
                     stack.enter_context(thread.interfere())
                 try:
                     t = dict()
+                    t['cores'] = application.get_cores()
                     t['application'] = str(application)
                     for i in range(0, len(interference)):
-                                                    t['interference%d' % (i+1)] = str(interference[i])
+                        t['interference%d' % (i+1)] = str(interference[i])
                     t.update(run_application(application))
                     t.update(run_benchmarks(benchmarks))
                     times.append(t)
@@ -57,7 +58,6 @@ def run_benchmarks(benchmarks):
     """ Run each selected benchmark """
     times = {}
     for benchmark in benchmarks:
-        
         logging.info('Launching %d copies...', len(benchmark))
         greenlets = [Greenlet.spawn(lambda: bmark.run()) for bmark in benchmark]
         logging.info('Launched %d copies', len(benchmark))
@@ -79,7 +79,7 @@ def run_benchmarks(benchmarks):
 
         # Merge based on keys, benchmark name first, then the type of data
         for key in t.keys():
-            times["%s_%s" % (str(benchmark), key)] = t[key]
+            times["%s_%s" % (str(benchmark[0]), key)] = t[key]
     logging.debug('Done with benchmarks')
     return times
 
@@ -132,6 +132,7 @@ def create_config(environ, application, interference_specs):
     
     # Parse the interference specs, and extract core request counts
     specs = map(lambda x: parse_interference(x), interference_specs)
+    specs = filter(lambda x: x[0].lower() != 'dummy', specs)
 
     # When running multi-threaded applications, we must ensure that we have
     # interference threads evenly spread across the multi-thread application cores
@@ -142,11 +143,11 @@ def create_config(environ, application, interference_specs):
     if len(same_core_specs) > 1:
         raise Exception('Only one same core interference thread allowed')
 
+    new_same_core_specs = []
     if len(same_core_specs) == 1:
         cores = int(same_core_specs[0][1])
         total = cores
         # We must have at least one interference thread
-        new_same_core_specs = []
         new_same_core_specs.append(same_core_specs[0])
         for i in range(0, int(math.ceil(application_cores / cores)) - 1):
             new_same_core_specs.append(same_core_specs[0])
@@ -172,7 +173,8 @@ def create_config(environ, application, interference_specs):
     # Process benchmarks for use
     bmarks = []
     for bmark in benchmarks.keys():       
-        bmarks.append([benchmarks[bmark](environ, [app_cores[i]]) for i in range(0, len(app_cores))])
+        #bmarks.append([benchmarks[bmark](environ, [app_cores[i]]) for i in range(0, len(app_cores))])
+		bmarks.append([benchmarks[bmark](environ, app_cores)])
     application = apps[application_name](environ, app_cores, client_cores[0], 1)
     return (application, bmarks, threads)
     

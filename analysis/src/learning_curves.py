@@ -23,9 +23,9 @@ def update(d, app, model, reps, pred, actual):
 def errors(array, data, indexes):
     diffs = pd.DataFrame(data)
     for (model, reps), group in diffs.groupby(['model', 'reps']):
-        index = model_idx[model]
-        error = metrics.median_absolute_error(data['actual'], data['pred'])
-        array[index, reps] = error
+        index = indexes[model]
+        error = metrics.mean_squared_error(data['actual'], data['pred'])
+        array[index, reps-1] = error
     return array
 
 
@@ -36,11 +36,11 @@ class LearningCurves(AnalysisModule):
     
     def analyze(self, train_data, test_data, models):
 
-        nreps = range(1, 10)
+        nreps = range(1, 4)
         keys = ['application']
 
-        error_test = dict(application=[], model=[], pred=[], acutal=[], reps=[])
-        error_train = dict(application=[], model=[], pred=[], acutal=[], reps=[])
+        error_test = dict(application=[], model=[], pred=[], actual=[], reps=[])
+        error_train = dict(application=[], model=[], pred=[], actual=[], reps=[])
 
         models = [LinearModel, RidgeModel, GBMModel]
         model_names = [str(models[i]()) for i in range(0, len(models))]
@@ -52,27 +52,33 @@ class LearningCurves(AnalysisModule):
 
         for reps in nreps:
             for app, group in train_data.groupby(keys):
-                data = group[group['rep'] <= rep]
+                data = group[group['rep'] <= reps]
                 X = util.get_predictors(data)
                 y = data['time']
                 test = test_data[test_data['application'] == app]
                 X_test = util.get_predictors(test)
-                y_test =  test['test']
+                y_test =  test['time']
                 for model in models:
-                    model = model().fit(X, y)
+                    model = model()
+                    model.fit(X, y)
                     # Find predictions over the test set
                     pred = model.predict(X_test)
                     for i in range(0, len(pred)):
-                       error_test = update(error_test, app, str(model), reps, pred[i], y_test[i])
+                       error_test = update(error_test, app, str(model), reps, pred[i], y_test.values[i])
                     # Find predictions over the training set
                     pred = model.predict(X)
                     for i in range(0, len(pred)):
-                        error_train = update(error_train, app, str(model), reps, pred[i], y[i])
+                        error_train = update(error_train, app, str(model), reps, pred[i], y.values[i])
         
-        error_test = errors(error_test, test_error, indexes)
-        error_train = errors(error_train, train_error, indexes)
+        test_error = errors(test_error, error_test, model_idx)
+        train_error = errors(train_error, error_train, model_idx)
 
-        for i in range(models):
+        for i in range(0, len(models)):
             model_name = model_names[i]
-            plt.plot(error_test[i, :], nreps, error_train[i, :], nreps)
+            print test_error[i, :]
+            print train_error[i, :]
+            plt.plot(nreps, test_error[i, :], nreps, train_error[i, :])
+            plt.ylabel('Mean Squared Error')
+            plt.xlabel('Runs within config')
+            plt.title('Learning Curve')
            

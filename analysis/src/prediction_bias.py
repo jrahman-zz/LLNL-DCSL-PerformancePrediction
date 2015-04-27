@@ -35,4 +35,6 @@ class PredictionBias(AnalysisModule):
         error = pd.DataFrame(error)
         grid = sns.FacetGrid(error, col='model')
         grid.map(plt.hist, 'error', bins=40)
+        grid.add_legend()
+        grid.set_xlabels('Relative Error (%)')
 

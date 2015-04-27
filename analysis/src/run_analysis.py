@@ -29,7 +29,7 @@ def main(train_csv, test_csv):
     models = cm.construct_models(train_csv.copy(), mods)
     logging.info('Finished base model construction')
 
-    modules = [pe, pm, at, pb, lc]
+    modules = [lc, pe, pm, at, pb]
     for module in modules:
         module = module()
         logging.info('Starting module %s...', str(module))

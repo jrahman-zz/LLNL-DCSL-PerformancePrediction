@@ -13,7 +13,7 @@ def construct_models(data, models):
         
         for key in models.keys():
             model = models[key]()
-            model.fit(times, group.values)
+            model.fit(group.values, times)
             fitted_models[application][key] = model
 
     return fitted_models

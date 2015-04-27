@@ -19,7 +19,7 @@ class Model:
                     (self._regressor_name, self._regressor)
                 ])
 
-    def fit(self, y, X):
+    def fit(self, X, y):
         if self._grid_params is None:
             self._model = self._pipeline.fit(X, y)
         else:
@@ -46,7 +46,7 @@ class RidgeModel(Model):
     def __init__(self):
         self._regressor = linear_model.Ridge()
         self._regressor_name = 'ridge'
-        self._grid_params = [dict(ridge__alpha=util.frange(0, 10, 0.2))]
+        self._grid_params = [dict(ridge__alpha=util.frange(0, 20, 0.1))]
         self._name = 'Ridge'
         Model.__init__(self)
         
@@ -55,9 +55,9 @@ class GBMModel(Model):
         self._regressor = ensemble.GradientBoostingRegressor()
         self._regressor_name = 'gbm'
         self._grid_params = [dict(
-                                gbm__learning_rate=util.frange(0.05, 0.4, 0.05),
-                                gbm__n_estimators=range(25, 300, 25),
-                                gbm__max_depth=range(2, 6)
+                                gbm__learning_rate=util.frange(0.05, 0.55, 0.025),
+                                gbm__n_estimators=range(20, 300, 20),
+                                gbm__max_depth=range(2, 7)
                             )]
         self._name = 'Gradient Boosted Model'
         Model.__init__(self)

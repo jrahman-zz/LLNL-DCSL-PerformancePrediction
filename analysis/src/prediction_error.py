@@ -12,7 +12,6 @@ class PredictionError(AnalysisModule):
         AnalysisModule.__init__(self)
         
     def analyze(self, train_data, test_data, models):
-        plots = []
         errors = dict(application=[], error=[], model=[], model_nice_name=[])
         grouped = test_data.groupby('application')
         for app, group in grouped:
@@ -34,7 +33,7 @@ class PredictionError(AnalysisModule):
                     errors['model_nice_name'].append(str(model))
                     errors['model'].append(model._regressor_name)
         errors = pd.DataFrame(errors)
-        grid = sns.FacetGrid(errors, hue='application', col='model')
         plot = sns.factorplot('model', 'error', 'application', data=errors, estimator=np.mean, kind='bar', ci=95)
-        plots.append(plot)
-        return plots
+        plot.set_titles('Prediction Error')
+        plot.set_xlabels('Relative Error (%)')
+        plot.set_ylabels('Frequency')

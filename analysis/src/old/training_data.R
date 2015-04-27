@@ -49,7 +49,7 @@ configs.data=list()
 configs.count=0
 
 # Remove non-benchmark columns
-drops = c('application', 'interference', 'coloc', 'rep', 'nice', 'time')
+drops = c('application', 'interference', 'coloc', 'cores', 'rep', 'nice', 'time')
 predictors.data = train_data[train_data$interference != 'dummy', !(names(train_data) %in% drops)]
 predictors.names = colnames(predictors.data)
 

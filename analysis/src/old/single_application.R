@@ -59,11 +59,11 @@ nice.levels			= unique(scrubbed$nice)
 interference.test.names = unique(test_data[test_data$interference != 'dummy', ]$interference)
 
 # Remove non-benchmark columns
-drops = c('application', 'interference', 'coloc', 'rep', 'nice', 'time')
+drops = c('application', 'interference', 'cores', 'coloc', 'rep', 'nice', 'time')
 predictors.data = train_data[train_data$interference != 'dummy', !(names(train_data) %in% drops)]
 predictors.names = colnames(predictors.data)
 
-pdf("single_application_times.pdf", width=11.5, height=8)
+pdf("application_times.pdf", width=11.5, height=8)
 #par(mfrow=c(length(application.names), 5), xpd=T)
 for (app in application.names) {
 	data = train_data[train_data$application == app, ]
@@ -115,14 +115,6 @@ for (interfere in interference.names) {
                     bmark_dev_values = c(bmark_dev_values, dev)
 					bmark_jitter_values = c(bmark_jitter_values, jitter)
 					max_bmark_jitter = max(max_bmark_jitter, jitter)
-#					if (jitter > 0.15) {
-#						print(paste("Benchmark: ", name))
-#						print(paste("Interference: ", interfere))
-#						print(paste("Coloc: ", coloc_level))
-#						print(paste("Nice: ", nice_level))
-#						print(paste("Measurements: ", length(d)))
-#						print(paste("Jitter: ", jitter))
-#					}
 				}
 			}	
 			for (app in application.names) {
@@ -137,14 +129,6 @@ for (interfere in interference.names) {
                     app_dev_values = c(app_dev_values, dev)
 					app_jitter_values = c(app_jitter_values, jitter)
 					max_app_jitter = max(max_app_jitter, jitter)
-#    				if (jitter > 0.15) {
-#						print(paste("Application: ", app))
-#						print(paste("Interference: ", interfere))
-#						print(paste("Coloc: ", coloc_level))
-#						print(paste("Nice: ", nice_level))
-#						print(paste("Measurements: ", length(d)))
-#						print(paste("Jitter: ", jitter))
-#					}	
 				}
 			}
 		}
@@ -157,7 +141,6 @@ hist(bmark_dev_values, breaks=10, xlab="sd/mean", main="Benchmark runtime coeffi
 hist(app_jitter_values, breaks=10, xlab="(max-min)/mean", main="App runtime jitter")
 hist(bmark_jitter_values, breaks=10, xlab="(max-min)/mean", main="Benchmark runtime jitter")
 dev.off()
-
 
 for (app in application.names) {
   # Compute the error assuming the mean is our prediction
@@ -188,7 +171,12 @@ boot.pred=function(data, indices, model) {
   #   model: Trained model to run data through
   #
   data=data[indices, ]
-  median(abs(predict(model, data) - data$time) / data$time) * 100
+  median(abs(data$time - predict(model, data)) / data$time) * 100
+}
+
+boot.pred2 = function(data, indices, mean) {
+    data=data[indices, ]
+    median(data$time - mean) / data$time * 100
 }
 
 boot.pred_mean = function(data, indices) {
@@ -211,10 +199,16 @@ pred.rmse = c()
 models.rmse = c()
 coloc.rmse = c()
 interfere.rmse = c()
-err.rmse = c()
+rel.rmse = c()
+
+application.skew = c()
+model.skew = c()
+coloc.skew = c()
+interfere.skew = c()
+err.skew = c()
 
 # Filter out any column except for our predictors and the response variable
-drops = c('application', 'interference', 'coloc', 'rep', 'nice')
+drops = c('application', 'interference', 'cores', 'coloc', 'rep', 'nice')
 for (app in names(models)) {
     print(app)
     application.data = test_data[test_data$application == app, ]
@@ -237,7 +231,6 @@ for (app in names(models)) {
                 # Compute the error for each model, 
                 for (model in names(models[[app]])) {
                   mod = models[[app]][[model]]
-#                  print(paste("Model: ", model, ", app: ", app))
                   pred = predict(mod, data)
                   err.diff = (data$time - pred)
                   err.abs = abs(err.diff)
@@ -250,8 +243,15 @@ for (app in names(models)) {
                   interfere.rmse = c(interfere.rmse, interfere)
                   base.rmse = c(base.rmse, times.rel)
                   pred.rmse = c(pred.rmse, err.rel)
-                  err.rmse = c(err.rmse, err.diff / times.mean * 100)
-                }
+
+                  for (err in err.diff) {
+                    application.skew = c(application.skew, app)
+                    model.skew = c(model.skew, model)
+                    coloc.skew = c(coloc.skew, coloc_level)
+                    interfere.skew = c(interfere.skew, interfere)
+                    err.skew = c(err.skew, err / times.mean * 100)
+                  }
+               }
             }
         }
     }
@@ -266,7 +266,7 @@ plot.settings <- list(
 )
 
 
-err.points = data.frame(application=applications, model=models.rmse, base_rmse=base.rmse, pred_rmse=pred.rmse, err=err.rmse)
+err.points = data.frame(application=applications, model=models.rmse, base_rmse=base.rmse, pred_rmse=pred.rmse)
 
 # Plot the base RMSE vs. the prediction RMSE
 pdf('single_prediction_rmse.pdf', width=11, height=8.5)
@@ -294,18 +294,30 @@ xyplot(pred_rmse ~ base_rmse,
     )
 
 histogram(~pred_rmse | model, data=err.points, group=model, xlab="Normalized Prediction RMSE")
-
-histogram(~err | model, data=err.points, group=model, xlab="Normalize Prediction Error")
-
 dev.off()
 
-#range = extendrange(c(error$error, error$upp, error$low))[2]
+# Print list of errors above 10%
+print(err.points[err.points$pred_rmse > 10, ])
 
-# Split data into four sets
-#i = 0
-#sets = split(application.names, cut(seq_along(application.names), 2, labels=FALSE))
-#print("Sets")
-#print(sets)
+pdf('error_skew.pdf', width=11, height=8.5)
+
+skew.points = data.frame(application=application.skew, model=model.skew, err=err.skew, coloc=coloc.skew, interfere=interfere.skew)
+
+upp=max(err.skew)
+low=min(err.skew)
+breaks = seq(from=low-1,to=upp+1,by=1)
+histogram(~err | model, data=skew.points, group=application, breaks=breaks, xlab="Normalized Prediction Error")
+
+histogram(~err | application, data=skew.points, group=model, breaks=breaks, xlab="Normalized Prediction Error")
+
+histogram(~err | interfere, data=skew.points, group=application, breaks=breaks, xlab="Normalized Prediction Error")
+
+for (app in unique(skew.points$application)) {
+  p = histogram(~err | model, data=skew.points[skew.points$application == app, ], group=model, xlab=paste("Normalized Prediction Error - ", app))
+  print(p)
+}
+
+dev.off()
 
 # Generate prediction errors from the test set
 applications = c()
@@ -323,7 +335,7 @@ for (app in names(models)) {
   test.set = test.set[test.set$interference != 'dummy', ]
 
   # Truncate columns that we do not want to be used in the fitting
-  drops = c('application', 'interference', 'coloc', 'rep', 'nice')
+  drops = c('application', 'interference', 'coloc', 'cores', 'rep', 'nice')
   test.data = test.set[, !(names(test.set) %in% drops)]
 
   for (model in names(models[[app]])) {
@@ -346,6 +358,26 @@ for (app in names(models)) {
     models.used = c(models.used, model)
     group = c(group, i %% 5)
   }
+
+  # Terrible naive mean model
+  data = train_data[train_data$application == app, ]
+  data = data[, !(names(data) %in% drops)]
+  m = mean(data$time)
+  fit.boot = boot(data=data,
+                  statistic=boot.pred2,
+                  R=250,
+                  mean=m,
+                  parallel=c('multicore'),
+                  ncpus=4)
+
+  bootstrap = boot.ci(fit.boot, type='bca')
+  applications = c(applications, app)
+  models.used = c(models.used, 'Naive Mean')
+  group = c(group, i %% 5)
+  err = c(err, bootstrap$t0)
+  low = c(low, bootstrap$bca[4])
+  upp = c(upp, bootstrap$bca[5])
+
   i = i + 1
 }
 
@@ -359,22 +391,7 @@ error = data.frame(application=applications,
 
 error <- error[order(error$application, error$model),]
 
-myplot <- function(group) {
-    d = error[error$group == group, ]
-    print(paste("Group: ", group))
-    print(paste("Group size: ", length(d$error)))
-    barchart(error~application | group,
-        data=d,
-        groups=model,
-        auto.key = list(space = "right"),
-        xlab='Median Prediction Error %',
-        main='Prediction Error',
-        border='white',
-        par.settings=plot.settings)
-    par(new=T)
-}
-
-pdf("single_prediction_error.pdf", width=11, height=8.5)
+pdf("prediction_error.pdf", width=11, height=8.5)
 for (group in unique(error$group)) {
     print(paste("Group: ", group))
     print(paste("Group size: ", length(error[error$group == group, ]$error)))

@@ -41,11 +41,18 @@ class PredictionRmse(AnalysisModule):
         grid = sns.FacetGrid(error, col='model', hue='application')
         grid.map(plt.scatter, 'base_rmse', 'pred_rmse')
         grid.add_legend()
+        grid.set_ylabels('Prediction RMSE')
+        grid.set_xlabels('Runtime RMSE')
 
         grid = sns.FacetGrid(error, hue='model')
         grid.map(plt.scatter, 'base_rmse', 'pred_rmse')
         grid.add_legend()
+        grid.set_ylabels('Prediction RMSE')
+        grid.set_xlabels('Runtime RMSE')
 
         grid = sns.FacetGrid(error, hue='coloc')
         grid.map(plt.scatter, 'base_rmse', 'pred_rmse')
         grid.add_legend()
+        grid.set_ylabels('Prediction RMSE')
+        grid.set_xlabels('Runtime RMSE')
+

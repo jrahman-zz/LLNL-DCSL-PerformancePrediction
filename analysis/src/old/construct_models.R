@@ -30,6 +30,8 @@ train_data=read.csv(args[1],
                     sep=',',
                     stringsAsFactors=T)
 
+train_data = train_data[train_data$rep != 0, ]
+
 # Get configuration informationi
 # We don't want dummy inteference data here, since that is only fir baselin
 scrubbed = train_data[train_data$interference != 'dummy', ]
@@ -62,14 +64,13 @@ boot.pred_mean = function(data, indices) {
     median(abs(data)) * 100
 }
 
-model.names = c("lm", "ridge", "svmRadial", "svmPoly", "gbm")
-#model.names = c('lm', 'svmRadial')
-#model.names = c('lm')
+model.names = c("lm", "ridge", "gbm")
 
 # Define our formula for y in terms of others
 formula=as.formula('time~.')
 
 models = list()
+models.runs.counts = c(1, 3, 5, 10)
 
 total = length(unique(train_data$rep)) * length(application.names) * length(model.names)
 done = 0
@@ -77,8 +78,13 @@ print(paste("Total: ", total))
 
 # Build models and use test set for error analysis
 #application.names = c('spec_434.zeusmp', 'spec_453.povray') # 'spec_434.zeusmp', 'spec_434.zeusmp')
-for (count in unique(train_data$rep)) {
+#for (count in unique(train_data$rep)) {
+for (count in models.runs.counts) {
+  warnings()
   training.reduced = train_data[train_data$rep <= count, ]
+  if (length(training.reduced$time) == 0) {
+    continue # Skip over empty data    
+  }
   models[[count]] = list()
   for (app in application.names) {
     
@@ -87,7 +93,7 @@ for (count in unique(train_data$rep)) {
     training.set = training.set[training.set$interference != 'dummy', ]
 
     # Truncate columns that we do not want to be used in the fitting
-    drops = c('application', 'interference', 'coloc', 'nice', 'rep')
+    drops = c('application', 'interference', 'coloc', 'cores', 'nice', 'rep')
     training.data = training.set[, !(names(training.set) %in% drops)]
 
     control.object=trainControl(method='repeatedcv',
@@ -114,9 +120,34 @@ for (count in unique(train_data$rep)) {
   }
 }
 
+# Variable selection experiment
+pdf('feature_selection.pdf', width=11, height=8.5)
+for (app in application.names) {
+    training.reduced = train_data[train_data$application == app, ]
+    training.reduced = train_data[train_data$rep <= 5, ]
+
+    drops = c('application', 'interference', 'coloc', 'cores', 'nice', 'rep')
+    y = training.reduced$times
+    x = training.reduced[, !(names(training.reduced) %in% drops)]
+    
+    control.object = trainControl(method='repeatcv',
+                                  repeats=10,
+                                  number=10)
+
+    model <- train(form = time ~ .,
+                   data=x,
+                   method='lvq',
+                   preProces=c('center', 'scale'),
+                   trControl=control.object,
+                   verbose=FALSE)
+
+}
+
 
 print("Saving models...")
-save(list=c('models', 'model.names'), file=args[2])
+save(list=c('models', 'models.runs.counts'), file=paste(args[2], "_multi_run"))
+models = models[[10]]
+save(list=c('models'), file=paste(args[2], "_10run"))
 print("Saved models")
 
 warnings()

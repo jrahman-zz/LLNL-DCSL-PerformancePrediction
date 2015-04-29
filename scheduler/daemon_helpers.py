@@ -66,7 +66,7 @@ def create_message(type):
 	message['time'] = datetime.utcnow()
 	return message
 
-def start_job(hostname, jobtype):
+def start_job(hostname, jobtype, cores):
 	message = create_message('start_job')
 	message['data'] = {'jobname': jobtype}
 	return send_request(hostname, JOB_START_ENDPOINT, json.dumps(message))

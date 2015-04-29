@@ -31,10 +31,12 @@ class PredictionBias(AnalysisModule):
                     error['model'].append(model_name)
                     error['model_nice_name'].append(str(model))
                     error['application'].append(app)
-
-        error = pd.DataFrame(error)
-        grid = sns.FacetGrid(error, col='model')
+        self.error = pd.DataFrame(error)
+        return self
+       
+    def plot(self, prefix, suffix):
+        grid = sns.FacetGrid(self.error, col='model')
         grid.map(plt.hist, 'error', bins=40)
         grid.add_legend()
         grid.set_xlabels('Relative Error (%)')
-
+        plt.savefig('%s_bias.%s' % (prefix, suffix))

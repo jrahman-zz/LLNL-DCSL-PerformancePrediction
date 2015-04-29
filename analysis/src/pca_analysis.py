@@ -14,24 +14,27 @@ class PcaAnalysis(AnalysisModule):
     def __init__(self):
         self._name = 'PcaAnalysis'
     
-    def pca_analysis(self, train_data, test_data, models):
+    def analyze(self, train_data, test_data, models):
         y = train_data['time']
-        X = train_data
+        self.X = train_data
         for drop in util.drops():
-            if drop in X:
-                del X[drop]
-        del X['time']
+            if drop in self.X:
+                del self.X[drop]
+        del self.X['time']
 
         explained_variance = list()
 
-        pca = PCA(n_components=len(X.columns))
+        self.pca = PCA(n_components=len(self.X.columns))
         scaler = StandardScaler(with_std=False)
-        steps = [('scaler', scaler), ('pca', pca)]
+        steps = [('scaler', scaler), ('pca', self.pca)]
         pipeline = Pipeline(steps=steps)
-        pipeline.fit(X)
-        X_r = pipeline.transform(X)
+        pipeline.fit(self.X)
+        X_r = pipeline.transform(self.X)
+        return self
 
+    def plot(self, prefix, suffix):
         fig = plt.figure()
         plt.xlabel('Number of dimensions')
         plt.ylabel('Ratio of explained variance')
-        plt.plot(range(0, len(X.columns)), pca.explained_variance_ratio_)
+        plt.plot(range(0, len(self.X.columns)), self.pca.explained_variance_ratio_)
+        plt.savefig('%s_pca_data.%s' % (prefix, suffix), bbox_inches='tight')

@@ -1,9 +1,10 @@
 
 import logging
+import load_numa
 import gevent.greenlet as greenlet
 import gevent.subprocess as subprocess
 
-class Application():
+class Application:
 
     def __init__(self, environ, application_name, start_cores, run_cores, nice=0, instance=1):
         
@@ -17,12 +18,18 @@ class Application():
         self._interface_params = [self._application_dir, self._data_dir, self._instance]
 
         # TODO, clarify how this works
-        self._run_cores = run_cores
-        self._start_cores = start_cores
-        self._nice = nice
-
-        self._loaded = False
-        self._started = False
+        if isinstance(start_cores, list):
+            self._run_cores = run_cores
+            self._run_core_count = len(run_cores)
+        else:
+            self._run_cores = load_numa.cpu_list()
+            self._run_core_count = run_cores
+        if isinstance(start_cores, list):
+            self._start_cores = start_cores
+            self._start_core_count = len(start_cores)
+        else:
+           self._start_cores = load_numa.cpu_list()
+           self._start_core_count = run_cores
         
         # Extra params that the sub-class will provide for it's shell automation scripts
         self._load_params = []
@@ -44,8 +51,8 @@ class Application():
     def __exit__(self, type, value, traceback):
         self.stop()
 
-	def get_cores(self):
-		return len(self._run_cores)
+    def get_cores(self):
+        return len(self._run_cores)
 
     def load(self):
         """Load data ahead of any potential benchmark run."""

@@ -9,8 +9,8 @@ class Parsec(Application):
         Application.__init__(self, environ, 'Parsec', client_cores, app_cores, nice, instance)
         self._load_params = [self._bmark_name]
         self._cleanup_params = [self._bmark_name]
-        self._run_params = [self._bmark_name, size, str(len(app_cores))]
-        self._intefere_params = [self._bmark_name, size,  str(len(app_cores))]
+        self._run_params = [self._bmark_name, size, str(self._run_core_count)]
+        self._intefere_params = [self._bmark_name, size,  str(self._run_core_count)]
 
     def _process_output(self, output):
         regex = r"real\s+(\d+)m(\d+\.\d+)s"

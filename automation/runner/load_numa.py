@@ -14,6 +14,15 @@ def load_numa():
 
     return nodes
 
+def cpu_list():
+    """ Get a full list of CPU cores for taskset """
+    nodes = load_numa()
+    l = []
+    for level in nodes:
+        for item in nodes[level]:
+            l.append(len(l))
+    return l
+
 def assign_cores(app_core_req, intererence_core_reqs, client_core_req):
     nodes = load_numa()
 
@@ -79,7 +88,7 @@ def get_cores_impl(app_request, interference_requests, client_requests, nodes):
     for core_request in client_requests:
         if core_request < (len(other_node_cores) - consumed_other_cores):
             start = consumed_other_cores
-            end = start + count
+            end = start + core_request
             cores = other_node_cores[start:end]
         else:
             start = consumed_other_cores
@@ -198,6 +207,7 @@ def main():
     nodes = {0: [1, 2, 3, 4], 1: [5, 6, 7, 8]}
     print get_cores_impl(2, [(1, 1), (1, 0), (1, 0)], [2], nodes)
     print get_cores_impl(1, [(3, 0)], [], nodes)
+    print cpu_list()
 
 if __name__ == '__main__':
     main()

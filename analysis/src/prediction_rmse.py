@@ -35,24 +35,34 @@ class PredictionRmse(AnalysisModule):
                 error['interference'].append(thread)
                 error['coloc'].append(coloc)
                 error['nice'].append(nice)
+        self.error = pd.DataFrame(error)
+        return self
 
-        error = pd.DataFrame(error)
-
-        grid = sns.FacetGrid(error, col='model', hue='application')
-        grid.map(plt.scatter, 'base_rmse', 'pred_rmse')
+    def plot(self, prefix, suffix):
+        grid = sns.FacetGrid(self.error, col='model', hue='application')
+        grid.map(plt.scatter, 'base_rmse', 'pred_rmse', s=3)
         grid.add_legend()
         grid.set_ylabels('Prediction RMSE')
         grid.set_xlabels('Runtime RMSE')
+        grid.set(xlim=(0,None))
+        grid.set(ylim=(0,None))
+        plt.savefig('%s_rmse_by_app.%s' % (prefix, suffix), bbox_inches='tight')
 
-        grid = sns.FacetGrid(error, hue='model')
-        grid.map(plt.scatter, 'base_rmse', 'pred_rmse')
+        grid = sns.FacetGrid(self.error, hue='model')
+        grid.map(plt.scatter, 'base_rmse', 'pred_rmse', s=3)
         grid.add_legend()
         grid.set_ylabels('Prediction RMSE')
         grid.set_xlabels('Runtime RMSE')
+        grid.set(xlim=(0,None))
+        grid.set(ylim=(0,None))
+        plt.savefig('%s_rmse_by_model.%s' % (prefix, suffix), bbox_inches='tight')
 
-        grid = sns.FacetGrid(error, hue='coloc')
-        grid.map(plt.scatter, 'base_rmse', 'pred_rmse')
+        grid = sns.FacetGrid(self.error, hue='coloc')
+        grid.map(plt.scatter, 'base_rmse', 'pred_rmse', s=3)
         grid.add_legend()
         grid.set_ylabels('Prediction RMSE')
         grid.set_xlabels('Runtime RMSE')
+        grid.set(xlim=(0,None))
+        grid.set(ylim=(0,None))
+        plt.savefig('%s_rmse_by_coloc.%s' % (prefix, suffix), bbox_inches='tight')
 

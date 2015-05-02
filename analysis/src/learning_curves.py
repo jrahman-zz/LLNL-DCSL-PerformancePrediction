@@ -1,6 +1,6 @@
 import util
 
-from model import LinearModel, RidgeModel, GBMModel
+from model import LinearModel, RidgeModel, GBMModel, SVMLinearModel, SVMPolynomialModel
 from analysis_module import AnalysisModule
 from sklearn import metrics
 
@@ -11,7 +11,6 @@ import numpy as np
 #
 # Look at the number of reps within a as it influences accuracy
 #
-
 def update(d, app, model, reps, pred, actual):
     d['application'].append(app)
     d['model'].append(model)
@@ -28,29 +27,28 @@ def errors(array, data, indexes):
         array[index, reps-1] = error
     return array
 
-
 class LearningCurves(AnalysisModule):
     def __init__(self):
         self._name = 'LearningCurves'
         AnalysisModule.__init__(self)
+        self.models = [LinearModel, RidgeModel, GBMModel]
+        self.model_names = [str(self.models[i]()) for i in range(0, len(self.models))]
+        self.nreps = range(1, 4)
     
     def analyze(self, train_data, test_data, models):
 
-        nreps = range(1, 4)
         keys = ['application']
 
         error_test = dict(application=[], model=[], pred=[], actual=[], reps=[])
         error_train = dict(application=[], model=[], pred=[], actual=[], reps=[])
 
-        models = [LinearModel, RidgeModel, GBMModel]
-        model_names = [str(models[i]()) for i in range(0, len(models))]
-        indexes = range(0, len(models))
-        model_idx = {str(model()): idx for (model, idx) in zip(models, indexes)}
+        indexes = range(0, len(self.models))
+        model_idx = {str(model()): idx for (model, idx) in zip(self.models, indexes)}
         
-        test_error = np.zeros((len(models), len(nreps)))
-        train_error = np.zeros((len(models), len(nreps)))
+        self.test_error = np.zeros((len(self.models), len(self.nreps)))
+        self.train_error = np.zeros((len(self.models), len(self.nreps)))
 
-        for reps in nreps:
+        for reps in self.nreps:
             for app, group in train_data.groupby(keys):
                 data = group[group['rep'] <= reps]
                 X = util.get_predictors(data)
@@ -58,7 +56,7 @@ class LearningCurves(AnalysisModule):
                 test = test_data[test_data['application'] == app]
                 X_test = util.get_predictors(test)
                 y_test =  test['time']
-                for model in models:
+                for model in self.models:
                     model = model()
                     model.fit(X, y)
                     # Find predictions over the test set
@@ -70,15 +68,16 @@ class LearningCurves(AnalysisModule):
                     for i in range(0, len(pred)):
                         error_train = update(error_train, app, str(model), reps, pred[i], y.values[i])
         
-        test_error = errors(test_error, error_test, model_idx)
-        train_error = errors(train_error, error_train, model_idx)
+        self.test_error = errors(self.test_error, error_test, model_idx)
+        self.train_error = errors(self.train_error, error_train, model_idx)
 
-        for i in range(0, len(models)):
-            model_name = model_names[i]
-            print test_error[i, :]
-            print train_error[i, :]
-            plt.plot(nreps, test_error[i, :], nreps, train_error[i, :])
+    def plot(self, prefix, suffix):
+        for i in range(0, len(self.models)):
+            model_name = self.model_names[i]
+            plt.figure()
+            plt.plot(self.nreps, self.test_error[i, :], self.nreps, self.train_error[i, :], '-')
             plt.ylabel('Mean Squared Error')
             plt.xlabel('Runs within config')
             plt.title('Learning Curve')
+            plt.savefig('%s_%s_learning_curve.%s' % (prefix, model_name, suffix))
            

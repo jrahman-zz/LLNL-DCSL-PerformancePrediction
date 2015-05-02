@@ -8,12 +8,12 @@ class ApplicationTimes(AnalysisModule):
         AnalysisModule.__init__(self)
         
     def analyze(self, train_data, test_data, models):
+        self.data = train_data
+
+    def plot(self, prefix, suffix):
         keys = ['application', 'coloc', 'nice']
         plots = []
-        for name, group in train_data.groupby(keys):
-            app = name[0]
-            coloc = name[1]
-            nice = name[2]
-            plots.append(sns.stripplot(x='time', hue=['coloc', 'nice'], data=group, jitter=True))
-        return plots
+        for (app, coloc, nice), group in self.data.groupby(keys):
+            sns.stripplot(x='time', hue=['coloc', 'nice'], data=group, jitter=True)
+        plt.savefig('%s_app_times.%s' % (prefix, suffix))
 

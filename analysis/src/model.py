@@ -5,6 +5,7 @@ from sklearn.pipeline import Pipeline
 from sklearn import ensemble
 from sklearn import linear_model
 from sklearn import dummy
+from sklearn import svm
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.grid_search import GridSearchCV
@@ -55,11 +56,32 @@ class GBMModel(Model):
         self._regressor = ensemble.GradientBoostingRegressor()
         self._regressor_name = 'gbm'
         self._grid_params = [dict(
-                                gbm__learning_rate=util.frange(0.05, 0.55, 0.025),
+                                gbm__learning_rate=util.frange(0.05, 1, 0.05),
                                 gbm__n_estimators=range(20, 300, 20),
                                 gbm__max_depth=range(2, 7)
                             )]
         self._name = 'Gradient Boosted Model'
+        Model.__init__(self)
+
+class SVMLinearModel(Model):
+    def __init__(self):
+        self._regressor = svm.SVR(kernel='linear')
+        self._regressor_name = 'svm_linear'
+        self._grid_params = [dict(
+                                svm_linear__C=[10**i for i in range(-5, 6)]
+                            )]
+        self._name = 'SVM Linear Kernel'
+        Model.__init__(self)
+
+class SVMPolynomialModel(Model):
+    def __init__(self):
+        self._regressor = svm.SVR(kernel='poly')
+        self._regressor_name = 'svm_polynomial'
+        self._grid_params = [dict(
+                                svm_polynomial__C=[10**i for i in range(-5, 6)],
+                                svn_polynomial__degree=range(1, 4)
+                            )]
+        self._name = 'SVM Polynomial Kernel'
         Model.__init__(self)
 
 class MeanModel(Model):

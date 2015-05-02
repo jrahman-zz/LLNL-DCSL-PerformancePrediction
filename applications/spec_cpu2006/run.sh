@@ -20,21 +20,30 @@ INTERFERENCE=${6}
 
 BASE_DIR=$(dirname $0)/
 
+TARGET="${DATA_DIR}/spec_data_${BMARK_NAME}_${INSTANCE}/run_base_${SIZE}_x86-64.0000/"
 echo "Run: Starting now..."
-(
-    cd "${SPEC_DIR}"
-    source shrc
-    if [ "x${INTERFERENCE}" == "x1" ]; then 
-        TARGET="${SPEC_DIR}/benchspec/CPU2006/${BMARK_NAME}/run/run_base_${SIZE}_${HOSTNAME}_${INSTANCE}.0000"
-		./bin/specinvoke -d "${TARGET}"
-    else
-        ./bin/runspec -c custom-linux64.cfg --nobuild --iterations 1 --noreportable --define HOSTNAME=${HOSTNAME} --define INSTANCE=${INSTANCE} --size ${SIZE} --action run "${BMARK_NAME}"
-    fi
-)
+time python "${BASE_DIR}/runner.py" "${BMARK_NAME}" "${BASE_DIR}/fake_commands.json" "${TARGET}" "${SIZE}"
 if [ $? -ne 0 ]; then
-    echo "Error: Failed to run the benchmark"
+    echo "Error: Failed to run application"
     exit 2
 fi
+
+# TODO
+#echo "Run: Starting now..."
+#(
+#    cd "${SPEC_DIR}"
+#    source shrc
+#    if [ "x${INTERFERENCE}" == "x1" ]; then 
+#        TARGET="${SPEC_DIR}/benchspec/CPU2006/${BMARK_NAME}/run/run_base_${SIZE}_${HOSTNAME}_${INSTANCE}.0000"
+#		./bin/specinvoke -d "${TARGET}"
+#    else
+#        ./bin/runspec -c custom-linux64.cfg --nobuild --iterations 1 --noreportable --define HOSTNAME=${HOSTNAME} --define INSTANCE=${INSTANCE} --size ${SIZE} --action run "${BMARK_NAME}"
+#    fi
+#)
+#if [ $? -ne 0 ]; then
+#    echo "Error: Failed to run the benchmark"
+#    exit 2
+#fi
 echo "Run: Completed"
 
 exit 0

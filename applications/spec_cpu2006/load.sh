@@ -46,7 +46,7 @@ if [ "${SIZE}" != "train" -a "${SIZE}" != "test" -a "${SIZE}" != "ref" ]; then
 fi
 
 # Delete old datadir
-DATA="${DATA_DIR}/spec_data_${BMARK_NAME}"
+DATA="${DATA_DIR}/spec_data_${BMARK_NAME}_${INSTANCE}"
 if [ -d "${DATA}" ]; then
     echo "Load: Deleting old data directory at ${DATA} ..."
     rm -rf "${DATA}"
@@ -66,17 +66,43 @@ if [ $? -ne 0 ]; then
 fi
 echo "Load: Created data directory"
 
-
-echo "Load: Building benchmark"
-(
-    cd "${SPEC_DIR}"
-    source shrc
-    ./bin/runspec -c custom-linux64.cfg --tune base --noreportable --size ${SIZE} --define HOSTNAME=${HOSTNAME} --define INSTANCE=${INSTANCE} --action setup ${BMARK_NAME}
-)
+BINARY_NAME=`${BASE_DIR}/read_binary.py "${BASE_DIR}/fake_commands.json" "${BMARK_NAME}"`
 if [ $? -ne 0 ]; then
-    echo "Error: Failed to compile benchmark"
+    echo "Error: Failed to load binary name"
     exit 8
 fi
+
+# Copy benchmark
+BASE_PATH="${SPEC_DIR}/benchspec/CPU2006/${BMARK_NAME}/run"
+BINARY_PATH="${BASE_PATH}/build_base_x86-64.0000/${BINARY_NAME}"
+RUN_PATH="${BASE_PATH}/run_base_${SIZE}_x86-64.0000"
+
+cp -r "${RUN_PATH}" "${DATA}"
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to copy application input"
+    exit 9
+fi
+
+TARGET="${DATA}/run_base_${SIZE}_x86-64.0000/${BINARY_NAME}_base.x86-64"
+if [ ! -x "${TARGET}" ]; then
+    cp "${BINARY_PATH}" "${TARGET}"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to copy binary to destination"
+        exit 10
+    fi
+fi
+
+# TODO
+#echo "Load: Building benchmark"
+#(
+#    cd "${SPEC_DIR}"
+#    source shrc
+#    ./bin/runspec -c custom-linux64.cfg --tune base --noreportable --size ${SIZE} --define HOSTNAME=${HOSTNAME} --define INSTANCE=${INSTANCE} --action setup ${BMARK_NAME}
+#)
+#if [ $? -ne 0 ]; then
+#    echo "Error: Failed to compile benchmark"
+#    exit 8
+#fi
 
 # Make a 2nd copy of the SPEC benchmark for interference use
 #SOURCE="${SPEC_DIR}/benchspec/CPU2006/${BMARK_NAME}/run/run_base_${SIZE}_${HOSTNAME}_${INSTANCE}.0000"

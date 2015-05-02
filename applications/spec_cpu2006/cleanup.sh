@@ -16,7 +16,7 @@ INSTANCE=${3}
 BMARK_NAME=${4}
 
 # Remove temp dir
-DATA_DIR="${2}/spec/${BMARK_DIR}"
+DATA_DIR="${2}/spec/${BMARK_DIR}_${INSTANCE}"
 if [ -d "${DATA_DIR}" ]; then
     echo "Cleanup: Removing ${DATA_DIR}..."
     rm -rf "${DATA_DIR}"
@@ -29,27 +29,28 @@ fi
 
 # Remove run files
 
-RUN_DIR="${SPEC_DIR}/benchspec/CPU2006/${BMARK_NAME}/"
-echo "Cleanup: Checking for ${RUN_DIR}/run/"
-if [ -d "${RUN_DIR}/run/" ]; then
-    echo "Cleanup: Removing ${RUN_DIR}/run/"
-	GONE=0
-    for RETRY in `seq 1 10`; do
-		rm -rf "${RUN_DIR}"/run/*"${HOSTNAME}_${INSTANCE}"*
-    	if [ $? -ne 0 ]; then
-        	sleep 5
-		else
-			GONE=1
-			break
-		fi
-    done
-	if [ ${GONE} -ne 1 ]; then
-		"Error: Failed to cleanup"
-		exit 3
-	fi
-else
-    echo "Error: No run directory found"
-    exit 4
-fi
+# TODO
+#RUN_DIR="${SPEC_DIR}/benchspec/CPU2006/${BMARK_NAME}/"
+#echo "Cleanup: Checking for ${RUN_DIR}/run/"
+#if [ -d "${RUN_DIR}/run/" ]; then
+#    echo "Cleanup: Removing ${RUN_DIR}/run/"
+#	GONE=0
+#    for RETRY in `seq 1 10`; do
+#		rm -rf "${RUN_DIR}"/run/*"${HOSTNAME}_${INSTANCE}"*
+#    	if [ $? -ne 0 ]; then
+#        	sleep 5
+#		else
+#			GONE=1
+#			break
+#		fi
+#    done
+#	if [ ${GONE} -ne 1 ]; then
+#		"Error: Failed to cleanup"
+#		exit 3
+#	fi
+#else
+#    echo "Error: No run directory found"
+#    exit 4
+#fi
 
 exit 0

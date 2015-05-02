@@ -38,6 +38,9 @@ class Application:
         self._stop_params = []
         self._cleanup_params = []
         self._interfere_params = []
+        self._started = False
+        self._loaded = False
+        self._nice = nice
 
     def __hash__(self):
         return hash(str(self))

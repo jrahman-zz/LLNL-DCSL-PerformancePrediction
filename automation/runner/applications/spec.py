@@ -13,12 +13,14 @@ class Spec(Application):
         self._interfere_params = [self._bmark_name, 'train', '1']
 
     def _process_output(self, output):
-        regex = r"%s[^-]*--\s*(\d*(?:\.\d*)?)[^-]*--\s*S.*\n" % self._bmark_name
+        #regex = r"%s[^-]*--\s*(\d*(?:\.\d*)?)[^-]*--\s*S.*\n" % self._bmark_name
+        regex = r"real\s*(\d+)m(\d+\.\d+)"
         match = re.search(regex, output)
         if match is None:
             logging.error('Mismatch: %s', output)
             raise Exception('No match')
-        return { 'time': float(match.group(1)) }
+        #return { 'time': float(match.group(1)) }
+        return { 'time': 60.0 * int(match.group(1)) + float(match.group(2)) }
 
     def __str__(self):
         return "spec_%s" % (self._bmark_name)

@@ -92,7 +92,7 @@ def get_cores_impl(app_request, interference_requests, client_requests, nodes):
             cores = other_node_cores[start:end]
         else:
             start = consumed_other_cores
-            end = start + count
+            end = start + core_request
             cores = other_node_cores[start:end]
             # Fill remaining cores from the app NUMA node
             remaining = core_request - len(cores)

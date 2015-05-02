@@ -7,7 +7,7 @@ from sklearn import linear_model
 from sklearn import svm
 from sklearn.cross_validation import StratifiedKFold, KFold
 from sklearn.grid_search import GridSearchCV
-from sklearn.feature_selection import RFECV
+from sklearn.feature_selection import RFE
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
@@ -33,29 +33,33 @@ class FeatureSelection(AnalysisModule):
     def analyze(self, train_data, test_data, models):
         models = [{'model': linear_model.LinearRegression(),
                    'grid': {},
-                   'name': 'Linear'}, 
+                   'name': 'Linear',
+                   'color': 'blue'}, 
                   {'model': linear_model.Ridge(),
                    'grid': [{'regressor__alpha': util.frange(0, 10, 0.2)}],
-                   'name': 'Ridge'},
+                   'name': 'Ridge',
+                   'color': 'red'},
                   {'model': ensemble.GradientBoostingRegressor(),
                    'grid': [{'regressor__learning_rate': util.frange(0.05, 1, 0.05),
                              'regressor__n_estimators': range(20, 300, 20),
                              'regressor__max_depth': range(2, 7)
                             }],
-                   'name': 'GBM'
+                   'name': 'GBM',
+                   'color': 'yellow'
                   },
-                  {'model': svm.SVR(kernel='poly'),
-                   'grid': [{
-                            'regressor__degree': range(1, 4),
-                            'regressor__C': [10**i for i in range(-5, 6)]
-                       }],
-                   'name': 'SVMPoly'
-                  },
+#                  {'model': svm.SVR(kernel='poly'),
+#                   'grid': [{
+#                            'regressor__degree': range(1, 4),
+#                            'regressor__C': [10**i for i in range(-5, 6)]
+#                       }],
+#                   'name': 'SVMPoly'
+#                  },
                   {'model': svm.SVR(kernel='linear'),
                    'grid': [{
                             'regressor__C': [10**i for i in range(-5, 6)]
                        }],
-                   'name': 'SVMLinear'
+                   'name': 'SVMLinear',
+                   'color': 'green'
                   }
                 ]
 
@@ -71,8 +75,8 @@ class FeatureSelection(AnalysisModule):
                     name = model_params['name']
 
                     pipeline = build_pipeline(model)
-                    cv = GridSearchCV(pipeline, grid, cv=10)
-                    rfe = RFE(cv, feature_count, step=1)
+                    rfe = RFE(pipeline, feature_count, step=1)
+                    cv = GridSearchCV(rfe, grid, cv=10)
                     test = test_data[test_data['application'] == app]
                     
                     X_train = util.get_predictors(group)
@@ -80,7 +84,7 @@ class FeatureSelection(AnalysisModule):
                     X_test = util.get_predictors(test)
                     y_test = test['time']
                     
-                    rfe.fit(X_train, y_train)
+                    cv.fit(X_train, y_train)
                 
                     # Build feature heatmap
                     for feature in self._extract_features(rfe, X_train):

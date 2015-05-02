@@ -14,7 +14,10 @@ class PredictionRmse(AnalysisModule):
         
     def analyze(self, train_data, test_data, models):
         keys = ['application', 'interference', 'coloc', 'nice']
-        error = dict(application=[], interference=[], model=[], model_nice_name=[], coloc=[], nice=[], pred_rmse=[], base_rmse=[])
+        error = dict(application=[], interference=[], model=[], coloc=[], nice=[], pred_rmse=[], base_rmse=[])
+        
+        self.colors = {str(model): model._color for name, model in models.values()[0].items()}
+        
         for (app, thread, coloc, nice), group in test_data.groupby(keys):
             base_rmse = 0
             y = group['time']
@@ -27,8 +30,7 @@ class PredictionRmse(AnalysisModule):
                 model = models[app][model_name]    
                 pred = model.predict(X)
                 pred_rmse = util.rmse_error(y, pred)            
-                error['model_nice_name'].append(str(model))
-                error['model'].append(model_name)
+                error['model'].append(str(model))
                 error['pred_rmse'].append(pred_rmse)
                 error['base_rmse'].append(base_rmse)
                 error['application'].append(app)
@@ -48,7 +50,7 @@ class PredictionRmse(AnalysisModule):
         grid.set(ylim=(0,None))
         plt.savefig('%s_rmse_by_app.%s' % (prefix, suffix), bbox_inches='tight')
 
-        grid = sns.FacetGrid(self.error, hue='model')
+        grid = sns.FacetGrid(self.error, hue='model', palette=self.colors)
         grid.map(plt.scatter, 'base_rmse', 'pred_rmse', s=3)
         grid.add_legend()
         grid.set_ylabels('Prediction RMSE')

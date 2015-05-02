@@ -2,6 +2,8 @@
 import model
 import pandas as pd
 
+import argparse
+
 import construct_models as cm
 
 from pca_analysis import PcaAnalysis as pca
@@ -31,11 +33,12 @@ def run(module, train, test, models, prefix, suffix):
         logging.exception('Error: %s', str(e))
         return None
 
-def main(train_csv, test_csv, pool_size, suffix, prefix):
+def main(train_csv, test_csv, pool_size, prefix, suffix):
     mods =  {
             'lm': model.LinearModel,
             'ridge': model.RidgeModel,
             'gbm': model.GBMModel,
+            'svmlinear': model.SVMLinearModel,
             'mean': model.MeanModel
             }
 
@@ -43,7 +46,7 @@ def main(train_csv, test_csv, pool_size, suffix, prefix):
     models = cm.construct_models(train_csv.copy(), mods)
     logging.info('Finished base model construction')
 
-    modules = [pe, pm, pb, tss, lc, fs, pca]
+    modules = [pe, pm, pb, tss, lc, pca]
     pool = Pool(pool_size)
 
     # Instantiate each module for use
@@ -55,11 +58,17 @@ if __name__ == '__main__':
     
     logging.basicConfig(level=logging.INFO)
     
-    if len(sys.argv) != 3:
-        raise ValueError('Incorrect command line parameters')
+    parser = argparse.ArgumentParser(description='Run analysis for models')
+    parser.add_argument('train_data', type=str)
+    parser.add_argument('test_data', type=str)
+    parser.add_argument('pool_size', type=int, default=4)
+    parser.add_argument('prefix', type=str)
+    parser.add_argument('suffix', type=str)
+    args = parser.parse_args()
+
     logging.info('Loading data...')
-    train_csv = pd.read_csv(sys.argv[1])
-    test_csv = pd.read_csv(sys.argv[2])
+    train_csv = pd.read_csv(args.train_data)
+    test_csv = pd.read_csv(args.test_data)
     logging.info('Loaded data')
-    main(train_csv, test_csv, 4, 'spec', 'pdf')
+    main(train_csv, test_csv, args.pool_size, args.prefix, args.suffix)
 

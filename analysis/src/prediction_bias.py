@@ -20,8 +20,6 @@ class PredictionBias(AnalysisModule):
             y=group['time']
             X = util.get_predictors(group).values
             for model_name in models[app]:
-                if model_name == 'mean':
-                    continue
                 model = models[app][model_name]
                 pred = model.predict(X)
 

@@ -41,6 +41,7 @@ class LinearModel(Model):
         self._regressor = linear_model.LinearRegression()
         self._regressor_name = 'lm'
         self._name = 'Linear Model'
+        self._color = 'blue'
         Model.__init__(self)
 
 class RidgeModel(Model):
@@ -49,6 +50,7 @@ class RidgeModel(Model):
         self._regressor_name = 'ridge'
         self._grid_params = [dict(ridge__alpha=util.frange(0, 20, 0.1))]
         self._name = 'Ridge'
+        self._color = 'red'
         Model.__init__(self)
         
 class GBMModel(Model):
@@ -61,6 +63,7 @@ class GBMModel(Model):
                                 gbm__max_depth=range(2, 7)
                             )]
         self._name = 'Gradient Boosted Model'
+        self._color = 'yellow'
         Model.__init__(self)
 
 class SVMLinearModel(Model):
@@ -71,6 +74,7 @@ class SVMLinearModel(Model):
                                 svm_linear__C=[10**i for i in range(-5, 6)]
                             )]
         self._name = 'SVM Linear Kernel'
+        self._color = 'green'
         Model.__init__(self)
 
 class SVMPolynomialModel(Model):
@@ -89,4 +93,5 @@ class MeanModel(Model):
         self._regressor = dummy.DummyRegressor()
         self._regressor_name = 'mean'
         self._name = 'Naive Mean'
+        self._color = 'purple'
         Model.__init__(self)

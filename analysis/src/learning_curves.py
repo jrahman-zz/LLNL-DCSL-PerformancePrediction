@@ -4,6 +4,7 @@ from model import LinearModel, RidgeModel, GBMModel, SVMLinearModel, SVMPolynomi
 from analysis_module import AnalysisModule
 from sklearn import metrics
 
+import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -31,16 +32,15 @@ class LearningCurves(AnalysisModule):
     def __init__(self):
         self._name = 'LearningCurves'
         AnalysisModule.__init__(self)
-        self.models = [LinearModel, RidgeModel, GBMModel]
+        self.models = [LinearModel, RidgeModel, GBMModel, SVMLinearModel]
         self.model_names = [str(self.models[i]()) for i in range(0, len(self.models))]
-        self.nreps = range(1, 4)
+        self.model_colors = {str(model()): model()._color for model in self.models}
+        self.nreps = range(1, 11)
     
     def analyze(self, train_data, test_data, models):
 
         keys = ['application']
-
-        error_test = dict(application=[], model=[], pred=[], actual=[], reps=[])
-        error_train = dict(application=[], model=[], pred=[], actual=[], reps=[])
+        errors = dict(application=[], model=[], error=[], reps=[], error_type=[])
 
         indexes = range(0, len(self.models))
         model_idx = {str(model()): idx for (model, idx) in zip(self.models, indexes)}
@@ -50,34 +50,68 @@ class LearningCurves(AnalysisModule):
 
         for reps in self.nreps:
             for app, group in train_data.groupby(keys):
-                data = group[group['rep'] <= reps]
-                X = util.get_predictors(data)
-                y = data['time']
-                test = test_data[test_data['application'] == app]
-                X_test = util.get_predictors(test)
-                y_test =  test['time']
+                app_data = group[group['rep'] <= reps]
+                test = test_data[test_data.application == app]
+
+                data = {'train': (util.get_predictors(app_data), app_data['time']),
+                        'test': (util.get_predictors(test), test['time'])}
                 for model in self.models:
                     model = model()
-                    model.fit(X, y)
+                    model.fit(data['train'][0], data['train'][1])
                     # Find predictions over the test set
-                    pred = model.predict(X_test)
-                    for i in range(0, len(pred)):
-                       error_test = update(error_test, app, str(model), reps, pred[i], y_test.values[i])
-                    # Find predictions over the training set
-                    pred = model.predict(X)
-                    for i in range(0, len(pred)):
-                        error_train = update(error_train, app, str(model), reps, pred[i], y.values[i])
-        
-        self.test_error = errors(self.test_error, error_test, model_idx)
-        self.train_error = errors(self.train_error, error_train, model_idx)
+                    for t, (X, y) in data.items():
+                        pred = model.predict(X)
+                        error = abs(util.relative_error(y, pred))
+                        for err in error.values:
+                            errors['application'].append(app)
+                            errors['model'].append(str(model))
+                            errors['error'].append(err)
+                            errors['reps'].append(reps)
+                            errors['error_type'].append(t)
+        self.errors = pd.DataFrame(errors)
+
 
     def plot(self, prefix, suffix):
-        for i in range(0, len(self.models)):
-            model_name = self.model_names[i]
+
+        colors = {'train': 'r', 'test': 'g'}
+        labels = {'train': 'Training accuracy', 'test': 'Test accuracy'}
+        data = self.errors[self.errors.error_type == 'test']
+
+        sns.factorplot('reps', 'error', data=data, hue='model',
+                       palette=self.model_colors, kind='point', ci=95, height=5)
+
+        plt.savefig('%s_learning_curve.%s' % (prefix, suffix))
+
+        for model, group in self.errors.groupby('model'):
             plt.figure()
-            plt.plot(self.nreps, self.test_error[i, :], self.nreps, self.train_error[i, :], '-')
-            plt.ylabel('Mean Squared Error')
-            plt.xlabel('Runs within config')
-            plt.title('Learning Curve')
-            plt.savefig('%s_%s_learning_curve.%s' % (prefix, model_name, suffix))
+            reps = np.unique(group.reps)
+            values = {
+                    'test': {'mean': [], 'std': [], 'reps': []},
+                    'train': {'mean': [], 'std': [], 'reps': []}
+                    }
+            for error_type in values.keys():
+                data = group[group.error_type == error_type]
+                for reps, d in data.groupby('reps'):
+                    error = d.error
+                    values[error_type]['mean'].append(np.mean(error))
+                    values[error_type]['std'].append(np.std(error))
+                    values[error_type]['reps'].append(reps)
+            processed = {}
+            for error_type in values.keys():
+                processed[error_type] = {}
+                for metric_name, metrics in values[error_type].items():
+                    processed[error_type][metric_name] = np.array(metrics)
+            plots = {}
+            for error_type, values in processed.items():
+                color = colors[error_type]
+                reps = values['reps']
+                plt.fill_between(reps,
+                                values['mean'] - values['std'],
+                                values['mean'] + values['std'],
+                                alpha=0.1,
+                                color=color)
+                plots[error_type] = plt.plot(reps, values['mean'], 'o-', color=color, label=labels[error_type])
+            plt.legend()
+            plt.savefig('%s_%s_learning_curve.%s' % (prefix, model.lower(), suffix))
+
            

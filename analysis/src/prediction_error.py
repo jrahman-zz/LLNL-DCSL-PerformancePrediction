@@ -13,12 +13,11 @@ class PredictionError(AnalysisModule):
         AnalysisModule.__init__(self)
         
     def analyze(self, train_data, test_data, models):
-        errors = dict(application=[], error=[], model=[], model_nice_name=[])
+        errors = dict(application=[], error=[], model=[])
         grouped = test_data.groupby('application')
+
         for app, group in grouped:
             for model_name in models[app]:
-                if model_name == 'mean':
-                    continue
                 model = models[app][model_name]
 
                 # Only want the predictors, drop everything else 
@@ -31,15 +30,14 @@ class PredictionError(AnalysisModule):
                 for err in res.values:
                     errors['error'].append(err)
                     errors['application'].append(app)
-                    errors['model_nice_name'].append(str(model))
-                    errors['model'].append(model._regressor_name)
+                    errors['model'].append(str(model))
         self.errors = pd.DataFrame(errors)
         return self
        
     def plot(self, prefix, suffix):
-        plot = sns.factorplot('model', 'error', 'application', data=self.errors, estimator=np.mean, kind='bar', ci=95, size=3.5, aspect=2.5)
+        plot = sns.factorplot('model', 'error', 'application', data=self.errors,
+                               estimator=np.median, kind='bar', ci=95, size=3.5, aspect=2.5)
         plot.set_titles('Prediction Error')
-        plot.set_xlabels('Relative Error (%)')
-        plot.set_ylabels('Frequency')
+        plot.set_ylabels('Relative Error (%)')
         plt.savefig('%s_error.%s' % (prefix, suffix), bbox_inches='tight')
 

@@ -21,7 +21,7 @@ def build_commands(app_name, dir_path, size, commands):
 
 def run_commands(commands):
     for command in commands:
-        subprocess.check_output(command, shell=True)
+        subprocess.check_call(command, shell=True)
 
 def main():
     if len(sys.argv) != 5:

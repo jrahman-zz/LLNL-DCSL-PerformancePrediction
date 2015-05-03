@@ -28,73 +28,73 @@ class Parsec(Application):
 
 
 class ParsecBlackscholes(Parsec):
-    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1, size='native'):
         self._bmark_name = 'blackscholes'
-        Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, size, nice, instance)
 
 class ParsecBodytrack(Parsec):
-    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1, size='native'):
         self._bmark_name = 'bodytrack'
-        Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, size, nice, instance)
 
 class ParsecCanneal(Parsec):
-    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1, size='native'):
         self._bmark_name = 'canneal'
-        Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, size, nice, instance)
 
 class ParsecDedup(Parsec):
-    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1, size='native'):
         self._bmark_name = 'dedup'
-        Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, size, nice, instance)
 
 class ParsecFacesim(Parsec):
-    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1, size='native'):
         self._bmark_name = 'facesim'
-        Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, size, nice, instance)
 
 class ParsecFerret(Parsec):
-    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1, size='native'):
         self._bmark_name = 'ferret'
-        Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, size, nice, instance)
 
 class ParsecFluidanimate(Parsec):
     # Note, needs power of 2 for core count
-    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1, size='native'):
         self._bmark_name = 'fluidanimate'
         # Cores must be power of 2
         power = int(math.log(len(app_cores), 2) + 0.5)
         if 2 ** power != len(app_cores):
             raise Exception('Core count must be power of 2')
-        Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, size, nice, instance)
 
 class ParsecFreqmine(Parsec):
-    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1, size='native'):
         self._bmark_name = 'freqmine'
-        Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, size, nice, instance)
 
 class ParsecRaytrace(Parsec):
-    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1, size='native'):
         self._bmark_name = 'raytrace'
-        Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, size, nice, instance)
 
 class ParsecStreamcluster(Parsec):
     # NOTE: Native takes a long time to run ~14 minutes
-    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1, size='native'):
         self._bmark_name = 'streamcluster'
-        Parsec.__init__(self, environ, app_cores, client_cores, 'simlarge', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, size, nice, instance)
 
 class ParsecSwaptions(Parsec):
-    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1, size='native'):
         self._bmark_name = 'swaptions'
-        Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, size, nice, instance)
 
 class ParsecVips(Parsec):
-    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1, size='native'):
         self._bmark_name = 'vips'
-        Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, size, nice, instance)
 
 class ParsecX264(Parsec):
-    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1):
+    def __init__(self, environ, app_cores, client_cores, nice=0, instance=1, size='native'):
         self._bmark_name = 'x264'
-        Parsec.__init__(self, environ, app_cores, client_cores, 'native', nice, instance)
+        Parsec.__init__(self, environ, app_cores, client_cores, size, nice, instance)
 

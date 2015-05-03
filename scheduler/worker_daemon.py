@@ -8,40 +8,51 @@ from datetime import datetime
 
 from flask import Flask, jsonify, request, json
 
-import scheduler.get_load
-import scheduler.daemon_helpers as helpers
-from scheduler.job_manager import JobManager
-from scheduler.measurement_manager import MeasurementManager
+import get_load
+import daemon_helpers as helpers
+from job_manager import JobManager
+from measurement_manager import MeasurementManager
 
+import argparse
+import logging
 import gevent
 from gevent.pywsgi import WSGIServer
 from gevent import subprocess
 
-import automation.runner.load_environ
+from automation.runner.load_environ import load_environ
 
 app = Flask(__name__)
+
+# Yes, globals, evil, I know
+environ = None
+job_manager = None
+measurement_manager = None
 
 def measurement():
 	""" Perform a status measurement """
 	measurement = get_load.get_load()
-	response = helpers.update_worker(sys.argv[1], message))
+	response = helpers.update_worker(environ['master'], message)
 
 def job_completed(job_type, job_id, start_time, end_time, exit_code):
 	""" Take action when a job completes according to the job manager """
 	# TODO
 	pass
 
-environ = None
-job_manager = None
-measurement_manager = None
-
-def init_server(base_path, modules):
+def init_server(args):
 	global environ
 	global job_manager
 	global measurement_manager
 
+	base_path = args.config_path
+	modules = args.modules
+	master = args.master	
+
 	modules = ['%s/%s' % (base_path, module) for module in modules]
 	environ = load_environ('%s/config.json' % (base_path), modules)
+
+	if master != '':
+		environ['master'] = master
+
 	job_manager = JobManager(environ)
 	job_manager.register_completion_cb(job_completed)
 	measurement_manager = MeasurementManager(environ)
@@ -51,7 +62,7 @@ def init_server(base_path, modules):
 def root():
 	return "Hello"
 
-@app.route(helpers.START_JOB_ENDPOINT, methods=['POST'])
+@app.route(helpers.JOB_START_ENDPOINT, methods=['POST'])
 def start_job():
 	message = request.json
 	helpers.log_rpc(message)
@@ -87,13 +98,26 @@ def notify_master():
 	message = {}
 	message['processors'] = int(processors)
 	message['memory'] = get_load.get_free_memory()
-	response = helpers.update_worker(sys.argv[1], message)
+	response = helpers.update_worker(environ['master'], message)
+
+def get_args():
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--master', type=str, help='Hostname for the master node', default='')
+	parser.add_argument('--measurements', type=bool, help='1 to record microbenchmarks')
+	parser.add_argument('--modules', type=str, nargs='*', help='Additional configuration modules', default=['benchmarks.json', 'applications.json'])
+	parser.add_argument('--config_path', type=str, help='Path to config folder', default='.')
+	return parser.parse_args()
 
 if __name__ == '__main__':
 	signal.signal(signal.SIGTERM, signal_handler)
 	logging.basicConfig(level=logging.INFO)
 
-	logging.info('Starting server...')
+	logging.info('Worker: Initializing...')
+	args = get_args()
+	init_server(args)
+	logging.info('Worker: Initialized')
+	
+	logging.info('Worker: Starting...')
 	server = WSGIServer(('', 8000), app)
 	server_greenlet = gevent.spawn(WSGIServer.serve_forever, server)
 	

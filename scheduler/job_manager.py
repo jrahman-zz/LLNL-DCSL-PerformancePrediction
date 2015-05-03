@@ -1,4 +1,4 @@
-from automation.runner.load_applications import load_applications
+from automation.load_applications import load_applications
 from job import JobState
 
 import logging
@@ -27,11 +27,16 @@ class JobManager(object):
 		self._greenlets = {}
 		self._running_info = {}
 
-	def start_job(info):
+	def start_job(self, info):
 		job_id = info['id']		
 		self._greenlets['id'] = greenlet.spawn(JobManager._run_job, self, info)
 		return 200
-	
+
+	def get_running_jobs(self):
+		""" Get a list of running job ids """
+		jobs = [id for id, info in self._running_info.items() if info['status'] == JobState.Running]
+		return jobs
+		
 	def _update_state(self, id, status, start_time=None, finish_time=None, exitcode=None, output=None):
 		""" Update the master of the status of a currently running job """
 		self._running_info[id]['status'] = status

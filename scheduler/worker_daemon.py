@@ -19,7 +19,7 @@ import gevent
 from gevent.pywsgi import WSGIServer
 from gevent import subprocess
 
-from automation.runner.load_environ import load_environ
+from automation.load_environ import load_environ
 
 app = Flask(__name__)
 
@@ -27,6 +27,9 @@ app = Flask(__name__)
 environ = None
 job_manager = None
 measurement_manager = None
+
+total_memory = None
+total_processors = None
 
 def measurement():
 	""" Perform a status measurement """
@@ -69,6 +72,17 @@ def start_job():
 	data = message['data']
 	return job_manager.start_job(data)
 
+@app.route(helpers.WORKER_UPDATE_ENDPOINT, methods=['GET'])
+def worker_update():
+	# Takes three samples over three seconds
+	load = get_load.get_load()
+	jobs = job_manager.get_running_jobs()
+	data = build_update_message(load['cores'], load['memory'], jobs)
+	message = helpers.create_message('update_worker')
+	message['data'] = data
+	return jsonify(message)
+	
+
 # Configure error handlers
 @app.errorhandler(404)
 def not_found_error(e):
@@ -91,14 +105,31 @@ def signal_handler(signo, stack):
 #def validation_error(e):
 #    helper.bad_request(e.args[0])
 
+def build_update_message(avail_processors, avail_memory, running_jobs):
+	global total_processors
+	global total_memory
+	message = {}
+	message['total_processors'] = total_processors
+	message['free_processors'] = avail_processors
+	message['total_memory'] = free_memory
+	message['free_memory'] = avail_memory
+	message['hostname'] = os.getenv('HOSTNAME')
+	message['running_jobs'] = running_jobs
+	return message
+
 
 def notify_master():
 	""" Indicate that we have just started normal operation """
-	processors = subprocess.check_output('cat /proc/cpuinfo | grep processor | wc -l', shell=True)
-	message = {}
-	message['processors'] = int(processors)
-	message['memory'] = get_load.get_free_memory()
+	global total_processors
+	global total_memory
+	procs = subprocess.check_output('cat /proc/cpuinfo | grep processor | wc -l', shell=True)
+	total_processors = int(procs)
+	total_memory = get_load.get_free_memory()
+	running_jobs = job_manager.get_running_jobs()
+	message = build_update_message(total_processors, total_memory, running_jobs)
 	response = helpers.update_worker(environ['master'], message)
+
+	
 
 def get_args():
 	parser = argparse.ArgumentParser()
@@ -108,7 +139,7 @@ def get_args():
 	parser.add_argument('--config_path', type=str, help='Path to config folder', default='.')
 	return parser.parse_args()
 
-if __name__ == '__main__':
+def main():
 	signal.signal(signal.SIGTERM, signal_handler)
 	logging.basicConfig(level=logging.INFO)
 
@@ -123,6 +154,7 @@ if __name__ == '__main__':
 	
 	gevent.sleep(1)
 
+	# Tell the master that we are ready to begin running jobs
 	notify_master()
 
 	delta = 0.5
@@ -132,3 +164,6 @@ if __name__ == '__main__':
 		measurement()
 		
 	server_greenlet.join()
+
+if __name__ == '__main__':
+	main()

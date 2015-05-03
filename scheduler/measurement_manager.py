@@ -1,7 +1,7 @@
 import gevent
 import logging
 from datetime import datetime, timedelta
-from automation.runner.load_benchmarks import load_benchmarks
+from automation.load_benchmarks import load_benchmarks
 
 
 class MeasurementManager:

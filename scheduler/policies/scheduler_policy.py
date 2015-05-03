@@ -1,4 +1,4 @@
-
+from datetime import datetime
 import logging
 
 class SchedulerPolicy(object):
@@ -28,7 +28,7 @@ class SchedulerPolicy(object):
 		if job_info['status'] == JobState.Completed:
 			logging.info('Job %d completed at %s, started at %s', id, job['finish_time'], job['start_time'])
 			# TODO, switch state to completed
-		else:
+		elif job_info['status'] == JobState.Failed:
 			logging.info('Job %d failed at %s, started at %s', id, job['finish_time'], job['start_time'])
 			# TODO, switch state to failed
 		return self._update_job(self, id, job_info)
@@ -39,6 +39,7 @@ class SchedulerPolicy(object):
 		for i in range(0, len(jobs)):
 			id = self._get_id()
 			jobs[i]['id'] = id
+			jobs[i]['queue_time'] = datetime.utcnow()
 
 		for job in jobs:
 			self.validate_job(job)
@@ -61,5 +62,5 @@ class SchedulerPolicy(object):
 			raise ValueError('No application given')
 		if 'cores' not in job:
 			raise ValueError('No cores given')
-		self._validate_job
+		self._validate_job(job)
 

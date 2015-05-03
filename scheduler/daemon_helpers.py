@@ -37,9 +37,6 @@ def internal_error(message):
 def send_request(hostname, endpoint, json=None):
 	
 	url = '%s:%s' % (hostname, DAEMON_PORT)
-
-	logging.info('Hostname: %s', url)
-	
 	conn = httplib.HTTPConnection(url)
 	
 	fullurl = "http://%s/%s" % (url, endpoint)
@@ -66,9 +63,9 @@ def create_message(type):
 	message['time'] = datetime.utcnow()
 	return message
 
-def start_job(hostname, jobtype, cores):
+def start_job(hostname, jobid, jobtype, cores, size):
 	message = create_message('start_job')
-	message['data'] = {'jobname': jobtype}
+	message['data'] = {'id': jobid, 'name': jobtype, 'cores': cores, 'size': size}
 	return send_request(hostname, JOB_START_ENDPOINT, json.dumps(message))
 
 def update_worker(hostname, info):

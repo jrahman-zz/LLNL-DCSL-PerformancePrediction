@@ -37,6 +37,7 @@
         "subapplications": [
             "Blackscholes",
             "Bodytrack",
+            "Dedup",
             "Facesim",
             "Ferret",
             "Fluidanimate",

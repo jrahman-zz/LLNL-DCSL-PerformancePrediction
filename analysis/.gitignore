@@ -1,3 +1,5 @@
 *.pdf
 *.RData
 *.Rhistory
+*.err
+*.out

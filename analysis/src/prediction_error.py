@@ -40,4 +40,4 @@ class PredictionError(AnalysisModule):
         plot.set_titles('Prediction Error')
         plot.set_ylabels('Relative Error (%)')
         plt.savefig('%s_error.%s' % (prefix, suffix), bbox_inches='tight')
-
+        return self

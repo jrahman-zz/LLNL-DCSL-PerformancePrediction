@@ -43,16 +43,20 @@ def main(train_csv, test_csv, pool_size, prefix, suffix):
             }
 
     logging.info('Starting model construction...')
-    models = cm.construct_models(train_csv.copy(), mods)
+#    models = cm.construct_models(train_csv.copy(), mods)
+    models = []
     logging.info('Finished base model construction')
 
-    modules = [pe, pm, pb, tss, lc, pca]
+#    modules = [pe, pm, pb, tss, lc, pca]
+    modules = [at]
     pool = Pool(pool_size)
 
     # Instantiate each module for use
     modules = [module() for module in modules]
-    results = [pool.apply_async(run, (module, train_csv.copy(), test_csv.copy(), models, prefix, suffix)) for module in modules]
-    finished = [result.get() for result in results]
+    #results = [pool.apply_async(run, (module, train_csv.copy(), test_csv.copy(), models, prefix, suffix)) for module in modules]
+    modules = [module.analyze(train_csv.copy(), test_csv.copy(), models) for module in modules]
+    modules = [module.plot(prefix, suffix) for module in modules]
+#    finished = [result.get() for result in results]
 
 if __name__ == '__main__':
     

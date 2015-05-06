@@ -69,6 +69,7 @@ class LearningCurves(AnalysisModule):
                             errors['reps'].append(reps)
                             errors['error_type'].append(t)
         self.errors = pd.DataFrame(errors)
+        return self
 
 
     def plot(self, prefix, suffix):
@@ -113,5 +114,5 @@ class LearningCurves(AnalysisModule):
                 plots[error_type] = plt.plot(reps, values['mean'], 'o-', color=color, label=labels[error_type])
             plt.legend()
             plt.savefig('%s_%s_learning_curve.%s' % (prefix, model.lower(), suffix))
-
+        return self
            

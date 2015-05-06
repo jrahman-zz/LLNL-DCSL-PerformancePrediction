@@ -38,3 +38,4 @@ class PredictionBias(AnalysisModule):
         grid.add_legend()
         grid.set_xlabels('Relative Error (%)')
         plt.savefig('%s_bias.%s' % (prefix, suffix))
+        return self

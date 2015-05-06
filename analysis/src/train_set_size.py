@@ -114,4 +114,4 @@ class TrainingSetSize(AnalysisModule):
                 args = (prefix, app.lower(), model.lower(), suffix)
                 plt.savefig('%s_%s_%s_training_set.%s' % args, bbox_inches='tight')
                 plt.close(fig)
-
+        return self

@@ -38,3 +38,4 @@ class PcaAnalysis(AnalysisModule):
         plt.ylabel('Ratio of explained variance')
         plt.plot(range(0, len(self.X.columns)), self.pca.explained_variance_ratio_)
         plt.savefig('%s_pca_data.%s' % (prefix, suffix), bbox_inches='tight')
+        return self

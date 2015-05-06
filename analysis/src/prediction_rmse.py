@@ -67,4 +67,4 @@ class PredictionRmse(AnalysisModule):
         grid.set(xlim=(0,None))
         grid.set(ylim=(0,None))
         plt.savefig('%s_rmse_by_coloc.%s' % (prefix, suffix), bbox_inches='tight')
-
+        return self

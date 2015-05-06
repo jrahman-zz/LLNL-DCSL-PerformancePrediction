@@ -37,14 +37,14 @@
         "subapplications": [
             "Blackscholes",
             "Bodytrack",
-            "Dedup",
+			"Canneal",
+			"Dedup",
             "Facesim",
             "Ferret",
-            "Fluidanimate",
             "Freqmine",
             "Raytrace",
+			"Streamcluster",
             "Swaptions",
-            "Vips",
             "X264"
         ]
     }

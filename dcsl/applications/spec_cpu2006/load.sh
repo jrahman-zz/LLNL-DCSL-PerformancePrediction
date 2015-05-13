@@ -85,7 +85,8 @@ fi
 
 TARGET="${DATA}/run_base_${SIZE}_x86-64.0000/${BINARY_NAME}_base.x86-64"
 if [ ! -x "${TARGET}" ]; then
-    cp "${BINARY_PATH}" "${TARGET}"
+    echo "Load: Binary not found at ${TARGET}, transfering ${BINARY_PATH}"
+	cp "${BINARY_PATH}" "${TARGET}"
     if [ $? -ne 0 ]; then
         echo "Error: Failed to copy binary to destination"
         exit 10

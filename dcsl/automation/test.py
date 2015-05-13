@@ -98,22 +98,22 @@ def main():
     #interference1 = threads['Metadata'](environ, [1, 2], [1], -5, 1)
     interference2 = threads['IOBenchV2Read1M'](environ, [2], [1], 10, 2)
     interference3 = threads['IOBenchV2Write4M'](environ, [1], [1], 10, 1)
-    interference4 = threads['MemoryV2Stream12M'](environ, [3], [3], 10, 2)
+    interference4 = threads['MemoryV2Stream1K'](environ, [3], [3], 10, 2)
 
     #interference = [interference2, interference3, interference3]
-    interference = []
-    with contexter.ExitStack() as top_stack:
-        for thread in interference:
-            top_stack.enter_context(thread)
-        with contexter.ExitStack() as stack:
-            for thread in interference:
-                stack.enter_context(thread.interfere())
-            print('Starting to sleep...')
-            gevent.sleep(1)
-            print('Woke up')
+    #interference = [interference4]
+    #with contexter.ExitStack() as top_stack:
+    #    for thread in interference:
+    #        top_stack.enter_context(thread)
+    #    with contexter.ExitStack() as stack:
+    #        for thread in interference:
+    #            stack.enter_context(thread.interfere())
+    #        print('Starting to sleep...')
+    #        gevent.sleep(20)
+    #        print('Woke up')
     
-    interference = threads['Metadata'](environ, [2], [2], 10, 1)
-    bmark = bmarks['Metadata'](environ, [2], 2)
+    #interference = threads['Metadata'](environ, [2], [2], 10, 1)
+    #bmark = bmarks['Metadata'](environ, [2], 2)
     #with interference:
     #    with interference.interfere():
     #        print bmark.run()

@@ -10,7 +10,7 @@ def load_applications(environ):
     appconfig = environ['applications']
 
     for application in appconfig.keys():
-        module_name = 'applications.' + application.lower()
+        module_name = 'automation.applications.' + application.lower()
         if 'subapplications' not in appconfig[application]:
             logging.debug('Loading app %s from module %s', application, module_name)
             try:

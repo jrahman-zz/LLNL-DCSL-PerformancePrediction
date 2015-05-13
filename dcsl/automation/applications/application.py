@@ -1,6 +1,6 @@
 
 import logging
-import load_numa
+import automation.load_numa
 import gevent.greenlet as greenlet
 import gevent.subprocess as subprocess
 

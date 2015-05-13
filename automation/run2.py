@@ -174,7 +174,7 @@ def create_config(environ, application, interference_specs):
     bmarks = []
     for bmark in benchmarks.keys():       
         #bmarks.append([benchmarks[bmark](environ, [app_cores[i]]) for i in range(0, len(app_cores))])
-		bmarks.append([benchmarks[bmark](environ, app_cores)])
+		bmarks.append([benchmarks[bmark](environ, [app_cores[0]])])
     application = apps[application_name](environ, app_cores, client_cores[0], 1)
     return (application, bmarks, threads)
     

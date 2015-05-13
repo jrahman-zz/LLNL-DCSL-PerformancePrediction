@@ -2,7 +2,7 @@
 {
 "binaries": {
     "400.perlbench": "perlbench",
-    "401.bzip": "bzip2",
+    "401.bzip2": "bzip2",
     "403.gcc": "gcc",
     "429.mcf": "mcf",
     "445.gobmk": "gobmk",
@@ -22,11 +22,11 @@
     "456.hmmer": "hmmer",
     "458.sjeng": "sjeng",
     "459.GemsFDTD": "GemsFDTD",
-    "462.libquantum": "",
+    "462.libquantum": "libquantum",
     "464.h264ref": "h264ref",
     "465.tonto": "tonto",
     "470.lbm": "lbm",
-    "471.omnetpp": "",
+    "471.omnetpp": "omnetpp",
     "473.astar": "astar",
     "481.wrf": "wrf",
     "482.sphinx3": "sphinx_livepretend",

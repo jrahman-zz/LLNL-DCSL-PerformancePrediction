@@ -13,14 +13,14 @@ class MeasurementManager:
 		self._end_time = None
 		self._is_benchmarking = None
 
-		self._benchmarks_used = Set()
+		self._benchmarks_used = set()
 
 		# Keyed by name, then a list
 		self._latest_measurements = {}
 		# Keyed by time, then 
 		self._measurements = {}
 		
-		self._loopdelta
+		self._loopdelta = 0 # TODO
 
 		self._keep_looping = False
 		self._looper = None

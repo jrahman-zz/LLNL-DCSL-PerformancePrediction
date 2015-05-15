@@ -111,7 +111,7 @@ def build_update_message(avail_processors, avail_memory, running_jobs):
 	message = {}
 	message['total_processors'] = total_processors
 	message['free_processors'] = avail_processors
-	message['total_memory'] = free_memory
+	message['total_memory'] = total_memory
 	message['free_memory'] = avail_memory
 	message['hostname'] = os.getenv('HOSTNAME')
 	message['running_jobs'] = running_jobs

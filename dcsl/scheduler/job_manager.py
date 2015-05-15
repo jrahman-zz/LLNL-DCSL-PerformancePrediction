@@ -1,4 +1,4 @@
-from .automation.load_applications import load_applications
+from automation.load_applications import load_applications
 from job import JobState
 
 import logging

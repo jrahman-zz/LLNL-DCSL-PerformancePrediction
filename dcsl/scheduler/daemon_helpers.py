@@ -3,9 +3,11 @@ from flask import jsonify, json
 from gevent import monkey
 monkey.patch_all()
 
+import socket
 import httplib
 import urllib2
 import logging
+from datetime import datetime
 
 # Schedule every 2 seconds
 SCHEDULER_HERTZ = 0.25
@@ -42,12 +44,12 @@ def send_request(hostname, endpoint, json=None):
 	fullurl = "http://%s/%s" % (url, endpoint)
 	if not json is None:
 		headers = {'Content-Type': 'application/json'}
-		conn.request(method, endpoint, json)
+		conn.request('post', endpoint, json)
 		#req = urllib2.Request(url=fullurl, data=json)
 		#req.add_header('Content-Type', 'application/json')
 	else:
 		#req = urllib2.Request(url=fullurl)
-		conn.request(method, endpoint)
+		conn.request('get', endpoint)
 	#f = urllib2.urlopen(req)
 
 	response = conn.getresponse()
@@ -59,7 +61,7 @@ def log_rpc(message):
 def create_message(type):
 	message = {}
 	message['type'] = type
-	message['hostname'] = os.environ['HOSTNAME']
+	message['hostname'] = socket.gethostname()
 	message['time'] = datetime.utcnow()
 	return message
 

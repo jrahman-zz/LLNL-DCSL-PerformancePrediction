@@ -24,16 +24,7 @@ def load_benchmarks(environ):
     for bmark_module in benchmarks:
         
         logging.debug('Loading benchmark module %s', bmark_module)
-        module_name = '.automation.benchmarks.' + bmark_module.lower()
-        module = None
-        try: 
-            logging.info('Importing module: %s', module_name)
-            logging.info('Package: %s', str(__package__))
-            module = __import__('automation.benchmarks.%s' % (bmark_module.lower()))
-#            module = getattr(module, 'benchmarks')
-        except Exception as e:
-            logging.warning('Failed to load benchmark module %s: %s', module_name, str(e))
-            raise
+        module_name = 'automation.benchmarks.' + bmark_module.lower()
 
         # Collect all the benchmark names in this module
         # Then collect the classes at the end
@@ -60,10 +51,11 @@ def load_benchmarks(environ):
         # from within the module object
         for bmark_name in bmark_names:
             try:
-#                cls = load_benchmark(module, bmark_module.lower(), bmark_name)
-#                m = getattr(module, bmark_module.lower())
-                print str(module.IOBenchRead1M)
-                cls = getattr(module, bmark_name)
+                path = module_name + "." + bmark_name
+                base = __import__(module_name)
+                for component in path.split('.')[1:]:
+                    base = getattr(base, component)
+                cls = base
                 bmarks[bmark_name] = cls
             except Exception as e:
                 logging.warning('Failed to load benchmark %s: %s', bmark_name, str(e))

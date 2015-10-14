@@ -1,0 +1,11 @@
+CWD=`pwd`
+
+# Add PARSEC
+cd "/p/lscratche/${USER}/apps/parsec-3.0/"
+source env.sh
+
+# Add SPEC2006
+cd "/p/lscratche/${USER}/apps/SPEC2006/"
+source shrc
+
+cd "${CWD}"

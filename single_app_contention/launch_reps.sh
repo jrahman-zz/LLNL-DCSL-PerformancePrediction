@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#
+# Run REPS repetitions of the experiment on the cab cluster
+#
+
 REPS=$1
 
 echo "Launching ${REPS} reps..." 1>&2

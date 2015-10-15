@@ -4,6 +4,7 @@ from scipy import interpolate
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+import utils
 
 #
 # Fit a curve to the bubble_size-ipc curve
@@ -23,23 +24,13 @@ def plot_fit(curve, x, y):
     ynew = curve(xnew)
     plt.plot(x, y, 'o', xnew, ynew, '-')
     plt.show()
-
-def read_bubble_size(filename):
-    sizes = []
-    ipcs = []
-    with open(filename, 'r') as f:
-        for line in f:
-            values = line.strip().split()
-            sizes.append(int(float(values[0])))
-            ipcs.append(float(values[1]))
-    return (sizes, ipcs)
             
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print('Need to give the filename')
         sys.exit(1)
     
-    (sizes, ipcs) = read_bubble_size(sys.argv[1])
+    (sizes, ipcs) = utils.read_bubble_size(sys.argv[1])
     curve = fit_curve(sizes, ipcs)
     plot_fit(curve, sizes, ipcs)
 

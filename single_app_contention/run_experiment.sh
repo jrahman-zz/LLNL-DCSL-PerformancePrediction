@@ -8,6 +8,11 @@
 # OUTPUT: time mean_ipc estimated_bubble_mean median_ipc estimated_bubble_median
 #
 
+#
+# NOTE: The taskset calls must be updated to reflect the appropriate processor topology
+#
+REPORTER_CORE=7
+
 function run_parsec() {
 	BMARK=$1
 	CORES=$2
@@ -43,7 +48,7 @@ EXPERIMENT_LOG="logs/${EXPERIMENT_NAME}.log"
 # Skip the first 15 seconds of performance counter data since that is unpacking inputs, etc
 # Intervals of 1 seconds for the outputs
 #
-../bin/time 2> "${OUTPUT_NAME}" | 3>>"${OUTPUT_NAME}" taskset -c 7 perf stat -I 1000 -D 15000 -e cycles,instructions --append --log-fd=3 -x ' ' ../bin/reporter 1> "${PID_FILE}" &
+../bin/time 2> "${OUTPUT_NAME}" | 3>>"${OUTPUT_NAME}" taskset -c ${REPORTER_CORE} perf stat -I 1000 -D 15000 -e cycles,instructions --append --log-fd=3 -x ' ' ../bin/reporter 1> "${PID_FILE}" &
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start perf and reporter"
     exit 1
@@ -78,6 +83,8 @@ if [ $? -ne 0 ]; then
 	exit 3
 fi
 
+# Compute both the mean and median of the timeseries IPC
+# values to determine the different values have
 MEAN_IPC=`../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.reporter.ipc" "mean" 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to average timeseries"
@@ -85,17 +92,24 @@ if [ $? -ne 0 ]; then
 fi
 
 MEDIAN_IPC=`../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.reporter.ipc" "median" 2>> "${EXPERIMENT_LOG}"`
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to average timeseries"
+    exit 5
+fi
 
 REPORTER_CURVE="data/reporter_curve.bubble_size.ipc.medians"
 BUBBLE_MEAN=`../processing/estimate_bubble.py ${REPORTER_CURVE} ${MEAN_IPC} 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to estimate bubble size"
-	exit 5
+	exit 6
 fi
 BUBBLE_MEDIAN=`../processing/estimate_bubble.py ${REPORTER_CURVE} ${MEDIAN_IPC} 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to estimate bubble size"
-	exit 5
+	exit 7
 fi
+
+# Output final result over stdout
 echo "0 ${MEAN_IPC} ${BUBBLE_MEAN} ${MEDIAN_IPC} ${BUBBLE_MEDIAN}"
+
 exit 0

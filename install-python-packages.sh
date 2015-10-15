@@ -13,8 +13,18 @@
 
 #rm "get-pip.py"
 
+#
+# The relevant packages to install are:
+#           numpy
+#           pandas
+#           matplotlib
+#           scipy
+#
 
 #/usr/apps/python3.4.2/bin/virtualenv ~/mypy
+
+# Using Python 3.2 installed into a virtualenv
+# Add the virtualenv Python into PATH as appropriate
 /usr/apps/python3.2/bin/virtualenv ~/mypy
 
 ~/mypy/bin/pip install numpy

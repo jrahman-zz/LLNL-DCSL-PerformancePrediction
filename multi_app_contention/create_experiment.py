@@ -18,7 +18,7 @@ def read_applications(cores):
     return applications
 
 def create_output_path(combination, rep):
-    path = 'data/' + '.'.join([ "_".join(app) for app in combination])
+    path = 'data/' + str(len(combination)) + '_' + '.'.join([ "_".join(app) for app in combination])
     path += '.%(rep)d.reporter.perf_counters' % locals()
     return path
 

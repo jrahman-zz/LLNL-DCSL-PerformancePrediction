@@ -1,6 +1,7 @@
 
 import logging
 import time
+import socket
 import sys
 import functools
 
@@ -51,7 +52,7 @@ def read_completed_experiments(f):
     return experiments
 
 @with_file('completed_experiments', 'w')
-def write_completed_experiements(f, completed_experiments):
+def write_completed_experiments(f, completed_experiments):
     logging.info('Writing %d completed experiments to file...', len(completed_experiments))
     for experiment in completed_experiments:
         f.write('%(experiment)s\n' % locals())
@@ -84,15 +85,21 @@ def expire_pending_experiments():
 def add_completed_experiment(experiment):
     global completed_experiments
     completed_experiments.add(experiment)
-    write_completed_experiments([completed_experiment])
+    write_completed_experiments([experiment])
 
 def experiment_complete(experiment):
+    global ready_experiments
+    global running_experiments
+    global pending_experiments
     
-    # Remove key from ready experiments if needed    
-    ready_experiments.remove(experiment)
-    if experiment in runnning_experiments:
+    logging.info('Experiment: %(experiment)s completed' % locals())
+    # Remove key from ready experiments if needed
+    if experiment in ready_experiments:
+        ready_experiments.remove(experiment)
+    if experiment in running_experiments:
         start_time = running_experiments[experiment]
         pending_experiments[start_time].remove(experiment)
+        del running_experiments[experiment]
     add_completed_experiment(experiment)
    
 def init_experiments():
@@ -144,6 +151,7 @@ def get_new_experiment():
         experiment = get_next_experiment()
         mark_experiment_started(experiment)
         print_status()
+        logging.info('Sending experiment: %(experiment)s' % locals())
         return experiment, 200
     except Exception as e:
         logging.exception('Failed to retrieve experiment: %s' % str(e))
@@ -153,13 +161,14 @@ def get_new_experiment():
 def return_completed_experiment():
     result = request.get_json(force=True)
     if result['success']:
-        experiment_complete(experiment)
+        experiment_complete(result['experiment'])
     else:
         # TODO
         pass
     print_status()
+    return "SUCCESS", 200
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     init_experiments()
-    app.run(port=int(sys.argv[1]))
+    app.run(host=socket.gethostname(), port=int(sys.argv[1]))

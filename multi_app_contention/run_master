@@ -1,0 +1,7 @@
+#!/bin/bash
+
+/usr/apps/python2.7.1/bin/virtualenv ~/py27
+
+~/py27/bin/pip install Flask
+
+~/py27/bin/python master.py 18120

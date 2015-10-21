@@ -8,7 +8,7 @@ import threading
 import functools
 
 import json
-import http.client
+import requests
 
 def ensure_data_dir():
     # Ensure that the data directory is created
@@ -111,8 +111,9 @@ def run_experiment(params, output_path, rep):
     logging.info('Starting experiment with %d applications' % (len(applications)))
 
     # Cab contains 8 cores per SMP
+    reporter_core = 0
     starting_core = 1
-    ending_core = 3
+    ending_core = 7
     current_core = 1
     core_allocations = []
     for application in applications:
@@ -132,7 +133,7 @@ def run_experiment(params, output_path, rep):
 
     reporter = None
     try:
-        reporter = run_reporter(output_path, pid_file, [0]) 
+        reporter = run_reporter(output_path, pid_file, [reporter_core]) 
     except Exception as e:
         logging.exception("Error: Failed to start reporter")
         sys.exit(1)
@@ -158,28 +159,24 @@ def run_experiment(params, output_path, rep):
 
     subprocess.check_call('/bin/kill `/bin/cat %(pid_file)s`' % locals(), shell=True)
 
-def get_connection(host, port):
-    return http.client.HTTPConnection(host, port=port)
+def send_request(host, port, endpoint, method='GET', body=None):
+    url = 'http://%(host)s:%(port)d/%(endpoint)s' % locals()
+    logging.info('Sending to url "%(url)s"' % locals())
+    if method == 'GET':
+        return requests.get(url).text
+    else:
+        return requests.post(url, data=body).text
 
 def get_experiment(host, port):
-    url = 'http://%(host)s:%(port)d/get_experiment' % locals()
-    connection = get_connection(host, port)
-    connection.request('GET', url)
-    return str(connection.getresponse().read().decode().strip())
+    return send_request(host, port, 'get_experiment')    
 
-def send_experiment(host, port, experiment):
-    url = 'http://%(host)s:%(port)d/return_experiment' % locals()
+def send_success(host, port, experiment):
     body = {'experiment': experiment, 'success': True}
-    connection = get_connection(host, port)
-    connection.request('POST', url, json.dumps(body), {'Content-Type': 'application/json'})
-    connection.getresponse()
+    send_request(host, port, 'return_experiment', 'POST', json.dumps(body))
 
 def send_failure(host, port, experiment, message):
-    url = 'http://%(host)s:%(port)d/return_experiment' % locals()
     body = {'experiment': experiment, 'success': False, 'message': message}
-    connection = get_connection(host, port)
-    connection.request('POST', url, json.dumps(body), {'Content-Type': 'application/json'})
-    connection.getresponse()
+    send_request(host, port, 'return_experiment', 'POST', json.dumps(body))
 
 def run_slave(host, port):
     # Run as a slave worker on a node

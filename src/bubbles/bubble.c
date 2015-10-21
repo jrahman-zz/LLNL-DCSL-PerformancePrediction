@@ -92,12 +92,16 @@ int main (int argc, char* argv[]) {
     char* fourth_chunk = data_chunk + 3 * (fp >> 2);
 
     for (i = 0; i < ((fp >> 2) - CACHE_LINE_SIZE); i += CACHE_LINE_SIZE) {
-      first_chunk[i] = second_chunk[i] + 1;
-      third_chunk[i] = fourth_chunk[i] + 1;
+      first_chunk[i]++;
+      second_chunk[i]++;
+      third_chunk[i]++;
+      fourth_chunk[i]++;
       data_chunk[RAND % fp]++;
-      second_chunk[i + CACHE_LINE_SIZE] = first_chunk[i + CACHE_LINE_SIZE] + 1;
-      fourth_chunk[i + CACHE_LINE_SIZE] = third_chunk[i + CACHE_LINE_SIZE] + 1;
-    }
+      second_chunk[i + CACHE_LINE_SIZE]++;
+      first_chunk[i + CACHE_LINE_SIZE]++;
+      fourth_chunk[i + CACHE_LINE_SIZE]++;
+      third_chunk[i + CACHE_LINE_SIZE]++;
+   }
 
     if (fp != footprint) {
        struct timespec tv;
@@ -111,11 +115,15 @@ int main (int argc, char* argv[]) {
     fourth_chunk = data_chunk + 3 * fp / 4;
 
     for (i = 0; i < ((fp >> 2) - CACHE_LINE_SIZE); i += CACHE_LINE_SIZE) {
-      second_chunk[i] = first_chunk[i] + 1;
-      fourth_chunk[i] = third_chunk[i] + 1;
+      first_chunk[i]++;
+      second_chunk[i]++;
+      third_chunk[i]++;
+      fourth_chunk[i]++;
       data_chunk[RAND % fp]++;
-      second_chunk[i + CACHE_LINE_SIZE] = first_chunk[i + CACHE_LINE_SIZE] + 1;
-      fourth_chunk[i + CACHE_LINE_SIZE] = third_chunk[i + CACHE_LINE_SIZE] + 1;
+      second_chunk[i + CACHE_LINE_SIZE]++;
+      first_chunk[i + CACHE_LINE_SIZE]++;
+      fourth_chunk[i + CACHE_LINE_SIZE]++;
+      third_chunk[i + CACHE_LINE_SIZE]++;
     }
   }
   return 0;

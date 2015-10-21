@@ -33,7 +33,7 @@ BUBBLE_PERF_COUNTERS="data/${EXPERIMENT_NAME}.bubble.perf_counters"
 # The perf util output will contain relative offsets that will be added to the absolute
 # initial timestamp and the post-processing script will perform registration between
 # the reporter timestamps and the bubble timestamps
-"${BINARY_DIR}/time" 2> "${BUBBLE_PERF_COUNTERS}" && 3>> "${BUBBLE_PERF_COUNTERS}" taskset -c "${BUBBLE_CORE}" perf stat --log-fd=3 -e instructions,cycles -I ${MEASUREMENT_INTERVAL} -D ${DELAY} "${BINARY_DIR}"/bubble 1.25 "${BUBBLE_INTERVAL}" "${BUBBLE_LOOPS}" |& tee "${BUBBLE_SIZE_FILE}"
+"${BINARY_DIR}/time" 2> "${BUBBLE_PERF_COUNTERS}" && 3>> "${BUBBLE_PERF_COUNTERS}" taskset -c "${BUBBLE_CORE}" perf stat --log-fd=3 -e instructions,cycles -I ${MEASUREMENT_INTERVAL} -D ${DELAY} "${BINARY_DIR}"/bubble 1.20 "${BUBBLE_INTERVAL}" "${BUBBLE_LOOPS}" |& tee "${BUBBLE_SIZE_FILE}"
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to run bubble"
 	exit 2

@@ -5,6 +5,7 @@
 #
 
 REPS=$1
+CORES=2
 
 echo "Launching ${REPS} reps..." 1>&2
 
@@ -17,17 +18,17 @@ cat <<EOF
 #!/bin/bash
 #MSUB -l nodes=1
 #MSUB -l partition=cab
-#MSUB -l walltime=12:00:00
+#MSUB -l walltime=16:00:00
 #MSUB -q pbatch
 #MSUB -V
 
-cd ~/dcsl/single_app_contention
-srun -n1 -N1 -c16 ~/mypy/bin/python ./run_experiments ${REP}    
+cd "${PWD}"
+srun -n1 -N1 -c16 ~/mypy/bin/python ./run_experiments.py ${REP}    
 EOF
 ) > "${OUTFILE}"
 
     # Generate experiment list
-    ./generate_experiment_list.sh 1 2 > "experiment_list.${REP}"
+    ./generate_experiment_list.sh "${REP}" "${CORES}" > "experiment_list.${REP}"
 
     echo "Launching rep ${REP}..." 1>&2
     JOB=`msub "${OUTFILE}"`

@@ -3,6 +3,7 @@
 import sys
 from scipy import optimize
 import fit_curve
+import utils
 
 #
 # Purpose: From the tuned reporter curve and the measured reporter IPC estimate the
@@ -14,7 +15,7 @@ import fit_curve
 #
 
 def estimate_bubble(filename, ipc):
-    (sizes, ipcs) = fit_curve.read_bubble_size(filename)
+    (sizes, ipcs) = utils.read_bubble_size(filename)
     curve = fit_curve.fit_curve(sizes, ipcs)
     target_function = lambda x: curve(x) - ipc
     return optimize.bisect(target_function, min(sizes), max(sizes))

@@ -4,4 +4,6 @@
 
 ~/py27/bin/pip install Flask
 
-~/py27/bin/python master.py 18120
+nohup ~/py27/bin/python master.py 18120 > master.log &
+echo "$!" > master.pid
+tail -f master.log

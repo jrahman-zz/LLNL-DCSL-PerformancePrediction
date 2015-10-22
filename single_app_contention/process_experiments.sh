@@ -37,7 +37,7 @@ cat "${1}" | while read LINE; do
         continue
     fi
 
-    REPORTER_CURVE="data/reporter_curve.bubble_size.ipc.medians"
+    REPORTER_CURVE="../data/reporter_curve.bubble_size.ipc.medians"
     echo "Estimating mean bubble" 1>&2
     BUBBLE_MEAN=`../processing/estimate_bubble.py "${REPORTER_CURVE}" "${MEAN_IPC}"`
     if [ $? -ne 0 ]; then

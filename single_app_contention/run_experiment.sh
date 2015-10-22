@@ -97,7 +97,7 @@ if [ $? -ne 0 ]; then
     exit 5
 fi
 
-REPORTER_CURVE="data/reporter_curve.bubble_size.ipc.medians"
+REPORTER_CURVE="../data/reporter_curve.bubble_size.ipc.medians"
 BUBBLE_MEAN=`../processing/estimate_bubble.py ${REPORTER_CURVE} ${MEAN_IPC} 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to estimate bubble size"

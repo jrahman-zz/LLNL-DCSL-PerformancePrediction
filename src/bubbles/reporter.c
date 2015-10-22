@@ -40,25 +40,30 @@ int main (int argc, char* argv[]) {
 
   while (time_limit == 0 || time(NULL) - start_time <= time_limit) {
     char* first_chunk  = data_chunk;
-    char* second_chunk = data_chunk + (FOOTPRINT >> 2);
-    char* third_chunk = data_chunk + (FOOTPRINT >> 1);
+    char* second_chunk = data_chunk + (FOOTPRINT >> 1);
+//    char* third_chunk = data_chunk + (FOOTPRINT >> 1);
     char* fourth_chunk = data_chunk + 3 * (FOOTPRINT >> 2);
+/*    char* first_chunk  = data_chunk;
+    char* second_chunk = data_chunk + FOOTPRINT/8;
+    char* third_chunk = data_chunk + FOOTPRINT/4;
+    char* fourth_chunk = data_chunk + 3*FOOTPRINT/8;
+    char* fifth_chunk = data_chunk + FOOTPRINT/2;
+    char* sixth_chunk = data_chunk + 5*FOOTPRINT/8;
+    char* seventh_chunk = data_chunk + 3*FOOTPRINT/8;
+    char* eighth_chunk = data_chunk + 7*FOOTPRINT/8;*/
 
-    for (i = 0; i < (FOOTPRINT >> 2); i += CACHE_LINE_SIZE) {
+
+    for (i = 0; i < (FOOTPRINT >> 1); i += CACHE_LINE_SIZE) {
       //data_chunk[RAND % FOOTPRINT]++;
       first_chunk[i]++;
       second_chunk[i]++;
-      data_chunk[RAND % FOOTPRINT]++;
-      third_chunk[i]++;
-      fourth_chunk[i]++;
-    }
-    for (i = 0; i < (FOOTPRINT >> 2); i += CACHE_LINE_SIZE) {
-      //data_chunk[RAND % FOOTPRINT]++;
-      second_chunk[i]++;
-      first_chunk[i]++;
-      data_chunk[RAND % FOOTPRINT]++;
-      fourth_chunk[i]++;
-      third_chunk[i]++;
+//      data_chunk[RAND % FOOTPRINT]++;
+//      third_chunk[i]++;
+//      fourth_chunk[i]++;
+    /*  fifth_chunk[i]++;
+      sixth_chunk[i]++;
+      seventh_chunk[i]++;
+      eighth_chunk[i]++;*/
     }
   }
   return 0;

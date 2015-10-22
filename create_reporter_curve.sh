@@ -11,7 +11,7 @@ EXPERIMENT_NAME="reporter_curve"
 OUTPUT_NAME="data/${EXPERIMENT_NAME}.reporter.perf_counters"
 PID_FILE="${EXPERIMENT_NAME}.pid"
 
-BINARY_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)/../bin
+BINARY_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)/bin
 
 # Launch the reporter in the background
 # Intervals of 500 milliseconds for the outputs
@@ -21,10 +21,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-MEASUREMENT_INTERVAL=500
+MEASUREMENT_INTERVAL=600
 DELAY=100
 BUBBLE_LOOPS=1
-BUBBLE_INTERVAL=10000
+BUBBLE_INTERVAL=12000
 BUBBLE_SIZE_FILE="data/${EXPERIMENT_NAME}.bubble.size"
 BUBBLE_PERF_COUNTERS="data/${EXPERIMENT_NAME}.bubble.perf_counters"
 
@@ -33,7 +33,7 @@ BUBBLE_PERF_COUNTERS="data/${EXPERIMENT_NAME}.bubble.perf_counters"
 # The perf util output will contain relative offsets that will be added to the absolute
 # initial timestamp and the post-processing script will perform registration between
 # the reporter timestamps and the bubble timestamps
-"${BINARY_DIR}/time" 2> "${BUBBLE_PERF_COUNTERS}" && 3>> "${BUBBLE_PERF_COUNTERS}" taskset -c "${BUBBLE_CORE}" perf stat --log-fd=3 -e instructions,cycles -I ${MEASUREMENT_INTERVAL} -D ${DELAY} "${BINARY_DIR}"/bubble 1.20 "${BUBBLE_INTERVAL}" "${BUBBLE_LOOPS}" |& tee "${BUBBLE_SIZE_FILE}"
+"${BINARY_DIR}/time" 2> "${BUBBLE_PERF_COUNTERS}" && 3>> "${BUBBLE_PERF_COUNTERS}" taskset -c "${BUBBLE_CORE}" perf stat --log-fd=3 -e instructions,cycles -I ${MEASUREMENT_INTERVAL} -D ${DELAY} "${BINARY_DIR}"/bubble 1.25 "${BUBBLE_INTERVAL}" "${BUBBLE_LOOPS}" |& tee "${BUBBLE_SIZE_FILE}"
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to run bubble"
 	exit 2
@@ -44,8 +44,15 @@ kill `cat "${PID_FILE}"`
 rm "${PID_FILE}"
 
 # Run the post-processing script on the output
-../processing/process_bubble.py "data/${EXPERIMENT_NAME}" "${BUBBLE_SIZE_FILE}" "${OUTPUT_NAME}" 0.2
+./processing/process_bubble.py "data/${EXPERIMENT_NAME}" "${BUBBLE_SIZE_FILE}" "${OUTPUT_NAME}" 0.2
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to process the bubble"
 	exit 3
+fi
+
+# Create a mesure of the bubble-size on the bubble IPC
+./processing/process_bubble.py "data/${EXPERIMENT_NAME}.bubble" "${BUBBLE_SIZE_FILE}" "${BUBBLE_PERF_COUNTERS}" 0.2
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to process the bubble for the bubble process"
+    exit 4
 fi

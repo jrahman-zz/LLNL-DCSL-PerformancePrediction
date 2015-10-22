@@ -8,3 +8,5 @@ set xlabel 'Bubble Size (KB)'
 set logscale x 2
 
 plot 'data/reporter_curve.bubble_size.ipc.medians' using ($1 / 1024):2 title 'Reporter IPC' with lines
+
+plot 'data/reporter_curve.bubble.bubble_size.ipc.medians' using ($1 / 1024):2 title 'Bubble IPC' with lines

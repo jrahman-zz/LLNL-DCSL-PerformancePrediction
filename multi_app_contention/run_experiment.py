@@ -23,10 +23,15 @@ def self_pin(core):
 def base_command(cores):
     return ['taskset', '-c', ','.join(map(lambda s: str(s), cores))]
 
+# 
 procs = dict()
 lock = threading.Lock()
 
 def run_thread(func):
+    """
+    Decorator to run a function inside it's own thread
+    Its assumed the function will return a Process object back
+    """
     def wrapper(slot, bmark, cores):
         with lock:
             procs[slot] = None
@@ -41,10 +46,14 @@ def run_thread(func):
                 logging.info('%(bmark)s finished' % locals())
                 with lock:
                     procs[slot] = None
+                # retcode == 0 indicates normal termination of the batch process
+                # while retcode==9 indicates that it was killed intentionally
                 if retcode != 0 and retcode != -9:
                     raise Exception('Non-zero return code: %(retcode)d' % locals())
                 if update_count(slot) == False:
-                    # Finished running, kill all other running procs
+                    # Finished running, kill all other running procs since
+                    # update_count() has indicated that each process has
+                    # fully run at least one time
                     with lock:
                         logging.info('Killing extra procs')
                         for key in procs:
@@ -84,9 +93,14 @@ def run_reporter(output_path, pid_file, cores):
     cmd += '../bin/reporter 1> %(pid_file)s' % locals()
     return subprocess.Popen(cmd, shell=True)
 
+# List containing completion counts for the ith process
 run_counts = []
 
 def update_count(slot):
+    """
+    Update the counts for a given process and determine if all processes
+    finished at least once, in which case we actually return false
+    """
     global run_counts
     global lock
     with lock:
@@ -94,6 +108,9 @@ def update_count(slot):
         return functools.reduce(lambda x, y: x*y, run_counts, 1) == 0
 
 def add_slot():
+    """
+    Add a new slot for another batch application
+    """
     global run_counts
     run_counts.append(0)
     return len(run_counts) - 1
@@ -147,6 +164,7 @@ def run_experiment(params, output_path, rep):
         suite = application[0]
         bmark = application[1]
         if suite == 'parsec':
+            # Notice that the parameters here reflect the def wrapper() function in the decorator
             threads.append(run_parsec(add_slot(), bmark, cores))
         elif suite == 'spec_fp' or suite == 'spec_int':
             threads.append(run_spec(add_slot(), bmark, cores))

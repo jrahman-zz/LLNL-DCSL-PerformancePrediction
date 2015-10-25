@@ -88,9 +88,9 @@ def read_data(filename):
         dataframe[key] = value
     return dataframe
 
-def apps_to_experiment_name(apps):
+def apps_to_experiment_name(apps, rep):
     output = '.'.join(["%s_%s_%s" % (app['suite'], app['bmark'], app['cores']) for app in apps])
-    output = str(len(apps)) + '_' + output
+    output = str(len(apps)) + '_' + output + '_' + str(rep)
     return output
 
 if __name__ == '__main__':

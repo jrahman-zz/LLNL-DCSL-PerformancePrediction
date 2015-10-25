@@ -18,7 +18,6 @@ def with_file(filename, mode='r'):
     def decorator(func):
         def wrapper(*args, **kwargs):
             with open(filename, mode) as f:
-                f.seek(0, 0)
                 function = functools.partial(func, f)
                 return function(*args, **kwargs)
         return wrapper
@@ -40,14 +39,14 @@ def serialize_experiment(experiment):
 @with_file('experiment_list', 'r')
 def read_experiment_list(f):
     logging.info('Reading experiments from experiment_list...')
-    experiments = [experiment for experiment in f]
+    experiments = [experiment.strip() for experiment in f if len(experiment.strip()) > 0]
     logging.info('Read %d experiments from experiment_list' % len(experiments))
     return experiments
 
-@with_file('completed_experiments', 'a+')
+@with_file('completed_experiments', 'r+')
 def read_completed_experiments(f):
     logging.info('Reading completed experiments from file...')
-    experiments = set([experiment for experiment in f])
+    experiments = set([experiment.strip() for experiment in f if len(experiment.strip()) > 0])
     logging.info('Read %d completed experiments from file' % len(experiments))
     return experiments
 
@@ -85,7 +84,7 @@ def expire_pending_experiments():
 def add_completed_experiment(experiment):
     global completed_experiments
     completed_experiments.add(experiment)
-    write_completed_experiments([experiment])
+    write_completed_experiments(completed_experiments)
 
 def experiment_complete(experiment):
     global ready_experiments
@@ -108,11 +107,12 @@ def init_experiments():
     global running_experiments
     global ready_experiments
 
-    completed_experiments.union(read_completed_experiments())
+    completed_experiments = completed_experiments.union(read_completed_experiments())
     ready_experiments += read_experiment_list()
     for experiment in completed_experiments:
         if experiment in ready_experiments:
             ready_experiments.remove(experiment)
+    logging.info('%d experiments already complete' % len(completed_experiments))
     logging.info('%d experiments ready to run' % len(ready_experiments))
         
 
@@ -161,7 +161,7 @@ def get_new_experiment():
 def return_completed_experiment():
     result = request.get_json(force=True)
     if result['success']:
-        experiment_complete(result['experiment'])
+        experiment_complete(result['experiment'].strip())
     else:
         # TODO
         pass

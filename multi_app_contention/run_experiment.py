@@ -209,6 +209,7 @@ def run_slave(host, port):
             logging.info('Retrieved experiment: %(experiment)s with %(size)d entries' % locals())
             run_experiment(parsed_experiment, parsed_experiment[-2], int(parsed_experiment[-1]))
             send_success(host, port, experiment)
+            keep_running = True
         except Exception as e:
             logging.info('Failed experiment: %(experiment)s' % locals())
             logging.exception('Error: %s' % str(e))

@@ -146,7 +146,7 @@ def run_experiment(params, output_path, rep):
     ensure_data_dir()
 
     experiment = ".".join(['%(suite)s_%(bmark)s_%(cores)d' % locals() for suite, bmark, cores in applications])
-    pid_file = '%(experiment)s.%(rep)d.reporter.pid' % locals()    
+    pid_file = './logs/%(experiment)s.%(rep)d.reporter.pid' % locals()    
 
     reporter = None
     try:

@@ -8,27 +8,34 @@ import sys
 #
 
 def read_data(filename):
-    output = dict()
+    mean = dict()
+    median = dict()
     with open(filename, 'r') as f:
         for line in f:
             values = line.strip().split()
             bmark = values[0] + "-" + values[1]
-            bmark = bmark.replace('_', '-')
-            if bmark not in output:
-                output[bmark] = []
-            values = (float(values[6]) / 1024.0, float(values[8]) / 1024.0)
-            output[bmark].append(values)
-    return output
+            bmark = (bmark.replace('_', '-'), values[0], values[1], values[3])
+            if bmark not in mean:
+                mean[bmark] = []
+                median[bmark] = []
+            mean[bmark].append(float(values[6]) / 1024.0)
+            median[bmark].append(float(values[8]) / 1024.0)
+    return mean, median
                 
 
 def output(data):
-    for bmark in data.keys():
-        mean = np.mean(data[bmark][0])
-        median = np.mean(data[bmark][1])
-        sd = np.std(data[bmark])
-        upper = mean + sd
-        lower = mean - sd
-        print("%(mean)f %(median)f %(upper)f %(lower)f %(bmark)s" % locals())
+    mean, median = data
+    for bmark in mean.keys():
+        name = bmark[0]
+        bmark_suite = bmark[1]
+        bmark_name = bmark[2]
+        bmark_cores = bmark[3]
+        dmean = np.mean(mean[bmark])
+        dmedian = np.mean(median[bmark])
+        sd = np.std(mean[bmark])
+        upper = dmean + sd
+        lower = dmean - sd
+        print("%(dmean)f %(dmedian)f %(upper)f %(lower)f %(name)s %(bmark_suite)s %(bmark_name)s %(bmark_cores)s" % locals())
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:

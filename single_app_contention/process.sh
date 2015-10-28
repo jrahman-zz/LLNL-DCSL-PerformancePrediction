@@ -6,4 +6,4 @@
 
 ./process_raw_data.py raw_data | sort -rn > processed_data
 ./plot_bubble_sizes
-./plot_reporter_curve
+../plot_reporter_curve

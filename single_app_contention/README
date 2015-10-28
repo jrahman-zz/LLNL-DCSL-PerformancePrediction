@@ -6,8 +6,9 @@ Scripts (Workflow):
     1. build_benchmarks.sh
         Run the appropriate commands to pre-build the benchmark suites
     2. create_reporter_curve.sh
-        Run via 'srun -ppdebug create_reporter_curve.sh' to build the reporter curve on debug queue node
+        From the parent directory, run via 'srun -ppdebug create_reporter_curve.sh' to build the reporter curve on debug queue node
         Run directly dia 'create_reporter_curve.sh' to run locally
+        The reporter curve data should be stored in the data/ directory of the parent directory
     3. launch_reps.sh REP_COUNT
         Launches scripts onto the cab cluster to run the
         reporter and batch applications concurrently on a node

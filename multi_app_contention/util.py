@@ -27,17 +27,35 @@ def read_manifest():
                 apps.append({'suite': suite, 'bmark': line.strip()}) 
     return apps  
 
+def read_single_app_bubbles(filename):
+    """
+    Read the list of procesed bubble sizes 
+    The format of the file is
+    'mean median mean+std mean-std readable_name suite name cores'
+    single_app_contention/process.sh generates this file from raw_data
+    """
+    means = dict()
+    medians = dict()
+    with open(filename, 'r') as f:
+        for line in f:
+            values = line.strip().split()
+            bmark_suite = values[5]
+            bmark_name = values[6]
+            bmark_cores = values[7]
+            key = ','.join([bmark_suite, bmark_name, bmark_cores])
+            means[key] = float(values[0])
+            medians[key] = float(values[1])
+    return means, medians
 
 def parse_row(row):
     parsed = dict()
-    data = row[0:4]
-    parsed['mean_ipc'] = float(data[0])
-    parsed['median_ipc'] = float(data[2])
-    parsed['mean_bubble'] = float(data[1])
-    parsed['median_bubble'] = float(data[3])
-    rep = row[4]
+    parsed['mean_ipc'] = float(row[-4])
+    parsed['median_ipc'] = float(row[-2])
+    parsed['mean_bubble'] = float(row[-3])
+    parsed['median_bubble'] = float(row[-1])
+    rep = row[-5]
     parsed['rep'] = int(rep)
-    apps = row[5:]
+    apps = row[0:-5]
     for i in range(int(len(apps) / 3)):
         suite = apps[3*i]
         bmark = apps[3*i + 1]
@@ -52,7 +70,9 @@ def parse_row(row):
     return parsed
 
 def read_data(filename):
-    """ Format is mean_ipc mean_bubble median_ipc median_bubble rep (suite bmark cores)+ """
+    """ Format is
+        '(suite bmark cores)+ rep mean_ipc mean_bubble median_ipc median_bubble' 
+    """
 
     data = dict()
    
@@ -74,6 +94,7 @@ def read_data(filename):
     data['median_ipc'] = np.zeros(lines)
     data['mean_bubble'] = np.zeros(lines)
     data['median_bubble'] = np.zeros(lines)
+    data['rep'] = ['' for i in range(lines)]
 
     with open(filename, 'r') as f:
         idx = 0

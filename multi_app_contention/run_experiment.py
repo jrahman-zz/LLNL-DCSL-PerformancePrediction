@@ -137,6 +137,7 @@ def run_experiment(params, output_path, rep):
         cores = int(application[2])
         if current_core + cores - 1 <= ending_core:
             core_allocations.append(list(range(current_core, current_core + cores)))
+            current_core += cores # This is appearently important...
         else:
             # TODO, error
             pass

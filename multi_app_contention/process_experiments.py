@@ -20,7 +20,8 @@ def estimate_bubble(ipc):
     return float(val)
 
 def process_experiment(experiment):
-    experiment_name = util.apps_to_experiment_name(experiment['apps'])
+    experiment_name = util.apps_to_experiment_name(experiment['apps'], experiment['rep'])
+    logging.info('Processing %(experiment_name)s...' % locals())
     experiment_name = 'data/' + experiment_name + '.reporter'
     reporter_output = experiment['output']
 
@@ -53,14 +54,18 @@ def process_experiment(experiment):
         apps.append(app['suite'])
         apps.append(app['bmark'])
         apps.append(app['cores'])
-    print('%(mean_ipc)s %(mean_bubble)s %(median_ipc)s %(median_bubble)s %(rep)s %(apps)s' % locals())
+    apps = ' '.join(apps)
+    print('%(apps)s %(rep)s %(mean_ipc)s %(mean_bubble)s %(median_ipc)s %(median_bubble)s' % locals())
+    logging.info('Processed %(experiment_name)s' % locals())
 
 def main():
     experiments = util.read_experiment_list()
     for experiment in experiments:
-       process_experiment(experiment) 
-
-
+       try:
+            process_experiment(experiment)
+       except Exception as e:
+            logging.exception('Error: %s' % (str(e)))
+            
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     main()

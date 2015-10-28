@@ -24,10 +24,10 @@ def create_output_path(combination, rep):
 
 def main(reps, cores, maxapps):
     applications = read_applications(cores)
-    for app_count in range(2, maxapps + 1):
-        for combination in itertools.combinations(applications, app_count):
-            combo = " ".join([" ".join(app) for app in combination])
-            for rep in range(reps):
+    for rep in range(reps):
+        for app_count in range(2, maxapps + 1):
+            for combination in itertools.combinations(applications, app_count):
+                combo = " ".join([" ".join(app) for app in combination])
                 output = create_output_path(combination, rep)
                 print('%(combo)s %(output)s %(rep)d' % locals())
 #

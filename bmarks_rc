@@ -9,3 +9,10 @@ cd "/p/lscratche/${USER}/apps/SPEC2006/"
 source shrc
 
 cd "${CWD}"
+
+# Spark
+export SPARKHOME="/p/lscratche/${USER}/apps/spark-1.5.1/"
+export JAVA_HOME="/p/lscratche/${USER}/apps/jre1.8.0_65/"
+
+export PYSPARK_PYTHON="/usr/apps/python3.4.2/bin/python3"
+export PYSPARK_DIRVER_PYTHON="${PYSPARK_PYTHON}"

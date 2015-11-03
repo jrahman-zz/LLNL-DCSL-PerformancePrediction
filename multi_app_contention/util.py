@@ -41,8 +41,7 @@ def read_single_app_bubbles(filename):
             values = line.strip().split()
             bmark_suite = values[5]
             bmark_name = values[6]
-            bmark_cores = values[7]
-            key = ','.join([bmark_suite, bmark_name, bmark_cores])
+            key = '_'.join([bmark_suite, bmark_name])
             means[key] = float(values[0])
             medians[key] = float(values[1])
     return means, medians
@@ -56,17 +55,24 @@ def parse_row(row):
     rep = row[-5]
     parsed['rep'] = int(rep)
     apps = row[0:-5]
+    app_list = []
     for i in range(int(len(apps) / 3)):
         suite = apps[3*i]
         bmark = apps[3*i + 1]
+        
         if suite not in parsed:
             parsed[suite] = 0
         parsed[suite] += 1
+        
         app = '_'.join([suite, bmark])
         if app not in parsed:
             parsed[app] = 0
         parsed[app] += 1
-    parsed['app_count'] = len(apps) / 3.0
+
+        app_list.append(app)
+
+    parsed['apps'] = '.'.join(app_list)
+    parsed['app_count'] = len(apps) / 3
     return parsed
 
 def read_data(filename):
@@ -85,16 +91,22 @@ def read_data(filename):
     apps = read_manifest()
 
     # Build empty dict will all required keys...
-    for app in apps:
-        data[app['suite']] = np.zeros(lines)
-        data['_'.join([app['suite'], app['bmark']])] = np.zeros(lines)
+    app_count = 0
 
+    data['apps'] = ['' for i in range(lines)]
     data['app_count'] = np.zeros(lines)
     data['mean_ipc'] = np.zeros(lines)
     data['median_ipc'] = np.zeros(lines)
     data['mean_bubble'] = np.zeros(lines)
     data['median_bubble'] = np.zeros(lines)
     data['rep'] = ['' for i in range(lines)]
+
+    # Populate application counts
+    apps = read_manifest()
+    for app in apps:
+        data[app['suite'] + '_' + app['bmark']] = [0 for i in range(lines)]
+    for suite in set([item['suite'] for item in apps]):
+        data[suite] = [0 for i in range(lines)]
 
     with open(filename, 'r') as f:
         idx = 0

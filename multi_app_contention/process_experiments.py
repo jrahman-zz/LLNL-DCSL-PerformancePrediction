@@ -2,6 +2,8 @@
 
 import util
 import subprocess
+import multiprocessing
+import sys
 import logging
 
 def process_perf(experiment_name, input_file):
@@ -28,21 +30,21 @@ def process_experiment(experiment):
     # Process PERF output into timeseries data
     process_perf(experiment_name, reporter_output)
 
-    mean_ipc = str(None)
-    mean_bubble = str(None)
+    mean_ipc = 'NaN'
+    mean_bubble = 'NaN'
     try:
         mean_ipc = mean_timeseries(experiment_name + '.ipc')
-        mean_bubble = estimate_bubble(mean_ipc)
+        mean_bubble = estimate_bubble(mean_ipc) / 1024.0
     except subprocess.CalledProcessError as e:
         logging.exception('Error: %s' % (e.output))
     except Exception as e:
         logging.exception('Exception: %s' % (str(e)))
 
-    median_ipc = str(None)
-    median_bubble = str(None)
+    median_ipc = 'NaN'
+    median_bubble = 'NaN'
     try:
         median_ipc = median_timeseries(experiment_name + '.ipc')
-        median_bubble = estimate_bubble(median_ipc)
+        median_bubble = estimate_bubble(median_ipc) / 1024.0
     except subprocess.CalledProcessError as e:
         logging.exception('Error: %s' % (e.output))
     except Exception as e:
@@ -55,17 +57,29 @@ def process_experiment(experiment):
         apps.append(app['bmark'])
         apps.append(app['cores'])
     apps = ' '.join(apps)
-    print('%(apps)s %(rep)s %(mean_ipc)s %(mean_bubble)s %(median_ipc)s %(median_bubble)s' % locals())
+    res = '%(apps)s %(rep)s %(mean_ipc)s %(mean_bubble)s %(median_ipc)s %(median_bubble)s' % locals()
     logging.info('Processed %(experiment_name)s' % locals())
+    return res
+
+def process(experiment):
+    try:
+        return process_experiment(experiment)
+    except Exception as e:
+        logging.exception('Error: %s' % (str(e)))
+        return None 
 
 def main():
     experiments = util.read_experiment_list()
-    for experiment in experiments:
-       try:
-            process_experiment(experiment)
-       except Exception as e:
-            logging.exception('Error: %s' % (str(e)))
-            
+    if len(sys.argv) >= 2:
+        workers = int(sys.argv[1])
+    else:
+        workers = 1
+    pool = multiprocessing.Pool(workers)
+    results = pool.map(process, experiments)
+    for result in results:
+        if result is not None:
+            print(result)
+     
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     main()

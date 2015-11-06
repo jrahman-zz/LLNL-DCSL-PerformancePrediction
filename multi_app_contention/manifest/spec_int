@@ -1,5 +1,8 @@
 mcf
 omnetpp
 gcc
-astar
 hmmer
+bzip
+h264ref
+sjeng
+xalancbmk

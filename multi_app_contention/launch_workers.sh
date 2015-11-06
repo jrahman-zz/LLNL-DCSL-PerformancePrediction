@@ -15,7 +15,7 @@ cat << EOF
 #/bin/bash
 #MSUB -l nodes=${NODES}
 #MSUB -l partition=cab
-#MSUB -l walltime=12:00:00
+#MSUB -l walltime=15:00:00
 #MSUB -q pbatch
 #MSUB -V
 

@@ -6,4 +6,4 @@ else
     WORKERS=1
 fi
 
-srun -n1 -N1 -c${WORKERS} -ppdebug ./process_experiments.py ${WORKERS}
+srun -n1 -N1 -c${WORKERS} -ppdebug ./process_experiments.py ${WORKERS} > processed_experiments

@@ -1,8 +1,12 @@
-#!/bin/env python
+#!/usr/apps/python3.4.2/bin/python3
 
 import numpy as np
 import pandas as pd
 import util
+import seaborn as sns
+import matplotlib
+matplotlib.use('pdf')
+import matplotlib.pyplot as plt
 
 def read_data():
     bubble_file = '../single_app_contention/processed_data'
@@ -28,6 +32,13 @@ def count_summary(data):
     count = apps_group.size()
     for i in [1, 2, 3, 4, 5]:
         print('Total combinations (No fluidanimate) with %d reps: %d' % (i, len(count[count == i])))
+
+def plot(data, label, filename):
+    sns.distplot(data*100, kde=False, rug=False, label=label, axlabel='100*(observed_bubble - sum_of_apps)/observed_bubble')
+    plt.legend()
+    #plt.show()
+    plt.savefig(filename)
+    plt.close('all')
 
 
 if __name__ == '__main__':
@@ -70,8 +81,18 @@ if __name__ == '__main__':
     print(groups['difference'])
    
     summary('Error', groups['error'])
+    plot(groups['error'], 'Prediction Error (%)', 'pred_error.pdf') 
     summary('AbsError', groups['abs_error'])
-    summary('Error2App', groups[groups['app_count'] == 2]['error'])
-    summary('AbsError2App', groups[groups['app_count'] == 2]['abs_error'])
-    summary('Error3App', groups[groups['app_count'] == 3]['error'])
-    summary('AbsErr3App', groups[groups['app_count'] == 3]['abs_error'])
+    plot(groups['error'], 'Absolute Prediction Error (%)', 'abs_pred_error.pdf')    
+
+    d = groups[groups['app_count'] == 2]
+    summary('Error2App', d['error'])
+    plot(d['error'], '2 Application Prediction Error (%)', '2_app_pred_error.pdf')    
+    summary('AbsError2App', d['abs_error'])
+    plot(d['abs_error'], '2 Application Absolute Prediction Error (%)', '2_app_abs_pred_error.pdf')    
+
+    d = groups[groups['app_count'] == 3]
+    summary('Error3App', d['error'])
+    plot(d['error'], '3 Appliction Prediction Error (%)', '3_app_pred_error.pdf')    
+    summary('AbsErr3App', d['abs_error'])
+    plot(d['abs_error'], '3 Application Absolute Prediction Error (%)', '3_app_abs_pred_error.pdf')    

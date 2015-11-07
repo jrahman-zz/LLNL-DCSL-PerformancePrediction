@@ -3,6 +3,21 @@
 import pandas as pd
 import numpy as np
 
+def read_experiment_list():
+    experiments = []
+    with open('completed_experiments', 'r') as f:
+        for line in f:
+            values = line.strip().split()
+            experiment = {'apps': [], 'rep': values[-1], 'output': values[-2]}
+            for i in range(int((len(values) - 2)/3)):
+                experiment['apps'].append({
+                    'suite': values[3*i],
+                    'bmark': values[3*i+1],
+                    'cores': values[3*i+2]
+                })
+            experiments.append(experiment)
+    return experiments
+
 def read_manifest():
     apps = []
     suites = ['parsec', 'spec_fp', 'spec_int']
@@ -11,6 +26,25 @@ def read_manifest():
             for line in f:
                 apps.append({'suite': suite, 'bmark': line.strip()}) 
     return apps  
+
+def read_single_app_bubbles(filename):
+    """
+    Read the list of procesed bubble sizes 
+    The format of the file is
+    'mean median mean+std mean-std readable_name suite name cores'
+    single_app_contention/process.sh generates this file from raw_data
+    """
+    means = dict()
+    medians = dict()
+    with open(filename, 'r') as f:
+        for line in f:
+            values = line.strip().split()
+            bmark_suite = values[5]
+            bmark_name = values[6]
+            key = '_'.join([bmark_suite, bmark_name])
+            means[key] = float(values[0])
+            medians[key] = float(values[1])
+    return means, medians
 
 def parse_row(row):
     parsed = dict()
@@ -37,7 +71,7 @@ def parse_row(row):
 
         app_list.append(app)
 
-    parsed['apps'] = '.'.join(app_list)
+    parsed['apps'] = '.'.join(sorted(app_list))
     parsed['app_count'] = len(apps) / 3
     return parsed
 
@@ -86,6 +120,11 @@ def read_data(filename):
     for key, value in data.items():
         dataframe[key] = value
     return dataframe
+
+def apps_to_experiment_name(apps, rep):
+    output = '.'.join(["%s_%s_%s" % (app['suite'], app['bmark'], app['cores']) for app in apps])
+    output = str(len(apps)) + '_' + output + '_' + str(rep)
+    return output
 
 if __name__ == '__main__':
     pass

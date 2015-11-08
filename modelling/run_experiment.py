@@ -1,12 +1,9 @@
 #!/bin/env python
 
-import util
-
 import pyspark
 from pyspark import SparkContext, SparkConf
 from pyspark.mllib.recommendation import ALS, MatrixFactorizationModel, Rating
 import numpy as np
-import pandas as pd
 
 import random
 import itertools
@@ -52,8 +49,9 @@ def build_training(apps, data, fractions, maxapps):
                     first_app = entry_apps[i]
                     remaining_apps = '.'.join(entry_apps[0:i] + entry_apps[i+1:])
                     entry_key = '.'.join(entry_apps)
-                    print(entry_key, remaining_apps)
                     if remaining_apps in columns and first_app not in columns[remaining_apps] and entry_key in data:
+                        
+                        print(entry_key, remaining_apps)
                         filled_entries += 1
                         columns[remaining_apps].add(first_app)
                         training_data.append((first_app, remaining_apps, data[entry_key]))
@@ -67,6 +65,7 @@ def build_training(apps, data, fractions, maxapps):
             idx += 1
             entry_key = '.'.join(entry_apps)
             if entry_key not in data:
+                print('Entry: %(entry_key)s not in data' % locals())
                 continue
             for i in range(len(entry_apps)):
                 first_app = entry_apps[i]
@@ -86,21 +85,12 @@ def build_training(apps, data, fractions, maxapps):
     return training_data, empty_columns
    
 def load_bubbles():
-    single_app, none = util.read_single_app_bubbles('single_bubble_sizes')
-    multi_app = util.read_data('multi_bubble_sizes').groupby('apps').agg({'mean_bubble': np.mean})
-    name = 'mean_bubble'
-    
-    # Filter the NaNs out since NaN == NaN is False
-    multi_app = multi_app[multi_app[name] == multi_app[name]]
-
-    bubble_sizes = dict()
-    for key in single_app:
-        bubble_sizes[key] = single_app[key]
-
-    # Merge the multi_app_contention dataframe
-    for apps in multi_app.index:
-        bubble_sizes[apps] = multi_app.loc[apps]['mean_bubble']
-    return bubble_sizes
+    bubbles = dict()
+    with open('bubble_sizes', 'r') as f:
+        for line in f:
+            values = line.strip().split()
+            bubbles[values[0]] = float(values[1])
+    return bubbles
 
 def load_mappings():
     # The ALS implementation uses numeric labels for items
@@ -119,7 +109,7 @@ def process_value(x):
         first_app = apps[i]
         remaining_apps = '.'.join(apps[0:i] + apps[i+1:])
         output.append((first_app, remaining_apps, x[1]))
-    return apps
+    return output
 
 def run_experiment(fractions, rank, rep):
     conf = (pyspark.SparkConf()
@@ -140,14 +130,14 @@ def run_experiment(fractions, rank, rep):
     train_data, empty_columns = build_training(apps, bubble_data, fractions, maxapps)
     training = sc.parallelize(train_data)
     # Apply mappings from application names, to numeric IDs
-    training.map(lambda x: Rating(ylabels[x[0]], xlabels[x[1]], x[2]))
-    
+    training = training.map(lambda x: Rating(ylabels[x[0]], xlabels[x[1]], x[2]))
+    model = ALS.train(training, rank, 10)
+
     # Create Rating objects for the entire dataset
     test = sc.parallelize([(key, value) for key, value in bubble_data.items()])
     test = test.flatMap(process_value)
+    print(test.collect()) # DEBUG
     test = test.map(lambda x: Rating(ylabels[x[0]], xlabels[x[1]], x[2]))
-
-    model = ALS.train(training, rank, 50)
 
     predictions = model.predictAll(test.map(lambda x: (x[0], x[1]))).map(lambda x: ((x[0], x[1]), x[2]))
     bubble_sizes = test.map(lambda x: ((x[0], x[1]), x[2]))

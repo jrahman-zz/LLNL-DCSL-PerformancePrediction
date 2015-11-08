@@ -10,20 +10,27 @@ import util
 
 if __name__ == '__main__':
     if len(sys.argv) < 4:
-        print('Error: Usage prepare_data.py filepath xlabelfile ylabelfile')
+        print('Error: Usage prepare_data.py datafile xlabelfile ylabelfile')
         sys.exit(1)
 
     # Construct the application list from the multi application bubble sizes
-    data = util.read_data('multi_bubble_sizes')
-    
-    
+    data = util.read_data('multi_bubble_sizes') 
 
     bubble = 'mean_bubble'
-    data = util.read_data(sys.argv[1])
     data = data[data[bubble] == data[bubble]]
     data = data[data['parsec_fluidanimate'] == 0]
+    datafile = sys.argv[1]
     xlabelfile = sys.argv[2]
     ylabelfile = sys.argv[3]
+
+    
+    with open(datafile, 'w') as f:
+        single_app_bubbles, none = util.read_single_app_bubbles('single_bubble_sizes')
+        aggregated = data.groupby('apps').agg({bubble: np.mean})
+        for tup in aggregated.itertuples():
+            f.write('%s %f\n' % (tup[0], float(tup[1])))
+        for key, value in single_app_bubbles.items():
+            f.write('%s %f\n' % (key, float(value)))
 
     xmaxlabel = 0
     ymaxlabel = 0

@@ -1,0 +1,1483 @@
+INFO:root:Reading completed experiments from file...
+INFO:root:Read 0 completed experiments from file
+INFO:root:Reading experiments from experiment_list...
+INFO:root:Read 120 experiments from experiment_list
+INFO:root:0 experiments already complete
+INFO:root:120 experiments ready to run
+INFO:werkzeug: * Running on http://cab688:13333/ (Press CTRL+C to quit)
+INFO:root:120 experiments ready to run
+INFO:root:Ready experiments: 119, running experiments: 1, completed experiments: 0
+INFO:root:Sending experiment: spec_fp lbm 1 spec_fp leslie3d 1 data/2_spec_fp_lbm_1.spec_fp_leslie3d_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 spec_fp leslie3d 1 data/2_spec_fp_lbm_1.spec_fp_leslie3d_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 1 completed experiments to file...
+INFO:root:Wrote 1 completed experiments to file
+INFO:root:Ready experiments: 119, running experiments: 0, completed experiments: 1
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:119 experiments ready to run
+INFO:root:Ready experiments: 118, running experiments: 1, completed experiments: 1
+INFO:root:Sending experiment: spec_fp lbm 1 spec_fp GemsFDTD 1 data/2_spec_fp_lbm_1.spec_fp_GemsFDTD_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 spec_fp GemsFDTD 1 data/2_spec_fp_lbm_1.spec_fp_GemsFDTD_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 2 completed experiments to file...
+INFO:root:Wrote 2 completed experiments to file
+INFO:root:Ready experiments: 118, running experiments: 0, completed experiments: 2
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:118 experiments ready to run
+INFO:root:Ready experiments: 117, running experiments: 1, completed experiments: 2
+INFO:root:Sending experiment: spec_fp lbm 1 spec_fp soplex 1 data/2_spec_fp_lbm_1.spec_fp_soplex_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 spec_fp soplex 1 data/2_spec_fp_lbm_1.spec_fp_soplex_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 3 completed experiments to file...
+INFO:root:Wrote 3 completed experiments to file
+INFO:root:Ready experiments: 117, running experiments: 0, completed experiments: 3
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:117 experiments ready to run
+INFO:root:Ready experiments: 116, running experiments: 1, completed experiments: 3
+INFO:root:Sending experiment: spec_fp lbm 1 spec_fp milc 1 data/2_spec_fp_lbm_1.spec_fp_milc_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 spec_fp milc 1 data/2_spec_fp_lbm_1.spec_fp_milc_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 4 completed experiments to file...
+INFO:root:Wrote 4 completed experiments to file
+INFO:root:Ready experiments: 116, running experiments: 0, completed experiments: 4
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:116 experiments ready to run
+INFO:root:Ready experiments: 115, running experiments: 1, completed experiments: 4
+INFO:root:Sending experiment: spec_fp lbm 1 spec_fp bwaves 1 data/2_spec_fp_lbm_1.spec_fp_bwaves_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 spec_fp bwaves 1 data/2_spec_fp_lbm_1.spec_fp_bwaves_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 5 completed experiments to file...
+INFO:root:Wrote 5 completed experiments to file
+INFO:root:Ready experiments: 115, running experiments: 0, completed experiments: 5
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:115 experiments ready to run
+INFO:root:Ready experiments: 114, running experiments: 1, completed experiments: 5
+INFO:root:Sending experiment: spec_fp lbm 1 spec_fp cactusADM 1 data/2_spec_fp_lbm_1.spec_fp_cactusADM_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 spec_fp cactusADM 1 data/2_spec_fp_lbm_1.spec_fp_cactusADM_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 6 completed experiments to file...
+INFO:root:Wrote 6 completed experiments to file
+INFO:root:Ready experiments: 114, running experiments: 0, completed experiments: 6
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:114 experiments ready to run
+INFO:root:Ready experiments: 113, running experiments: 1, completed experiments: 6
+INFO:root:Sending experiment: spec_fp lbm 1 spec_int mcf 1 data/2_spec_fp_lbm_1.spec_int_mcf_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 spec_int mcf 1 data/2_spec_fp_lbm_1.spec_int_mcf_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 7 completed experiments to file...
+INFO:root:Wrote 7 completed experiments to file
+INFO:root:Ready experiments: 113, running experiments: 0, completed experiments: 7
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:113 experiments ready to run
+INFO:root:Ready experiments: 112, running experiments: 1, completed experiments: 7
+INFO:root:Sending experiment: spec_fp lbm 1 spec_int omnetpp 1 data/2_spec_fp_lbm_1.spec_int_omnetpp_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 spec_int omnetpp 1 data/2_spec_fp_lbm_1.spec_int_omnetpp_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 8 completed experiments to file...
+INFO:root:Wrote 8 completed experiments to file
+INFO:root:Ready experiments: 112, running experiments: 0, completed experiments: 8
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:112 experiments ready to run
+INFO:root:Ready experiments: 111, running experiments: 1, completed experiments: 8
+INFO:root:Sending experiment: spec_fp lbm 1 spec_int gcc 1 data/2_spec_fp_lbm_1.spec_int_gcc_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 spec_int gcc 1 data/2_spec_fp_lbm_1.spec_int_gcc_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 9 completed experiments to file...
+INFO:root:Wrote 9 completed experiments to file
+INFO:root:Ready experiments: 111, running experiments: 0, completed experiments: 9
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:111 experiments ready to run
+INFO:root:Ready experiments: 110, running experiments: 1, completed experiments: 9
+INFO:root:Sending experiment: spec_fp lbm 1 spec_int astar 1 data/2_spec_fp_lbm_1.spec_int_astar_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 spec_int astar 1 data/2_spec_fp_lbm_1.spec_int_astar_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 10 completed experiments to file...
+INFO:root:Wrote 10 completed experiments to file
+INFO:root:Ready experiments: 110, running experiments: 0, completed experiments: 10
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:110 experiments ready to run
+INFO:root:Ready experiments: 109, running experiments: 1, completed experiments: 10
+INFO:root:Sending experiment: spec_fp lbm 1 spec_int hmmer 1 data/2_spec_fp_lbm_1.spec_int_hmmer_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 spec_int hmmer 1 data/2_spec_fp_lbm_1.spec_int_hmmer_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 11 completed experiments to file...
+INFO:root:Wrote 11 completed experiments to file
+INFO:root:Ready experiments: 109, running experiments: 0, completed experiments: 11
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:109 experiments ready to run
+INFO:root:Ready experiments: 108, running experiments: 1, completed experiments: 11
+INFO:root:Sending experiment: spec_fp lbm 1 parsec streamcluster 1 data/2_spec_fp_lbm_1.parsec_streamcluster_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 parsec streamcluster 1 data/2_spec_fp_lbm_1.parsec_streamcluster_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 12 completed experiments to file...
+INFO:root:Wrote 12 completed experiments to file
+INFO:root:Ready experiments: 108, running experiments: 0, completed experiments: 12
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:108 experiments ready to run
+INFO:root:Ready experiments: 107, running experiments: 1, completed experiments: 12
+INFO:root:Sending experiment: spec_fp lbm 1 parsec facesim 1 data/2_spec_fp_lbm_1.parsec_facesim_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 parsec facesim 1 data/2_spec_fp_lbm_1.parsec_facesim_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 13 completed experiments to file...
+INFO:root:Wrote 13 completed experiments to file
+INFO:root:Ready experiments: 107, running experiments: 0, completed experiments: 13
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:107 experiments ready to run
+INFO:root:Ready experiments: 106, running experiments: 1, completed experiments: 13
+INFO:root:Sending experiment: spec_fp lbm 1 parsec fluidanimate 1 data/2_spec_fp_lbm_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 parsec fluidanimate 1 data/2_spec_fp_lbm_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 14 completed experiments to file...
+INFO:root:Wrote 14 completed experiments to file
+INFO:root:Ready experiments: 106, running experiments: 0, completed experiments: 14
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:106 experiments ready to run
+INFO:root:Ready experiments: 105, running experiments: 1, completed experiments: 14
+INFO:root:Sending experiment: spec_fp lbm 1 parsec canneal 1 data/2_spec_fp_lbm_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp lbm 1 parsec canneal 1 data/2_spec_fp_lbm_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 15 completed experiments to file...
+INFO:root:Wrote 15 completed experiments to file
+INFO:root:Ready experiments: 105, running experiments: 0, completed experiments: 15
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:105 experiments ready to run
+INFO:root:Ready experiments: 104, running experiments: 1, completed experiments: 15
+INFO:root:Sending experiment: spec_fp leslie3d 1 spec_fp GemsFDTD 1 data/2_spec_fp_leslie3d_1.spec_fp_GemsFDTD_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 spec_fp GemsFDTD 1 data/2_spec_fp_leslie3d_1.spec_fp_GemsFDTD_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 16 completed experiments to file...
+INFO:root:Wrote 16 completed experiments to file
+INFO:root:Ready experiments: 104, running experiments: 0, completed experiments: 16
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:104 experiments ready to run
+INFO:root:Ready experiments: 103, running experiments: 1, completed experiments: 16
+INFO:root:Sending experiment: spec_fp leslie3d 1 spec_fp soplex 1 data/2_spec_fp_leslie3d_1.spec_fp_soplex_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 spec_fp soplex 1 data/2_spec_fp_leslie3d_1.spec_fp_soplex_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 17 completed experiments to file...
+INFO:root:Wrote 17 completed experiments to file
+INFO:root:Ready experiments: 103, running experiments: 0, completed experiments: 17
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:103 experiments ready to run
+INFO:root:Ready experiments: 102, running experiments: 1, completed experiments: 17
+INFO:root:Sending experiment: spec_fp leslie3d 1 spec_fp milc 1 data/2_spec_fp_leslie3d_1.spec_fp_milc_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 spec_fp milc 1 data/2_spec_fp_leslie3d_1.spec_fp_milc_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 18 completed experiments to file...
+INFO:root:Wrote 18 completed experiments to file
+INFO:root:Ready experiments: 102, running experiments: 0, completed experiments: 18
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:102 experiments ready to run
+INFO:root:Ready experiments: 101, running experiments: 1, completed experiments: 18
+INFO:root:Sending experiment: spec_fp leslie3d 1 spec_fp bwaves 1 data/2_spec_fp_leslie3d_1.spec_fp_bwaves_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 spec_fp bwaves 1 data/2_spec_fp_leslie3d_1.spec_fp_bwaves_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 19 completed experiments to file...
+INFO:root:Wrote 19 completed experiments to file
+INFO:root:Ready experiments: 101, running experiments: 0, completed experiments: 19
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:101 experiments ready to run
+INFO:root:Ready experiments: 100, running experiments: 1, completed experiments: 19
+INFO:root:Sending experiment: spec_fp leslie3d 1 spec_fp cactusADM 1 data/2_spec_fp_leslie3d_1.spec_fp_cactusADM_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 spec_fp cactusADM 1 data/2_spec_fp_leslie3d_1.spec_fp_cactusADM_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 20 completed experiments to file...
+INFO:root:Wrote 20 completed experiments to file
+INFO:root:Ready experiments: 100, running experiments: 0, completed experiments: 20
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:100 experiments ready to run
+INFO:root:Ready experiments: 99, running experiments: 1, completed experiments: 20
+INFO:root:Sending experiment: spec_fp leslie3d 1 spec_int mcf 1 data/2_spec_fp_leslie3d_1.spec_int_mcf_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 spec_int mcf 1 data/2_spec_fp_leslie3d_1.spec_int_mcf_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 21 completed experiments to file...
+INFO:root:Wrote 21 completed experiments to file
+INFO:root:Ready experiments: 99, running experiments: 0, completed experiments: 21
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:99 experiments ready to run
+INFO:root:Ready experiments: 98, running experiments: 1, completed experiments: 21
+INFO:root:Sending experiment: spec_fp leslie3d 1 spec_int omnetpp 1 data/2_spec_fp_leslie3d_1.spec_int_omnetpp_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 spec_int omnetpp 1 data/2_spec_fp_leslie3d_1.spec_int_omnetpp_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 22 completed experiments to file...
+INFO:root:Wrote 22 completed experiments to file
+INFO:root:Ready experiments: 98, running experiments: 0, completed experiments: 22
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:98 experiments ready to run
+INFO:root:Ready experiments: 97, running experiments: 1, completed experiments: 22
+INFO:root:Sending experiment: spec_fp leslie3d 1 spec_int gcc 1 data/2_spec_fp_leslie3d_1.spec_int_gcc_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 spec_int gcc 1 data/2_spec_fp_leslie3d_1.spec_int_gcc_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 23 completed experiments to file...
+INFO:root:Wrote 23 completed experiments to file
+INFO:root:Ready experiments: 97, running experiments: 0, completed experiments: 23
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:97 experiments ready to run
+INFO:root:Ready experiments: 96, running experiments: 1, completed experiments: 23
+INFO:root:Sending experiment: spec_fp leslie3d 1 spec_int astar 1 data/2_spec_fp_leslie3d_1.spec_int_astar_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 spec_int astar 1 data/2_spec_fp_leslie3d_1.spec_int_astar_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 24 completed experiments to file...
+INFO:root:Wrote 24 completed experiments to file
+INFO:root:Ready experiments: 96, running experiments: 0, completed experiments: 24
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:96 experiments ready to run
+INFO:root:Ready experiments: 95, running experiments: 1, completed experiments: 24
+INFO:root:Sending experiment: spec_fp leslie3d 1 spec_int hmmer 1 data/2_spec_fp_leslie3d_1.spec_int_hmmer_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 spec_int hmmer 1 data/2_spec_fp_leslie3d_1.spec_int_hmmer_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 25 completed experiments to file...
+INFO:root:Wrote 25 completed experiments to file
+INFO:root:Ready experiments: 95, running experiments: 0, completed experiments: 25
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:95 experiments ready to run
+INFO:root:Ready experiments: 94, running experiments: 1, completed experiments: 25
+INFO:root:Sending experiment: spec_fp leslie3d 1 parsec streamcluster 1 data/2_spec_fp_leslie3d_1.parsec_streamcluster_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 parsec streamcluster 1 data/2_spec_fp_leslie3d_1.parsec_streamcluster_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 26 completed experiments to file...
+INFO:root:Wrote 26 completed experiments to file
+INFO:root:Ready experiments: 94, running experiments: 0, completed experiments: 26
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:94 experiments ready to run
+INFO:root:Ready experiments: 93, running experiments: 1, completed experiments: 26
+INFO:root:Sending experiment: spec_fp leslie3d 1 parsec facesim 1 data/2_spec_fp_leslie3d_1.parsec_facesim_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 parsec facesim 1 data/2_spec_fp_leslie3d_1.parsec_facesim_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 27 completed experiments to file...
+INFO:root:Wrote 27 completed experiments to file
+INFO:root:Ready experiments: 93, running experiments: 0, completed experiments: 27
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:93 experiments ready to run
+INFO:root:Ready experiments: 92, running experiments: 1, completed experiments: 27
+INFO:root:Sending experiment: spec_fp leslie3d 1 parsec fluidanimate 1 data/2_spec_fp_leslie3d_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 parsec fluidanimate 1 data/2_spec_fp_leslie3d_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 28 completed experiments to file...
+INFO:root:Wrote 28 completed experiments to file
+INFO:root:Ready experiments: 92, running experiments: 0, completed experiments: 28
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:92 experiments ready to run
+INFO:root:Ready experiments: 91, running experiments: 1, completed experiments: 28
+INFO:root:Sending experiment: spec_fp leslie3d 1 parsec canneal 1 data/2_spec_fp_leslie3d_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp leslie3d 1 parsec canneal 1 data/2_spec_fp_leslie3d_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 29 completed experiments to file...
+INFO:root:Wrote 29 completed experiments to file
+INFO:root:Ready experiments: 91, running experiments: 0, completed experiments: 29
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:91 experiments ready to run
+INFO:root:Ready experiments: 90, running experiments: 1, completed experiments: 29
+INFO:root:Sending experiment: spec_fp GemsFDTD 1 spec_fp soplex 1 data/2_spec_fp_GemsFDTD_1.spec_fp_soplex_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp GemsFDTD 1 spec_fp soplex 1 data/2_spec_fp_GemsFDTD_1.spec_fp_soplex_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 30 completed experiments to file...
+INFO:root:Wrote 30 completed experiments to file
+INFO:root:Ready experiments: 90, running experiments: 0, completed experiments: 30
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:90 experiments ready to run
+INFO:root:Ready experiments: 89, running experiments: 1, completed experiments: 30
+INFO:root:Sending experiment: spec_fp GemsFDTD 1 spec_fp milc 1 data/2_spec_fp_GemsFDTD_1.spec_fp_milc_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp GemsFDTD 1 spec_fp milc 1 data/2_spec_fp_GemsFDTD_1.spec_fp_milc_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 31 completed experiments to file...
+INFO:root:Wrote 31 completed experiments to file
+INFO:root:Ready experiments: 89, running experiments: 0, completed experiments: 31
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:89 experiments ready to run
+INFO:root:Ready experiments: 88, running experiments: 1, completed experiments: 31
+INFO:root:Sending experiment: spec_fp GemsFDTD 1 spec_fp bwaves 1 data/2_spec_fp_GemsFDTD_1.spec_fp_bwaves_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp GemsFDTD 1 spec_fp bwaves 1 data/2_spec_fp_GemsFDTD_1.spec_fp_bwaves_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 32 completed experiments to file...
+INFO:root:Wrote 32 completed experiments to file
+INFO:root:Ready experiments: 88, running experiments: 0, completed experiments: 32
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:88 experiments ready to run
+INFO:root:Ready experiments: 87, running experiments: 1, completed experiments: 32
+INFO:root:Sending experiment: spec_fp GemsFDTD 1 spec_fp cactusADM 1 data/2_spec_fp_GemsFDTD_1.spec_fp_cactusADM_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:10] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp GemsFDTD 1 spec_fp cactusADM 1 data/2_spec_fp_GemsFDTD_1.spec_fp_cactusADM_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 33 completed experiments to file...
+INFO:root:Wrote 33 completed experiments to file
+INFO:root:Ready experiments: 87, running experiments: 0, completed experiments: 33
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:87 experiments ready to run
+INFO:root:Ready experiments: 86, running experiments: 1, completed experiments: 33
+INFO:root:Sending experiment: spec_fp GemsFDTD 1 spec_int mcf 1 data/2_spec_fp_GemsFDTD_1.spec_int_mcf_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp GemsFDTD 1 spec_int mcf 1 data/2_spec_fp_GemsFDTD_1.spec_int_mcf_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 34 completed experiments to file...
+INFO:root:Wrote 34 completed experiments to file
+INFO:root:Ready experiments: 86, running experiments: 0, completed experiments: 34
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:86 experiments ready to run
+INFO:root:Ready experiments: 85, running experiments: 1, completed experiments: 34
+INFO:root:Sending experiment: spec_fp GemsFDTD 1 spec_int omnetpp 1 data/2_spec_fp_GemsFDTD_1.spec_int_omnetpp_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp GemsFDTD 1 spec_int omnetpp 1 data/2_spec_fp_GemsFDTD_1.spec_int_omnetpp_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 35 completed experiments to file...
+INFO:root:Wrote 35 completed experiments to file
+INFO:root:Ready experiments: 85, running experiments: 0, completed experiments: 35
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:85 experiments ready to run
+INFO:root:Ready experiments: 84, running experiments: 1, completed experiments: 35
+INFO:root:Sending experiment: spec_fp GemsFDTD 1 spec_int gcc 1 data/2_spec_fp_GemsFDTD_1.spec_int_gcc_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp GemsFDTD 1 spec_int gcc 1 data/2_spec_fp_GemsFDTD_1.spec_int_gcc_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 36 completed experiments to file...
+INFO:root:Wrote 36 completed experiments to file
+INFO:root:Ready experiments: 84, running experiments: 0, completed experiments: 36
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:84 experiments ready to run
+INFO:root:Ready experiments: 83, running experiments: 1, completed experiments: 36
+INFO:root:Sending experiment: spec_fp GemsFDTD 1 spec_int astar 1 data/2_spec_fp_GemsFDTD_1.spec_int_astar_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp GemsFDTD 1 spec_int astar 1 data/2_spec_fp_GemsFDTD_1.spec_int_astar_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 37 completed experiments to file...
+INFO:root:Wrote 37 completed experiments to file
+INFO:root:Ready experiments: 83, running experiments: 0, completed experiments: 37
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:83 experiments ready to run
+INFO:root:Ready experiments: 82, running experiments: 1, completed experiments: 37
+INFO:root:Sending experiment: spec_fp GemsFDTD 1 spec_int hmmer 1 data/2_spec_fp_GemsFDTD_1.spec_int_hmmer_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp GemsFDTD 1 spec_int hmmer 1 data/2_spec_fp_GemsFDTD_1.spec_int_hmmer_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 38 completed experiments to file...
+INFO:root:Wrote 38 completed experiments to file
+INFO:root:Ready experiments: 82, running experiments: 0, completed experiments: 38
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:82 experiments ready to run
+INFO:root:Ready experiments: 81, running experiments: 1, completed experiments: 38
+INFO:root:Sending experiment: spec_fp GemsFDTD 1 parsec streamcluster 1 data/2_spec_fp_GemsFDTD_1.parsec_streamcluster_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp GemsFDTD 1 parsec streamcluster 1 data/2_spec_fp_GemsFDTD_1.parsec_streamcluster_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 39 completed experiments to file...
+INFO:root:Wrote 39 completed experiments to file
+INFO:root:Ready experiments: 81, running experiments: 0, completed experiments: 39
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:81 experiments ready to run
+INFO:root:Ready experiments: 80, running experiments: 1, completed experiments: 39
+INFO:root:Sending experiment: spec_fp GemsFDTD 1 parsec facesim 1 data/2_spec_fp_GemsFDTD_1.parsec_facesim_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp GemsFDTD 1 parsec facesim 1 data/2_spec_fp_GemsFDTD_1.parsec_facesim_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 40 completed experiments to file...
+INFO:root:Wrote 40 completed experiments to file
+INFO:root:Ready experiments: 80, running experiments: 0, completed experiments: 40
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:80 experiments ready to run
+INFO:root:Ready experiments: 79, running experiments: 1, completed experiments: 40
+INFO:root:Sending experiment: spec_fp GemsFDTD 1 parsec fluidanimate 1 data/2_spec_fp_GemsFDTD_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp GemsFDTD 1 parsec fluidanimate 1 data/2_spec_fp_GemsFDTD_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 41 completed experiments to file...
+INFO:root:Wrote 41 completed experiments to file
+INFO:root:Ready experiments: 79, running experiments: 0, completed experiments: 41
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:79 experiments ready to run
+INFO:root:Ready experiments: 78, running experiments: 1, completed experiments: 41
+INFO:root:Sending experiment: spec_fp GemsFDTD 1 parsec canneal 1 data/2_spec_fp_GemsFDTD_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp GemsFDTD 1 parsec canneal 1 data/2_spec_fp_GemsFDTD_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 42 completed experiments to file...
+INFO:root:Wrote 42 completed experiments to file
+INFO:root:Ready experiments: 78, running experiments: 0, completed experiments: 42
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:78 experiments ready to run
+INFO:root:Ready experiments: 77, running experiments: 1, completed experiments: 42
+INFO:root:Sending experiment: spec_fp soplex 1 spec_fp milc 1 data/2_spec_fp_soplex_1.spec_fp_milc_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp soplex 1 spec_fp milc 1 data/2_spec_fp_soplex_1.spec_fp_milc_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 43 completed experiments to file...
+INFO:root:Wrote 43 completed experiments to file
+INFO:root:Ready experiments: 77, running experiments: 0, completed experiments: 43
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:77 experiments ready to run
+INFO:root:Ready experiments: 76, running experiments: 1, completed experiments: 43
+INFO:root:Sending experiment: spec_fp soplex 1 spec_fp bwaves 1 data/2_spec_fp_soplex_1.spec_fp_bwaves_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp soplex 1 spec_fp bwaves 1 data/2_spec_fp_soplex_1.spec_fp_bwaves_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 44 completed experiments to file...
+INFO:root:Wrote 44 completed experiments to file
+INFO:root:Ready experiments: 76, running experiments: 0, completed experiments: 44
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:76 experiments ready to run
+INFO:root:Ready experiments: 75, running experiments: 1, completed experiments: 44
+INFO:root:Sending experiment: spec_fp soplex 1 spec_fp cactusADM 1 data/2_spec_fp_soplex_1.spec_fp_cactusADM_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp soplex 1 spec_fp cactusADM 1 data/2_spec_fp_soplex_1.spec_fp_cactusADM_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 45 completed experiments to file...
+INFO:root:Wrote 45 completed experiments to file
+INFO:root:Ready experiments: 75, running experiments: 0, completed experiments: 45
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:75 experiments ready to run
+INFO:root:Ready experiments: 74, running experiments: 1, completed experiments: 45
+INFO:root:Sending experiment: spec_fp soplex 1 spec_int mcf 1 data/2_spec_fp_soplex_1.spec_int_mcf_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp soplex 1 spec_int mcf 1 data/2_spec_fp_soplex_1.spec_int_mcf_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 46 completed experiments to file...
+INFO:root:Wrote 46 completed experiments to file
+INFO:root:Ready experiments: 74, running experiments: 0, completed experiments: 46
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:74 experiments ready to run
+INFO:root:Ready experiments: 73, running experiments: 1, completed experiments: 46
+INFO:root:Sending experiment: spec_fp soplex 1 spec_int omnetpp 1 data/2_spec_fp_soplex_1.spec_int_omnetpp_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp soplex 1 spec_int omnetpp 1 data/2_spec_fp_soplex_1.spec_int_omnetpp_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 47 completed experiments to file...
+INFO:root:Wrote 47 completed experiments to file
+INFO:root:Ready experiments: 73, running experiments: 0, completed experiments: 47
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:73 experiments ready to run
+INFO:root:Ready experiments: 72, running experiments: 1, completed experiments: 47
+INFO:root:Sending experiment: spec_fp soplex 1 spec_int gcc 1 data/2_spec_fp_soplex_1.spec_int_gcc_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp soplex 1 spec_int gcc 1 data/2_spec_fp_soplex_1.spec_int_gcc_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 48 completed experiments to file...
+INFO:root:Wrote 48 completed experiments to file
+INFO:root:Ready experiments: 72, running experiments: 0, completed experiments: 48
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:72 experiments ready to run
+INFO:root:Ready experiments: 71, running experiments: 1, completed experiments: 48
+INFO:root:Sending experiment: spec_fp soplex 1 spec_int astar 1 data/2_spec_fp_soplex_1.spec_int_astar_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp soplex 1 spec_int astar 1 data/2_spec_fp_soplex_1.spec_int_astar_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 49 completed experiments to file...
+INFO:root:Wrote 49 completed experiments to file
+INFO:root:Ready experiments: 71, running experiments: 0, completed experiments: 49
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:71 experiments ready to run
+INFO:root:Ready experiments: 70, running experiments: 1, completed experiments: 49
+INFO:root:Sending experiment: spec_fp soplex 1 spec_int hmmer 1 data/2_spec_fp_soplex_1.spec_int_hmmer_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp soplex 1 spec_int hmmer 1 data/2_spec_fp_soplex_1.spec_int_hmmer_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 50 completed experiments to file...
+INFO:root:Wrote 50 completed experiments to file
+INFO:root:Ready experiments: 70, running experiments: 0, completed experiments: 50
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:70 experiments ready to run
+INFO:root:Ready experiments: 69, running experiments: 1, completed experiments: 50
+INFO:root:Sending experiment: spec_fp soplex 1 parsec streamcluster 1 data/2_spec_fp_soplex_1.parsec_streamcluster_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp soplex 1 parsec streamcluster 1 data/2_spec_fp_soplex_1.parsec_streamcluster_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 51 completed experiments to file...
+INFO:root:Wrote 51 completed experiments to file
+INFO:root:Ready experiments: 69, running experiments: 0, completed experiments: 51
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:69 experiments ready to run
+INFO:root:Ready experiments: 68, running experiments: 1, completed experiments: 51
+INFO:root:Sending experiment: spec_fp soplex 1 parsec facesim 1 data/2_spec_fp_soplex_1.parsec_facesim_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp soplex 1 parsec facesim 1 data/2_spec_fp_soplex_1.parsec_facesim_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 52 completed experiments to file...
+INFO:root:Wrote 52 completed experiments to file
+INFO:root:Ready experiments: 68, running experiments: 0, completed experiments: 52
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:68 experiments ready to run
+INFO:root:Ready experiments: 67, running experiments: 1, completed experiments: 52
+INFO:root:Sending experiment: spec_fp soplex 1 parsec fluidanimate 1 data/2_spec_fp_soplex_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp soplex 1 parsec fluidanimate 1 data/2_spec_fp_soplex_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 53 completed experiments to file...
+INFO:root:Wrote 53 completed experiments to file
+INFO:root:Ready experiments: 67, running experiments: 0, completed experiments: 53
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:67 experiments ready to run
+INFO:root:Ready experiments: 66, running experiments: 1, completed experiments: 53
+INFO:root:Sending experiment: spec_fp soplex 1 parsec canneal 1 data/2_spec_fp_soplex_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp soplex 1 parsec canneal 1 data/2_spec_fp_soplex_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 54 completed experiments to file...
+INFO:root:Wrote 54 completed experiments to file
+INFO:root:Ready experiments: 66, running experiments: 0, completed experiments: 54
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:66 experiments ready to run
+INFO:root:Ready experiments: 65, running experiments: 1, completed experiments: 54
+INFO:root:Sending experiment: spec_fp milc 1 spec_fp bwaves 1 data/2_spec_fp_milc_1.spec_fp_bwaves_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp milc 1 spec_fp bwaves 1 data/2_spec_fp_milc_1.spec_fp_bwaves_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 55 completed experiments to file...
+INFO:root:Wrote 55 completed experiments to file
+INFO:root:Ready experiments: 65, running experiments: 0, completed experiments: 55
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:65 experiments ready to run
+INFO:root:Ready experiments: 64, running experiments: 1, completed experiments: 55
+INFO:root:Sending experiment: spec_fp milc 1 spec_fp cactusADM 1 data/2_spec_fp_milc_1.spec_fp_cactusADM_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp milc 1 spec_fp cactusADM 1 data/2_spec_fp_milc_1.spec_fp_cactusADM_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 56 completed experiments to file...
+INFO:root:Wrote 56 completed experiments to file
+INFO:root:Ready experiments: 64, running experiments: 0, completed experiments: 56
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:64 experiments ready to run
+INFO:root:Ready experiments: 63, running experiments: 1, completed experiments: 56
+INFO:root:Sending experiment: spec_fp milc 1 spec_int mcf 1 data/2_spec_fp_milc_1.spec_int_mcf_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp milc 1 spec_int mcf 1 data/2_spec_fp_milc_1.spec_int_mcf_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 57 completed experiments to file...
+INFO:root:Wrote 57 completed experiments to file
+INFO:root:Ready experiments: 63, running experiments: 0, completed experiments: 57
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:63 experiments ready to run
+INFO:root:Ready experiments: 62, running experiments: 1, completed experiments: 57
+INFO:root:Sending experiment: spec_fp milc 1 spec_int omnetpp 1 data/2_spec_fp_milc_1.spec_int_omnetpp_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp milc 1 spec_int omnetpp 1 data/2_spec_fp_milc_1.spec_int_omnetpp_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 58 completed experiments to file...
+INFO:root:Wrote 58 completed experiments to file
+INFO:root:Ready experiments: 62, running experiments: 0, completed experiments: 58
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:62 experiments ready to run
+INFO:root:Ready experiments: 61, running experiments: 1, completed experiments: 58
+INFO:root:Sending experiment: spec_fp milc 1 spec_int gcc 1 data/2_spec_fp_milc_1.spec_int_gcc_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp milc 1 spec_int gcc 1 data/2_spec_fp_milc_1.spec_int_gcc_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 59 completed experiments to file...
+INFO:root:Wrote 59 completed experiments to file
+INFO:root:Ready experiments: 61, running experiments: 0, completed experiments: 59
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:61 experiments ready to run
+INFO:root:Ready experiments: 60, running experiments: 1, completed experiments: 59
+INFO:root:Sending experiment: spec_fp milc 1 spec_int astar 1 data/2_spec_fp_milc_1.spec_int_astar_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp milc 1 spec_int astar 1 data/2_spec_fp_milc_1.spec_int_astar_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 60 completed experiments to file...
+INFO:root:Wrote 60 completed experiments to file
+INFO:root:Ready experiments: 60, running experiments: 0, completed experiments: 60
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:60 experiments ready to run
+INFO:root:Ready experiments: 59, running experiments: 1, completed experiments: 60
+INFO:root:Sending experiment: spec_fp milc 1 spec_int hmmer 1 data/2_spec_fp_milc_1.spec_int_hmmer_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp milc 1 spec_int hmmer 1 data/2_spec_fp_milc_1.spec_int_hmmer_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 61 completed experiments to file...
+INFO:root:Wrote 61 completed experiments to file
+INFO:root:Ready experiments: 59, running experiments: 0, completed experiments: 61
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:59 experiments ready to run
+INFO:root:Ready experiments: 58, running experiments: 1, completed experiments: 61
+INFO:root:Sending experiment: spec_fp milc 1 parsec streamcluster 1 data/2_spec_fp_milc_1.parsec_streamcluster_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp milc 1 parsec streamcluster 1 data/2_spec_fp_milc_1.parsec_streamcluster_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 62 completed experiments to file...
+INFO:root:Wrote 62 completed experiments to file
+INFO:root:Ready experiments: 58, running experiments: 0, completed experiments: 62
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:58 experiments ready to run
+INFO:root:Ready experiments: 57, running experiments: 1, completed experiments: 62
+INFO:root:Sending experiment: spec_fp milc 1 parsec facesim 1 data/2_spec_fp_milc_1.parsec_facesim_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp milc 1 parsec facesim 1 data/2_spec_fp_milc_1.parsec_facesim_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 63 completed experiments to file...
+INFO:root:Wrote 63 completed experiments to file
+INFO:root:Ready experiments: 57, running experiments: 0, completed experiments: 63
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:57 experiments ready to run
+INFO:root:Ready experiments: 56, running experiments: 1, completed experiments: 63
+INFO:root:Sending experiment: spec_fp milc 1 parsec fluidanimate 1 data/2_spec_fp_milc_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp milc 1 parsec fluidanimate 1 data/2_spec_fp_milc_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 64 completed experiments to file...
+INFO:root:Wrote 64 completed experiments to file
+INFO:root:Ready experiments: 56, running experiments: 0, completed experiments: 64
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:56 experiments ready to run
+INFO:root:Ready experiments: 55, running experiments: 1, completed experiments: 64
+INFO:root:Sending experiment: spec_fp milc 1 parsec canneal 1 data/2_spec_fp_milc_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp milc 1 parsec canneal 1 data/2_spec_fp_milc_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 65 completed experiments to file...
+INFO:root:Wrote 65 completed experiments to file
+INFO:root:Ready experiments: 55, running experiments: 0, completed experiments: 65
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:55 experiments ready to run
+INFO:root:Ready experiments: 54, running experiments: 1, completed experiments: 65
+INFO:root:Sending experiment: spec_fp bwaves 1 spec_fp cactusADM 1 data/2_spec_fp_bwaves_1.spec_fp_cactusADM_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp bwaves 1 spec_fp cactusADM 1 data/2_spec_fp_bwaves_1.spec_fp_cactusADM_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 66 completed experiments to file...
+INFO:root:Wrote 66 completed experiments to file
+INFO:root:Ready experiments: 54, running experiments: 0, completed experiments: 66
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:54 experiments ready to run
+INFO:root:Ready experiments: 53, running experiments: 1, completed experiments: 66
+INFO:root:Sending experiment: spec_fp bwaves 1 spec_int mcf 1 data/2_spec_fp_bwaves_1.spec_int_mcf_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp bwaves 1 spec_int mcf 1 data/2_spec_fp_bwaves_1.spec_int_mcf_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 67 completed experiments to file...
+INFO:root:Wrote 67 completed experiments to file
+INFO:root:Ready experiments: 53, running experiments: 0, completed experiments: 67
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:53 experiments ready to run
+INFO:root:Ready experiments: 52, running experiments: 1, completed experiments: 67
+INFO:root:Sending experiment: spec_fp bwaves 1 spec_int omnetpp 1 data/2_spec_fp_bwaves_1.spec_int_omnetpp_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp bwaves 1 spec_int omnetpp 1 data/2_spec_fp_bwaves_1.spec_int_omnetpp_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 68 completed experiments to file...
+INFO:root:Wrote 68 completed experiments to file
+INFO:root:Ready experiments: 52, running experiments: 0, completed experiments: 68
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:52 experiments ready to run
+INFO:root:Ready experiments: 51, running experiments: 1, completed experiments: 68
+INFO:root:Sending experiment: spec_fp bwaves 1 spec_int gcc 1 data/2_spec_fp_bwaves_1.spec_int_gcc_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp bwaves 1 spec_int gcc 1 data/2_spec_fp_bwaves_1.spec_int_gcc_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 69 completed experiments to file...
+INFO:root:Wrote 69 completed experiments to file
+INFO:root:Ready experiments: 51, running experiments: 0, completed experiments: 69
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:51 experiments ready to run
+INFO:root:Ready experiments: 50, running experiments: 1, completed experiments: 69
+INFO:root:Sending experiment: spec_fp bwaves 1 spec_int astar 1 data/2_spec_fp_bwaves_1.spec_int_astar_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp bwaves 1 spec_int astar 1 data/2_spec_fp_bwaves_1.spec_int_astar_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 70 completed experiments to file...
+INFO:root:Wrote 70 completed experiments to file
+INFO:root:Ready experiments: 50, running experiments: 0, completed experiments: 70
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:50 experiments ready to run
+INFO:root:Ready experiments: 49, running experiments: 1, completed experiments: 70
+INFO:root:Sending experiment: spec_fp bwaves 1 spec_int hmmer 1 data/2_spec_fp_bwaves_1.spec_int_hmmer_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp bwaves 1 spec_int hmmer 1 data/2_spec_fp_bwaves_1.spec_int_hmmer_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 71 completed experiments to file...
+INFO:root:Wrote 71 completed experiments to file
+INFO:root:Ready experiments: 49, running experiments: 0, completed experiments: 71
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:49 experiments ready to run
+INFO:root:Ready experiments: 48, running experiments: 1, completed experiments: 71
+INFO:root:Sending experiment: spec_fp bwaves 1 parsec streamcluster 1 data/2_spec_fp_bwaves_1.parsec_streamcluster_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp bwaves 1 parsec streamcluster 1 data/2_spec_fp_bwaves_1.parsec_streamcluster_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 72 completed experiments to file...
+INFO:root:Wrote 72 completed experiments to file
+INFO:root:Ready experiments: 48, running experiments: 0, completed experiments: 72
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:48 experiments ready to run
+INFO:root:Ready experiments: 47, running experiments: 1, completed experiments: 72
+INFO:root:Sending experiment: spec_fp bwaves 1 parsec facesim 1 data/2_spec_fp_bwaves_1.parsec_facesim_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp bwaves 1 parsec facesim 1 data/2_spec_fp_bwaves_1.parsec_facesim_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 73 completed experiments to file...
+INFO:root:Wrote 73 completed experiments to file
+INFO:root:Ready experiments: 47, running experiments: 0, completed experiments: 73
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:47 experiments ready to run
+INFO:root:Ready experiments: 46, running experiments: 1, completed experiments: 73
+INFO:root:Sending experiment: spec_fp bwaves 1 parsec fluidanimate 1 data/2_spec_fp_bwaves_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp bwaves 1 parsec fluidanimate 1 data/2_spec_fp_bwaves_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 74 completed experiments to file...
+INFO:root:Wrote 74 completed experiments to file
+INFO:root:Ready experiments: 46, running experiments: 0, completed experiments: 74
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:46 experiments ready to run
+INFO:root:Ready experiments: 45, running experiments: 1, completed experiments: 74
+INFO:root:Sending experiment: spec_fp bwaves 1 parsec canneal 1 data/2_spec_fp_bwaves_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp bwaves 1 parsec canneal 1 data/2_spec_fp_bwaves_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 75 completed experiments to file...
+INFO:root:Wrote 75 completed experiments to file
+INFO:root:Ready experiments: 45, running experiments: 0, completed experiments: 75
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:45 experiments ready to run
+INFO:root:Ready experiments: 44, running experiments: 1, completed experiments: 75
+INFO:root:Sending experiment: spec_fp cactusADM 1 spec_int mcf 1 data/2_spec_fp_cactusADM_1.spec_int_mcf_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp cactusADM 1 spec_int mcf 1 data/2_spec_fp_cactusADM_1.spec_int_mcf_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 76 completed experiments to file...
+INFO:root:Wrote 76 completed experiments to file
+INFO:root:Ready experiments: 44, running experiments: 0, completed experiments: 76
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:44 experiments ready to run
+INFO:root:Ready experiments: 43, running experiments: 1, completed experiments: 76
+INFO:root:Sending experiment: spec_fp cactusADM 1 spec_int omnetpp 1 data/2_spec_fp_cactusADM_1.spec_int_omnetpp_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp cactusADM 1 spec_int omnetpp 1 data/2_spec_fp_cactusADM_1.spec_int_omnetpp_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 77 completed experiments to file...
+INFO:root:Wrote 77 completed experiments to file
+INFO:root:Ready experiments: 43, running experiments: 0, completed experiments: 77
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:43 experiments ready to run
+INFO:root:Ready experiments: 42, running experiments: 1, completed experiments: 77
+INFO:root:Sending experiment: spec_fp cactusADM 1 spec_int gcc 1 data/2_spec_fp_cactusADM_1.spec_int_gcc_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp cactusADM 1 spec_int gcc 1 data/2_spec_fp_cactusADM_1.spec_int_gcc_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 78 completed experiments to file...
+INFO:root:Wrote 78 completed experiments to file
+INFO:root:Ready experiments: 42, running experiments: 0, completed experiments: 78
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:42 experiments ready to run
+INFO:root:Ready experiments: 41, running experiments: 1, completed experiments: 78
+INFO:root:Sending experiment: spec_fp cactusADM 1 spec_int astar 1 data/2_spec_fp_cactusADM_1.spec_int_astar_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp cactusADM 1 spec_int astar 1 data/2_spec_fp_cactusADM_1.spec_int_astar_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 79 completed experiments to file...
+INFO:root:Wrote 79 completed experiments to file
+INFO:root:Ready experiments: 41, running experiments: 0, completed experiments: 79
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:41 experiments ready to run
+INFO:root:Ready experiments: 40, running experiments: 1, completed experiments: 79
+INFO:root:Sending experiment: spec_fp cactusADM 1 spec_int hmmer 1 data/2_spec_fp_cactusADM_1.spec_int_hmmer_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp cactusADM 1 spec_int hmmer 1 data/2_spec_fp_cactusADM_1.spec_int_hmmer_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 80 completed experiments to file...
+INFO:root:Wrote 80 completed experiments to file
+INFO:root:Ready experiments: 40, running experiments: 0, completed experiments: 80
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:40 experiments ready to run
+INFO:root:Ready experiments: 39, running experiments: 1, completed experiments: 80
+INFO:root:Sending experiment: spec_fp cactusADM 1 parsec streamcluster 1 data/2_spec_fp_cactusADM_1.parsec_streamcluster_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp cactusADM 1 parsec streamcluster 1 data/2_spec_fp_cactusADM_1.parsec_streamcluster_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 81 completed experiments to file...
+INFO:root:Wrote 81 completed experiments to file
+INFO:root:Ready experiments: 39, running experiments: 0, completed experiments: 81
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:39 experiments ready to run
+INFO:root:Ready experiments: 38, running experiments: 1, completed experiments: 81
+INFO:root:Sending experiment: spec_fp cactusADM 1 parsec facesim 1 data/2_spec_fp_cactusADM_1.parsec_facesim_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp cactusADM 1 parsec facesim 1 data/2_spec_fp_cactusADM_1.parsec_facesim_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 82 completed experiments to file...
+INFO:root:Wrote 82 completed experiments to file
+INFO:root:Ready experiments: 38, running experiments: 0, completed experiments: 82
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:38 experiments ready to run
+INFO:root:Ready experiments: 37, running experiments: 1, completed experiments: 82
+INFO:root:Sending experiment: spec_fp cactusADM 1 parsec fluidanimate 1 data/2_spec_fp_cactusADM_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp cactusADM 1 parsec fluidanimate 1 data/2_spec_fp_cactusADM_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 83 completed experiments to file...
+INFO:root:Wrote 83 completed experiments to file
+INFO:root:Ready experiments: 37, running experiments: 0, completed experiments: 83
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:37 experiments ready to run
+INFO:root:Ready experiments: 36, running experiments: 1, completed experiments: 83
+INFO:root:Sending experiment: spec_fp cactusADM 1 parsec canneal 1 data/2_spec_fp_cactusADM_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_fp cactusADM 1 parsec canneal 1 data/2_spec_fp_cactusADM_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 84 completed experiments to file...
+INFO:root:Wrote 84 completed experiments to file
+INFO:root:Ready experiments: 36, running experiments: 0, completed experiments: 84
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:36 experiments ready to run
+INFO:root:Ready experiments: 35, running experiments: 1, completed experiments: 84
+INFO:root:Sending experiment: spec_int mcf 1 spec_int omnetpp 1 data/2_spec_int_mcf_1.spec_int_omnetpp_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int mcf 1 spec_int omnetpp 1 data/2_spec_int_mcf_1.spec_int_omnetpp_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 85 completed experiments to file...
+INFO:root:Wrote 85 completed experiments to file
+INFO:root:Ready experiments: 35, running experiments: 0, completed experiments: 85
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:35 experiments ready to run
+INFO:root:Ready experiments: 34, running experiments: 1, completed experiments: 85
+INFO:root:Sending experiment: spec_int mcf 1 spec_int gcc 1 data/2_spec_int_mcf_1.spec_int_gcc_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int mcf 1 spec_int gcc 1 data/2_spec_int_mcf_1.spec_int_gcc_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 86 completed experiments to file...
+INFO:root:Wrote 86 completed experiments to file
+INFO:root:Ready experiments: 34, running experiments: 0, completed experiments: 86
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:34 experiments ready to run
+INFO:root:Ready experiments: 33, running experiments: 1, completed experiments: 86
+INFO:root:Sending experiment: spec_int mcf 1 spec_int astar 1 data/2_spec_int_mcf_1.spec_int_astar_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int mcf 1 spec_int astar 1 data/2_spec_int_mcf_1.spec_int_astar_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 87 completed experiments to file...
+INFO:root:Wrote 87 completed experiments to file
+INFO:root:Ready experiments: 33, running experiments: 0, completed experiments: 87
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:33 experiments ready to run
+INFO:root:Ready experiments: 32, running experiments: 1, completed experiments: 87
+INFO:root:Sending experiment: spec_int mcf 1 spec_int hmmer 1 data/2_spec_int_mcf_1.spec_int_hmmer_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int mcf 1 spec_int hmmer 1 data/2_spec_int_mcf_1.spec_int_hmmer_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 88 completed experiments to file...
+INFO:root:Wrote 88 completed experiments to file
+INFO:root:Ready experiments: 32, running experiments: 0, completed experiments: 88
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:32 experiments ready to run
+INFO:root:Ready experiments: 31, running experiments: 1, completed experiments: 88
+INFO:root:Sending experiment: spec_int mcf 1 parsec streamcluster 1 data/2_spec_int_mcf_1.parsec_streamcluster_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int mcf 1 parsec streamcluster 1 data/2_spec_int_mcf_1.parsec_streamcluster_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 89 completed experiments to file...
+INFO:root:Wrote 89 completed experiments to file
+INFO:root:Ready experiments: 31, running experiments: 0, completed experiments: 89
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:31 experiments ready to run
+INFO:root:Ready experiments: 30, running experiments: 1, completed experiments: 89
+INFO:root:Sending experiment: spec_int mcf 1 parsec facesim 1 data/2_spec_int_mcf_1.parsec_facesim_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int mcf 1 parsec facesim 1 data/2_spec_int_mcf_1.parsec_facesim_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 90 completed experiments to file...
+INFO:root:Wrote 90 completed experiments to file
+INFO:root:Ready experiments: 30, running experiments: 0, completed experiments: 90
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:30 experiments ready to run
+INFO:root:Ready experiments: 29, running experiments: 1, completed experiments: 90
+INFO:root:Sending experiment: spec_int mcf 1 parsec fluidanimate 1 data/2_spec_int_mcf_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int mcf 1 parsec fluidanimate 1 data/2_spec_int_mcf_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 91 completed experiments to file...
+INFO:root:Wrote 91 completed experiments to file
+INFO:root:Ready experiments: 29, running experiments: 0, completed experiments: 91
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:29 experiments ready to run
+INFO:root:Ready experiments: 28, running experiments: 1, completed experiments: 91
+INFO:root:Sending experiment: spec_int mcf 1 parsec canneal 1 data/2_spec_int_mcf_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int mcf 1 parsec canneal 1 data/2_spec_int_mcf_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 92 completed experiments to file...
+INFO:root:Wrote 92 completed experiments to file
+INFO:root:Ready experiments: 28, running experiments: 0, completed experiments: 92
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:28 experiments ready to run
+INFO:root:Ready experiments: 27, running experiments: 1, completed experiments: 92
+INFO:root:Sending experiment: spec_int omnetpp 1 spec_int gcc 1 data/2_spec_int_omnetpp_1.spec_int_gcc_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int omnetpp 1 spec_int gcc 1 data/2_spec_int_omnetpp_1.spec_int_gcc_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 93 completed experiments to file...
+INFO:root:Wrote 93 completed experiments to file
+INFO:root:Ready experiments: 27, running experiments: 0, completed experiments: 93
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:27 experiments ready to run
+INFO:root:Ready experiments: 26, running experiments: 1, completed experiments: 93
+INFO:root:Sending experiment: spec_int omnetpp 1 spec_int astar 1 data/2_spec_int_omnetpp_1.spec_int_astar_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int omnetpp 1 spec_int astar 1 data/2_spec_int_omnetpp_1.spec_int_astar_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 94 completed experiments to file...
+INFO:root:Wrote 94 completed experiments to file
+INFO:root:Ready experiments: 26, running experiments: 0, completed experiments: 94
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:26 experiments ready to run
+INFO:root:Ready experiments: 25, running experiments: 1, completed experiments: 94
+INFO:root:Sending experiment: spec_int omnetpp 1 spec_int hmmer 1 data/2_spec_int_omnetpp_1.spec_int_hmmer_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int omnetpp 1 spec_int hmmer 1 data/2_spec_int_omnetpp_1.spec_int_hmmer_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 95 completed experiments to file...
+INFO:root:Wrote 95 completed experiments to file
+INFO:root:Ready experiments: 25, running experiments: 0, completed experiments: 95
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:25 experiments ready to run
+INFO:root:Ready experiments: 24, running experiments: 1, completed experiments: 95
+INFO:root:Sending experiment: spec_int omnetpp 1 parsec streamcluster 1 data/2_spec_int_omnetpp_1.parsec_streamcluster_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int omnetpp 1 parsec streamcluster 1 data/2_spec_int_omnetpp_1.parsec_streamcluster_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 96 completed experiments to file...
+INFO:root:Wrote 96 completed experiments to file
+INFO:root:Ready experiments: 24, running experiments: 0, completed experiments: 96
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:24 experiments ready to run
+INFO:root:Ready experiments: 23, running experiments: 1, completed experiments: 96
+INFO:root:Sending experiment: spec_int omnetpp 1 parsec facesim 1 data/2_spec_int_omnetpp_1.parsec_facesim_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int omnetpp 1 parsec facesim 1 data/2_spec_int_omnetpp_1.parsec_facesim_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 97 completed experiments to file...
+INFO:root:Wrote 97 completed experiments to file
+INFO:root:Ready experiments: 23, running experiments: 0, completed experiments: 97
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:23 experiments ready to run
+INFO:root:Ready experiments: 22, running experiments: 1, completed experiments: 97
+INFO:root:Sending experiment: spec_int omnetpp 1 parsec fluidanimate 1 data/2_spec_int_omnetpp_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int omnetpp 1 parsec fluidanimate 1 data/2_spec_int_omnetpp_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 98 completed experiments to file...
+INFO:root:Wrote 98 completed experiments to file
+INFO:root:Ready experiments: 22, running experiments: 0, completed experiments: 98
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:22 experiments ready to run
+INFO:root:Ready experiments: 21, running experiments: 1, completed experiments: 98
+INFO:root:Sending experiment: spec_int omnetpp 1 parsec canneal 1 data/2_spec_int_omnetpp_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int omnetpp 1 parsec canneal 1 data/2_spec_int_omnetpp_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 99 completed experiments to file...
+INFO:root:Wrote 99 completed experiments to file
+INFO:root:Ready experiments: 21, running experiments: 0, completed experiments: 99
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:21 experiments ready to run
+INFO:root:Ready experiments: 20, running experiments: 1, completed experiments: 99
+INFO:root:Sending experiment: spec_int gcc 1 spec_int astar 1 data/2_spec_int_gcc_1.spec_int_astar_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int gcc 1 spec_int astar 1 data/2_spec_int_gcc_1.spec_int_astar_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 100 completed experiments to file...
+INFO:root:Wrote 100 completed experiments to file
+INFO:root:Ready experiments: 20, running experiments: 0, completed experiments: 100
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:20 experiments ready to run
+INFO:root:Ready experiments: 19, running experiments: 1, completed experiments: 100
+INFO:root:Sending experiment: spec_int gcc 1 spec_int hmmer 1 data/2_spec_int_gcc_1.spec_int_hmmer_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int gcc 1 spec_int hmmer 1 data/2_spec_int_gcc_1.spec_int_hmmer_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 101 completed experiments to file...
+INFO:root:Wrote 101 completed experiments to file
+INFO:root:Ready experiments: 19, running experiments: 0, completed experiments: 101
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:19 experiments ready to run
+INFO:root:Ready experiments: 18, running experiments: 1, completed experiments: 101
+INFO:root:Sending experiment: spec_int gcc 1 parsec streamcluster 1 data/2_spec_int_gcc_1.parsec_streamcluster_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int gcc 1 parsec streamcluster 1 data/2_spec_int_gcc_1.parsec_streamcluster_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 102 completed experiments to file...
+INFO:root:Wrote 102 completed experiments to file
+INFO:root:Ready experiments: 18, running experiments: 0, completed experiments: 102
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:18 experiments ready to run
+INFO:root:Ready experiments: 17, running experiments: 1, completed experiments: 102
+INFO:root:Sending experiment: spec_int gcc 1 parsec facesim 1 data/2_spec_int_gcc_1.parsec_facesim_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int gcc 1 parsec facesim 1 data/2_spec_int_gcc_1.parsec_facesim_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 103 completed experiments to file...
+INFO:root:Wrote 103 completed experiments to file
+INFO:root:Ready experiments: 17, running experiments: 0, completed experiments: 103
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:17 experiments ready to run
+INFO:root:Ready experiments: 16, running experiments: 1, completed experiments: 103
+INFO:root:Sending experiment: spec_int gcc 1 parsec fluidanimate 1 data/2_spec_int_gcc_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int gcc 1 parsec fluidanimate 1 data/2_spec_int_gcc_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 104 completed experiments to file...
+INFO:root:Wrote 104 completed experiments to file
+INFO:root:Ready experiments: 16, running experiments: 0, completed experiments: 104
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:16 experiments ready to run
+INFO:root:Ready experiments: 15, running experiments: 1, completed experiments: 104
+INFO:root:Sending experiment: spec_int gcc 1 parsec canneal 1 data/2_spec_int_gcc_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int gcc 1 parsec canneal 1 data/2_spec_int_gcc_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 105 completed experiments to file...
+INFO:root:Wrote 105 completed experiments to file
+INFO:root:Ready experiments: 15, running experiments: 0, completed experiments: 105
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:15 experiments ready to run
+INFO:root:Ready experiments: 14, running experiments: 1, completed experiments: 105
+INFO:root:Sending experiment: spec_int astar 1 spec_int hmmer 1 data/2_spec_int_astar_1.spec_int_hmmer_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int astar 1 spec_int hmmer 1 data/2_spec_int_astar_1.spec_int_hmmer_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 106 completed experiments to file...
+INFO:root:Wrote 106 completed experiments to file
+INFO:root:Ready experiments: 14, running experiments: 0, completed experiments: 106
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:14 experiments ready to run
+INFO:root:Ready experiments: 13, running experiments: 1, completed experiments: 106
+INFO:root:Sending experiment: spec_int astar 1 parsec streamcluster 1 data/2_spec_int_astar_1.parsec_streamcluster_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int astar 1 parsec streamcluster 1 data/2_spec_int_astar_1.parsec_streamcluster_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 107 completed experiments to file...
+INFO:root:Wrote 107 completed experiments to file
+INFO:root:Ready experiments: 13, running experiments: 0, completed experiments: 107
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:13 experiments ready to run
+INFO:root:Ready experiments: 12, running experiments: 1, completed experiments: 107
+INFO:root:Sending experiment: spec_int astar 1 parsec facesim 1 data/2_spec_int_astar_1.parsec_facesim_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int astar 1 parsec facesim 1 data/2_spec_int_astar_1.parsec_facesim_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 108 completed experiments to file...
+INFO:root:Wrote 108 completed experiments to file
+INFO:root:Ready experiments: 12, running experiments: 0, completed experiments: 108
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:12 experiments ready to run
+INFO:root:Ready experiments: 11, running experiments: 1, completed experiments: 108
+INFO:root:Sending experiment: spec_int astar 1 parsec fluidanimate 1 data/2_spec_int_astar_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int astar 1 parsec fluidanimate 1 data/2_spec_int_astar_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 109 completed experiments to file...
+INFO:root:Wrote 109 completed experiments to file
+INFO:root:Ready experiments: 11, running experiments: 0, completed experiments: 109
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:11 experiments ready to run
+INFO:root:Ready experiments: 10, running experiments: 1, completed experiments: 109
+INFO:root:Sending experiment: spec_int astar 1 parsec canneal 1 data/2_spec_int_astar_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int astar 1 parsec canneal 1 data/2_spec_int_astar_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 110 completed experiments to file...
+INFO:root:Wrote 110 completed experiments to file
+INFO:root:Ready experiments: 10, running experiments: 0, completed experiments: 110
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:10 experiments ready to run
+INFO:root:Ready experiments: 9, running experiments: 1, completed experiments: 110
+INFO:root:Sending experiment: spec_int hmmer 1 parsec streamcluster 1 data/2_spec_int_hmmer_1.parsec_streamcluster_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int hmmer 1 parsec streamcluster 1 data/2_spec_int_hmmer_1.parsec_streamcluster_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 111 completed experiments to file...
+INFO:root:Wrote 111 completed experiments to file
+INFO:root:Ready experiments: 9, running experiments: 0, completed experiments: 111
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:9 experiments ready to run
+INFO:root:Ready experiments: 8, running experiments: 1, completed experiments: 111
+INFO:root:Sending experiment: spec_int hmmer 1 parsec facesim 1 data/2_spec_int_hmmer_1.parsec_facesim_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int hmmer 1 parsec facesim 1 data/2_spec_int_hmmer_1.parsec_facesim_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 112 completed experiments to file...
+INFO:root:Wrote 112 completed experiments to file
+INFO:root:Ready experiments: 8, running experiments: 0, completed experiments: 112
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:8 experiments ready to run
+INFO:root:Ready experiments: 7, running experiments: 1, completed experiments: 112
+INFO:root:Sending experiment: spec_int hmmer 1 parsec fluidanimate 1 data/2_spec_int_hmmer_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int hmmer 1 parsec fluidanimate 1 data/2_spec_int_hmmer_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 113 completed experiments to file...
+INFO:root:Wrote 113 completed experiments to file
+INFO:root:Ready experiments: 7, running experiments: 0, completed experiments: 113
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:7 experiments ready to run
+INFO:root:Ready experiments: 6, running experiments: 1, completed experiments: 113
+INFO:root:Sending experiment: spec_int hmmer 1 parsec canneal 1 data/2_spec_int_hmmer_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: spec_int hmmer 1 parsec canneal 1 data/2_spec_int_hmmer_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 114 completed experiments to file...
+INFO:root:Wrote 114 completed experiments to file
+INFO:root:Ready experiments: 6, running experiments: 0, completed experiments: 114
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:6 experiments ready to run
+INFO:root:Ready experiments: 5, running experiments: 1, completed experiments: 114
+INFO:root:Sending experiment: parsec streamcluster 1 parsec facesim 1 data/2_parsec_streamcluster_1.parsec_facesim_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: parsec streamcluster 1 parsec facesim 1 data/2_parsec_streamcluster_1.parsec_facesim_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 115 completed experiments to file...
+INFO:root:Wrote 115 completed experiments to file
+INFO:root:Ready experiments: 5, running experiments: 0, completed experiments: 115
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:5 experiments ready to run
+INFO:root:Ready experiments: 4, running experiments: 1, completed experiments: 115
+INFO:root:Sending experiment: parsec streamcluster 1 parsec fluidanimate 1 data/2_parsec_streamcluster_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: parsec streamcluster 1 parsec fluidanimate 1 data/2_parsec_streamcluster_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 116 completed experiments to file...
+INFO:root:Wrote 116 completed experiments to file
+INFO:root:Ready experiments: 4, running experiments: 0, completed experiments: 116
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:4 experiments ready to run
+INFO:root:Ready experiments: 3, running experiments: 1, completed experiments: 116
+INFO:root:Sending experiment: parsec streamcluster 1 parsec canneal 1 data/2_parsec_streamcluster_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: parsec streamcluster 1 parsec canneal 1 data/2_parsec_streamcluster_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 117 completed experiments to file...
+INFO:root:Wrote 117 completed experiments to file
+INFO:root:Ready experiments: 3, running experiments: 0, completed experiments: 117
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:3 experiments ready to run
+INFO:root:Ready experiments: 2, running experiments: 1, completed experiments: 117
+INFO:root:Sending experiment: parsec facesim 1 parsec fluidanimate 1 data/2_parsec_facesim_1.parsec_fluidanimate_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: parsec facesim 1 parsec fluidanimate 1 data/2_parsec_facesim_1.parsec_fluidanimate_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 118 completed experiments to file...
+INFO:root:Wrote 118 completed experiments to file
+INFO:root:Ready experiments: 2, running experiments: 0, completed experiments: 118
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:2 experiments ready to run
+INFO:root:Ready experiments: 1, running experiments: 1, completed experiments: 118
+INFO:root:Sending experiment: parsec facesim 1 parsec canneal 1 data/2_parsec_facesim_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: parsec facesim 1 parsec canneal 1 data/2_parsec_facesim_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 119 completed experiments to file...
+INFO:root:Wrote 119 completed experiments to file
+INFO:root:Ready experiments: 1, running experiments: 0, completed experiments: 119
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:1 experiments ready to run
+INFO:root:Ready experiments: 0, running experiments: 1, completed experiments: 119
+INFO:root:Sending experiment: parsec fluidanimate 1 parsec canneal 1 data/2_parsec_fluidanimate_1.parsec_canneal_1.0.reporter.perf_counters 0
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 200 -
+INFO:root:Experiment: parsec fluidanimate 1 parsec canneal 1 data/2_parsec_fluidanimate_1.parsec_canneal_1.0.reporter.perf_counters 0 completed
+INFO:root:Writing 120 completed experiments to file...
+INFO:root:Wrote 120 completed experiments to file
+INFO:root:Ready experiments: 0, running experiments: 0, completed experiments: 120
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:0 experiments ready to run
+INFO:root:Checking for expired experiments at time 1447121591
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+ERROR:root:Failed to retrieve experiment: No experiments left
+Traceback (most recent call last):
+  File "master.py", line 151, in get_new_experiment
+    experiment = get_next_experiment()
+  File "master.py", line 125, in get_next_experiment
+    raise Exception('No experiments left')
+Exception: No experiments left
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "GET /get_experiment HTTP/1.1" 500 -
+INFO:root:Ready experiments: 0, running experiments: 0, completed experiments: 120
+INFO:werkzeug:192.168.115.89 - - [09/Nov/2015 18:13:11] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:0 experiments ready to run
+INFO:root:Checking for expired experiments at time 1447121796
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+ERROR:root:Failed to retrieve experiment: No experiments left
+Traceback (most recent call last):
+  File "master.py", line 151, in get_new_experiment
+    experiment = get_next_experiment()
+  File "master.py", line 125, in get_next_experiment
+    raise Exception('No experiments left')
+Exception: No experiments left
+INFO:werkzeug:192.168.115.90 - - [09/Nov/2015 18:16:36] "GET /get_experiment HTTP/1.1" 500 -
+INFO:root:Ready experiments: 0, running experiments: 0, completed experiments: 120
+INFO:werkzeug:192.168.115.90 - - [09/Nov/2015 18:16:36] "POST /return_experiment HTTP/1.1" 200 -
+INFO:root:0 experiments ready to run
+INFO:root:Checking for expired experiments at time 1447121832
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+INFO:root:Expiring 0 experiments
+ERROR:root:Failed to retrieve experiment: No experiments left
+Traceback (most recent call last):
+  File "master.py", line 151, in get_new_experiment
+    experiment = get_next_experiment()
+  File "master.py", line 125, in get_next_experiment
+    raise Exception('No experiments left')
+Exception: No experiments left
+INFO:werkzeug:192.168.115.90 - - [09/Nov/2015 18:17:12] "GET /get_experiment HTTP/1.1" 500 -
+INFO:root:Ready experiments: 0, running experiments: 0, completed experiments: 120
+INFO:werkzeug:192.168.115.90 - - [09/Nov/2015 18:17:12] "POST /return_experiment HTTP/1.1" 200 -

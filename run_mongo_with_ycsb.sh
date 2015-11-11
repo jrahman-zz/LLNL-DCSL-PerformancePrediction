@@ -12,3 +12,4 @@ sleep 60   # sleep for 60 sec, give time mongo db to init
 
 cd $YCSB_DIR
 ./bin/ycsb load mongodb -s -P workloads/workloada > outputLoad.txt
+./bin/ycsb run mongodb -s -P workloads/workloada | tee outputRun.txt

@@ -46,24 +46,28 @@ def run_thread(func):
                 retcode = proc.wait()
                 logging.info('%(bmark)s finished' % locals())
                 with lock:
+                    # The main experiment function will set this to None
+                    # if the driver has finished, so if that is the case
+                    # we should break immediately
+                    if procs[slot] is None:
+                        break
                     procs[slot] = None
                 # retcode == 0 indicates normal termination of the batch process
                 # while retcode==9 indicates that it was killed intentionally
                 if retcode != 0 and retcode != -9:
                     raise Exception('Non-zero return code: %(retcode)d' % locals())
-                if update_count(slot) == False:
+                #if update_count(slot) == False:
                     # Finished running, kill all other running procs since
                     # update_count() has indicated that each process has
                     # fully run at least one time
-                    with lock:
-                        logging.info('Killing extra procs')
-                        for key in procs:
-                            if procs[key] is not None:
-                                try:
-                                    procs[key].kill()
-                                except Exception as e:
-                                    logging.exception("Failed to kill proc")
-                    break
+                #    with lock:
+                #        logging.info('Killing extra procs')
+                #        for key in procs:
+                #            if procs[key] is not None:
+                #                try:
+                #                    procs[key].kill()
+                #                except Exception as e:
+                #                    logging.exception("Failed to kill proc")
         thread = threading.Thread(target=run)
         logging.info('Starting thread for %(bmark)s' % locals())
         thread.start()
@@ -86,9 +90,9 @@ def run_parsec(bmark, cores):
     return subprocess.Popen(cmd)
 
 def getQoSWithDriverCommand(qosAppName, driverAppName, driverWorkload, driverResultsPath):
-	driverRunCommand = ""
-        driverRunCommand += "ycsb run mongodb -s -P " + driverWorkload + " | tee " + driverResultsPath
-	return driverRunCommand
+    driverRunCommand = ""
+    driverRunCommand += "ycsb run mongodb -s -P " + driverWorkload + " | tee " + driverResultsPath
+    return driverRunCommand
 
 def run_driver(output_path, pid_file, qosAppName, driverAppName, driver_cores, driverWorkload, driverResultsPath):
     logging.info('Starting QoS appr...')
@@ -103,7 +107,7 @@ def run_driver(output_path, pid_file, qosAppName, driverAppName, driver_cores, d
     cmd += '1> %(pid_file)s' % locals() #subrata : call the script that would run the interactive application. Before running "run_reporter" prepare mongoDB by loading it and shutdown . and call script shoud start it
     #return subprocess.Popen(cmd, shell=True)
 
-    print cmd
+    logging.info(cmd)
     # Subrata: during QoS run, we will wait till the end of the run. We have already created the benchmarks threads. After this driver run finishes we will kill all
     subprocess.check_call(cmd, shell=True)
 
@@ -133,40 +137,39 @@ def run_and_initialize_qos(qosAppName, qosAppDataPath, driverName, qos_cores, dr
 	"""
 	Start a QoS application and initialize it for the experiment but loading with data etc..
 	At this point, we do not want to make things unncecessarily complex by handling multiple QoS at a time
-	For each QoS, we will rather start a new experiment.
-	"""
-        #if(qosAppName == mongoDB):
-	qoscmd = base_command(qos_cores)
-	qoscmd += ['mongod' , '--dbpath', qosAppDataPath]
+	For each QoS, we will rather start a new experiment."""
+    qoscmd = base_command(qos_cores)
+    qoscmd += ['mongod' , '--dbpath', qosAppDataPath]
 
-	logging.info('Starting %(qosAppName)s' % locals())
-	
-	qos_pid = subprocess.Popen(qoscmd)
+    logging.info('Starting %(qosAppName)s' % locals())
+    qos_pid = subprocess.Popen(qoscmd)
 
-        #give time to QoS to initialize. hence sleep for 60sec
-        time.sleep(300)
+    #give time to QoS to initialize. hence sleep for 60sec
+    time.sleep(300)
 
 	#driverInitcmd = ['ycsb', 'load', 'mongodb', '-s', '-P',  'workloads/workloada', '>',  'outputLoad.txt']
-	driverInitcmd = ['ycsb', 'load', 'mongodb', '-s', '-P',  driverWorkload]
+    driverInitcmd = ['ycsb', 'load', 'mongodb', '-s', '-P',  driverWorkload]
 
-        try:
-           # Ideally this call should not return untill driver loads all the data. check if that is the case
-	   # for some reason this call is returning non-zero exit status 1 which throws exception. That is why this try-catch so that we can continue
+    try:
+        # Ideally this call should not return untill driver loads all the data. check if that is the cas# for some reason this call is returning non-zero exit status 1 which throws exception. That is why this try-catch so that we can continue
+    # for some reason this call is returning non-zero exit status 1 which throws exception. That is why this try-catch so that we can continue
            subprocess.check_call(driverInitcmd)
-        except subprocess.CalledProcessError:
-	   pass # do not do for CalledProcessError exception. 
-
-       
-        return qos_pid
+    except subprocess.CalledProcessError:
+        # Jason: Strongly recommend working around the exception via a retry or
+        # fixing the underlying problem with ycsb load, instead of silently
+        # ignoring the exception. Bad practice to ignore exceptions in general
+        pass # do not do for CalledProcessError exception. 
+    
+    return qos_pid
 
 def createQoSAppDataStorePath(output_path):
-	qosDataStorePath = "/tmp/" + os.path.basename(output_path) + ".data"
-        subprocess.check_call(['rm', '-rf', qosDataStorePath])
-        subprocess.check_call(['mkdir', '-p', qosDataStorePath])
+    qosDataStorePath = "/tmp/" + os.path.basename(output_path) + ".data"
+    subprocess.check_call(['rm', '-rf', qosDataStorePath])
+    subprocess.check_call(['mkdir', '-p', qosDataStorePath])
 	return qosDataStorePath
 
 def removeOldDir(dirToRemove):
-        subprocess.check_call(['rm', '-rf', dirToRemove])
+    subprocess.check_call(['rm', '-rf', dirToRemove])
 
 # Application format is '(suite bmark cores)+ output_path rep'
 def run_experiment(params, output_path, rep):
@@ -252,9 +255,16 @@ def run_experiment(params, output_path, rep):
 
     # TODO: Subrata : this is not the cleanest way to handle this. What would an abrupt exit do ?  It has created some other process...I am not sure how to handle the following
     # Kill the benchmark threads as the main thread running the driver has finished
-    for thread in threads:
-        thread.exit()
+    with lock:
+        for key in procs:
+            if procs[key] is not None:
+                procs[key].kill()
+                procs[key] = None    
 
+    # Wait for threads to return
+    for thread in threads:
+        thread.join()
+    
     # now also kill the qos application
     #subprocess.check_call('/bin/kill `/bin/cat %(pid_file)s`' % locals(), shell=True)
     

@@ -11,6 +11,8 @@ import time
 import json
 import requests
 
+YCSB_DIR="/p/lscratche/mitra3/apps/YCSB/"
+
 def ensure_data_dir():
     # Ensure that the data directory is created
     subprocess.check_call(['mkdir', '-p', 'data'])
@@ -91,10 +93,12 @@ def run_parsec(bmark, cores):
 
 def getQoSWithDriverCommand(qosAppName, driverAppName, driverWorkload, driverResultsPath):
     driverRunCommand = ""
-    driverRunCommand += "ycsb run mongodb -s -P " + driverWorkload + " | tee " + driverResultsPath
+    #driverRunCommand += YCSB_DIR + "ycsb run mongodb -s -P " + driverWorkload + " | tee " + driverResultsPath
+    currentDir = "/g/g90/mitra3/scheduling_work/LLNL-DCSL-PerformancePrediction/multi_app_with_qos/"
+    driverRunCommand += currentDir + "mongoDB_by_ycsb.sh run " + driverWorkload + " | tee " + driverResultsPath
     return driverRunCommand
 
-def run_driver(output_path, pid_file, qosAppName, driverAppName, driver_cores, driverWorkload, driverResultsPath):
+def run_driver(output_path, pid_file, qosAppName, qos_pid, driverAppName, driver_cores, driverWorkload, driverResultsPath):
     logging.info('Starting QoS appr...')
     
     #cores = ",".join(map(lambda s: str(s), cores))
@@ -103,13 +107,16 @@ def run_driver(output_path, pid_file, qosAppName, driverAppName, driver_cores, d
     cmd = '../bin/time 2> "%(output_path)s" ' % locals()
     cmd += '| 3>>"%(output_path)s" taskset -c %(driver_cores)s ' % locals()  # subrata cores => comma seperated list of cores
     cmd += '/usr/bin/perf stat -I 1000 -D 15000 -e cycles,instructions --append --log-fd=3 -x " " '
-    cmd += getQoSWithDriverCommand(qosAppName, driverAppName, driverWorkload, driverResultsPath)
-    cmd += '1> %(pid_file)s' % locals() #subrata : call the script that would run the interactive application. Before running "run_reporter" prepare mongoDB by loading it and shutdown . and call script shoud start it
-    #return subprocess.Popen(cmd, shell=True)
+    cmd += '-p %(qos_pid)s ' % locals()  # subrata start collecting data on the existing pid of the qos app.
+    cmd += '1> %(pid_file)s' % locals() #subrata : we will first start collecting data and then start the driver in the next few lines. Will the locking mechanism create problem ?
+    logging.info(cmd)  
+    subprocess.Popen(cmd, shell=True) # subrata: note in this command we are already starting to monitor QoS app with 15 sec delay..but the driverhas not started yet
 
-    logging.info(cmd)
+    # subrata: now start the driver (e.g. ycsb, which would drive qosApp, i.e. mongoDB .. 
+    driver_run_cmd = getQoSWithDriverCommand(qosAppName, driverAppName, driverWorkload, driverResultsPath) # subrata: this command will drive the QoS app
+    logging.info(driver_run_cmd)
     # Subrata: during QoS run, we will wait till the end of the run. We have already created the benchmarks threads. After this driver run finishes we will kill all
-    subprocess.check_call(cmd, shell=True)
+    subprocess.check_call(driver_run_cmd, shell=True)
 
 # List containing completion counts for the ith process
 run_counts = []
@@ -134,26 +141,35 @@ def add_slot():
     return len(run_counts) - 1
 
 def run_and_initialize_qos(qosAppName, qosAppDataPath, driverName, qos_cores, driverWorkload):
-	"""
-	Start a QoS application and initialize it for the experiment but loading with data etc..
-	At this point, we do not want to make things unncecessarily complex by handling multiple QoS at a time
-	For each QoS, we will rather start a new experiment."""
+    """
+    Start a QoS application and initialize it for the experiment but loading with data etc..
+    At this point, we do not want to make things unncecessarily complex by handling multiple QoS at a time
+    For each QoS, we will rather start a new experiment."""
     qoscmd = base_command(qos_cores)
     qoscmd += ['mongod' , '--dbpath', qosAppDataPath]
 
     logging.info('Starting %(qosAppName)s' % locals())
-    qos_pid = subprocess.Popen(qoscmd)
-
+    popenObj = subprocess.Popen(qoscmd)
+    qos_pid = popenObj.pid
+   
+    logging.info("PID of QoS app is : " + str(qos_pid))
+    
     #give time to QoS to initialize. hence sleep for 60sec
     time.sleep(300)
 
-	#driverInitcmd = ['ycsb', 'load', 'mongodb', '-s', '-P',  'workloads/workloada', '>',  'outputLoad.txt']
-    driverInitcmd = ['ycsb', 'load', 'mongodb', '-s', '-P',  driverWorkload]
+    #driverInitcmd = ['ycsb', 'load', 'mongodb', '-s', '-P',  'workloads/workloada', '>',  'outputLoad.txt']
+    #driverInitcmd = ['ycsb', 'load', 'mongodb', '-s', '-P',  driverWorkload]
+    #driverInitcmd = YCSB_DIR + "ycsb load mongodb -s -P " + driverWorkload
+    currentDir = "/g/g90/mitra3/scheduling_work/LLNL-DCSL-PerformancePrediction/multi_app_with_qos/"
+    driverInitcmd = currentDir + "mongoDB_by_ycsb.sh load " + driverWorkload
+
+    print driverInitcmd
+
 
     try:
         # Ideally this call should not return untill driver loads all the data. check if that is the cas# for some reason this call is returning non-zero exit status 1 which throws exception. That is why this try-catch so that we can continue
     # for some reason this call is returning non-zero exit status 1 which throws exception. That is why this try-catch so that we can continue
-           subprocess.check_call(driverInitcmd)
+        subprocess.check_call(driverInitcmd, shell=True)
     except subprocess.CalledProcessError:
         # Jason: Strongly recommend working around the exception via a retry or
         # fixing the underlying problem with ycsb load, instead of silently
@@ -166,7 +182,7 @@ def createQoSAppDataStorePath(output_path):
     qosDataStorePath = "/tmp/" + os.path.basename(output_path) + ".data"
     subprocess.check_call(['rm', '-rf', qosDataStorePath])
     subprocess.check_call(['mkdir', '-p', qosDataStorePath])
-	return qosDataStorePath
+    return qosDataStorePath
 
 def removeOldDir(dirToRemove):
     subprocess.check_call(['rm', '-rf', dirToRemove])
@@ -246,7 +262,7 @@ def run_experiment(params, output_path, rep):
 
     reporter = None
     try:
-        reporter = run_driver(output_path, pid_file, qosApp, driverApp, driver_core, driverWorkload, driverResultsPath) 
+        reporter = run_driver(output_path, pid_file, qosApp, qos_pid, driverApp, driver_core, driverWorkload, driverResultsPath) 
     except Exception as e:
         logging.exception("Error: Failed to start reporter")
         for thread in threads:

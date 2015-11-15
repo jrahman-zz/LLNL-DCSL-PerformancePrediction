@@ -11,8 +11,6 @@ import time
 import json
 import requests
 
-YCSB_DIR="/p/lscratche/mitra3/apps/YCSB/"
-
 def ensure_data_dir():
     # Ensure that the data directory is created
     subprocess.check_call(['mkdir', '-p', 'data'])
@@ -58,18 +56,6 @@ def run_thread(func):
                 # while retcode==9 indicates that it was killed intentionally
                 if retcode != 0 and retcode != -9:
                     raise Exception('Non-zero return code: %(retcode)d' % locals())
-                #if update_count(slot) == False:
-                    # Finished running, kill all other running procs since
-                    # update_count() has indicated that each process has
-                    # fully run at least one time
-                #    with lock:
-                #        logging.info('Killing extra procs')
-                #        for key in procs:
-                #            if procs[key] is not None:
-                #                try:
-                #                    procs[key].kill()
-                #                except Exception as e:
-                #                    logging.exception("Failed to kill proc")
         thread = threading.Thread(target=run)
         logging.info('Starting thread for %(bmark)s' % locals())
         thread.start()
@@ -91,47 +77,41 @@ def run_parsec(bmark, cores):
     logging.info('Starting %(bmark)s' % locals())
     return subprocess.Popen(cmd)
 
-def getQoSWithDriverCommand(qosAppName, driverAppName, driverWorkload, driverResultsPath):
-    driverRunCommand = ""
-    #driverRunCommand += YCSB_DIR + "ycsb run mongodb -s -P " + driverWorkload + " | tee " + driverResultsPath
-    currentDir = "/g/g90/mitra3/scheduling_work/LLNL-DCSL-PerformancePrediction/multi_app_with_qos/"
-    driverRunCommand += currentDir + "mongoDB_by_ycsb.sh run " + driverWorkload + " | tee " + driverResultsPath
-    return driverRunCommand
-
-def run_driver(output_path, pid_file, qosAppName, qos_pid, driverAppName, driver_cores, driverWorkload, driverResultsPath):
-    logging.info('Starting QoS appr...')
-    
-    #cores = ",".join(map(lambda s: str(s), cores))
-    driver_cores = ",".join(map(lambda s: str(s), driver_cores))
-
-    cmd = '../bin/time 2> "%(output_path)s" ' % locals()
-    cmd += '| 3>>"%(output_path)s" taskset -c %(driver_cores)s ' % locals()  # subrata cores => comma seperated list of cores
-    cmd += '/usr/bin/perf stat -I 1000 -D 15000 -e cycles,instructions --append --log-fd=3 -x " " '
+def run_driver(output_base, qos_app, qos_pid, driver_cores, driver_params):
+    """
+    Run performance driver to determine the performance of the QoS application
+    """
+    logging.info('Starting QoS driver...')
+   
+    perf_output_path = '%(output_base)s.perf'
+    driver_output_path = '%(output_base)s.driver'
+ 
+    cmd = '../bin/time 2> "%(perf_output_path)s" ' % locals()
+    cmd += '| 3>>"%(perf_output_path)s" taskset -c %(driver_cores)s ' % locals()  # subrata cores => comma seperated list of cores
+    cmd += '/usr/bin/perf stat -I 1000 -D 4000 -e cycles,instructions --append --log-fd=3 -x " " '
     cmd += '-p %(qos_pid)s ' % locals()  # subrata start collecting data on the existing pid of the qos app.
-    cmd += '1> %(pid_file)s' % locals() #subrata : we will first start collecting data and then start the driver in the next few lines. Will the locking mechanism create problem ?
-    logging.info(cmd)  
-    subprocess.Popen(cmd, shell=True) # subrata: note in this command we are already starting to monitor QoS app with 15 sec delay..but the driverhas not started yet
+    logging.info('Perf: ' + str(cmd))
 
-    # subrata: now start the driver (e.g. ycsb, which would drive qosApp, i.e. mongoDB .. 
-    driver_run_cmd = getQoSWithDriverCommand(qosAppName, driverAppName, driverWorkload, driverResultsPath) # subrata: this command will drive the QoS app
-    logging.info(driver_run_cmd)
-    # Subrata: during QoS run, we will wait till the end of the run. We have already created the benchmarks threads. After this driver run finishes we will kill all
-    subprocess.check_call(driver_run_cmd, shell=True)
+    # Context manager will control the lifetime of the process
+    with subprocess.Popen(cmd, shell=True) as perf_proc:
+        # jason: note in this command we are already starting to
+        # monitor QoS app performance counter with 4 sec delay
+        # but the driverhas not started yet
+
+        # subrata: now start the driver (e.g. ycsb, which would drive qosApp, i.e. mongoDB .. 
+        driver_cmd = base_command(driver_cores)
+        driver_cmd += ['sh', 'apps/%(qos_app)s/run_driver.sh', driver_params, driver_output_path]
+        logging.info('Driver: ' + str(driver_run_cmd))
+        # Subrata: during QoS run, we will wait till the end of the run. We have already created the benchmarks threads. After this driver run finishes we will kill all
+        subprocess.check_call(driver_run_cmd)
+
+    # Jason: We will not return here until after the driver and performance counter
+    #           monitoring processes have run to completion
+    return
+
 
 # List containing completion counts for the ith process
 run_counts = []
-
-def update_count(slot):
-    """
-    Update the counts for a given process and determine if all processes
-    finished at least once, in which case we actually return false
-    """
-    global run_counts
-    global lock
-    with lock:
-        run_counts[slot] += 1
-        return functools.reduce(lambda x, y: x*y, run_counts, 1) == 0
-
 def add_slot():
     """
     Add a new slot for another batch application
@@ -140,77 +120,84 @@ def add_slot():
     run_counts.append(0)
     return len(run_counts) - 1
 
-def run_and_initialize_qos(qosAppName, qosAppDataPath, driverName, qos_cores, driverWorkload):
+def start_and_load_qos(qos_app, qos_data_dir, qos_cores, driver_params):
     """
     Start a QoS application and initialize it for the experiment but loading with data etc..
     At this point, we do not want to make things unncecessarily complex by handling multiple QoS at a time
-    For each QoS, we will rather start a new experiment."""
+    For each QoS application, we will rather start a new experiment.
+    """
+
+    # NOTE: The start.sh script will write the PID into '%(qos_data_dir)s/app.pid'
     qoscmd = base_command(qos_cores)
-    qoscmd += ['mongod' , '--dbpath', qosAppDataPath]
+    qoscmd += ['sh', 'apps/%(qos_app)s/start.sh' % locals(), qos_data_dir]
 
-    logging.info('Starting %(qosAppName)s' % locals())
-    popenObj = subprocess.Popen(qoscmd)
-    qos_pid = popenObj.pid
+    logging.info('Starting %(qos_app)s' % locals())
+    logging.info('qoscmd: %(qoscmd)s' % locals())
+    qos_proc = subprocess.Popen(qoscmd)
    
-    logging.info("PID of QoS app is : " + str(qos_pid))
-    
-    #give time to QoS to initialize. hence sleep for 60sec
-    time.sleep(300)
-
-    #driverInitcmd = ['ycsb', 'load', 'mongodb', '-s', '-P',  'workloads/workloada', '>',  'outputLoad.txt']
-    #driverInitcmd = ['ycsb', 'load', 'mongodb', '-s', '-P',  driverWorkload]
-    #driverInitcmd = YCSB_DIR + "ycsb load mongodb -s -P " + driverWorkload
-    currentDir = "/g/g90/mitra3/scheduling_work/LLNL-DCSL-PerformancePrediction/multi_app_with_qos/"
-    driverInitcmd = currentDir + "mongoDB_by_ycsb.sh load " + driverWorkload
-
-    print driverInitcmd
-
-
+    qos_pid = None
     try:
-        # Ideally this call should not return untill driver loads all the data. check if that is the cas# for some reason this call is returning non-zero exit status 1 which throws exception. That is why this try-catch so that we can continue
-    # for some reason this call is returning non-zero exit status 1 which throws exception. That is why this try-catch so that we can continue
-        subprocess.check_call(driverInitcmd, shell=True)
-    except subprocess.CalledProcessError:
-        # Jason: Strongly recommend working around the exception via a retry or
-        # fixing the underlying problem with ycsb load, instead of silently
-        # ignoring the exception. Bad practice to ignore exceptions in general
-        pass # do not do for CalledProcessError exception. 
-    
+        #give time to QoS to initialize. hence sleep for 60sec
+        logging.info("Waiting for QoS application to start")
+        time.sleep(15)
+        qos_pid = int(subprocess.check_output(['cat', '%(qos_data_dir)s/app.pid' % locals()]).decode('utf-8').strip()) 
+
+        # Check if qos_proc as terminated, it should not have
+        if qos_proc.poll() is not None:
+            logging.error('QoS application terminated prematurely')
+            raise Exception('QoS application terminated prematurely')
+
+        #driverInitcmd = ['ycsb', 'load', 'mongodb', '-s', '-P',  'workloads/workloada', '>',  'outputLoad.txt']
+        #driverInitcmd = ['ycsb', 'load', 'mongodb', '-s', '-P',  workload]
+        #driverInitcmd = YCSB_DIR + "ycsb load mongodb -s -P " + workload
+        loadcmd = ['sh', 'apps/%(qos_app)s/load.sh' % locals(), driver_params]
+        logging.info('loadcmd: %(loadcmd)s' % locals())
+
+        # Run the load script and block until finished...
+        subprocess.check_call(loadcmd)
+    except Exception as e:
+        # In the event of a load failure, terminate the QoS app
+        if qos_pid is not None:
+            subprocess.check_call(['kill', '%(qos_pid)d' % locals()])
+        raise # Retrow th exception so it can bubble upward
+
+    # Sleep for 10 seconds to allow the QoS application to settle after loading
+    logging.info("Sleeping for QoS to settle after loading")
+    time.sleep(10)
+
+    # Read the PID file that the 
     return qos_pid
 
-def createQoSAppDataStorePath(output_path):
-    qosDataStorePath = "/tmp/" + os.path.basename(output_path) + ".data"
-    subprocess.check_call(['rm', '-rf', qosDataStorePath])
-    subprocess.check_call(['mkdir', '-p', qosDataStorePath])
-    return qosDataStorePath
+def create_qos_app_directory():
+    return subprocess.check_output(['/bin/mktemp', '--directory']).decode('utf-8').strip()
 
-def removeOldDir(dirToRemove):
-    subprocess.check_call(['rm', '-rf', dirToRemove])
+def remove_dir(directory):
+    subprocess.check_call(['rm', '-rf', directory])
 
-# Application format is '(suite bmark cores)+ output_path rep'
-def run_experiment(params, output_path, rep):
+# Application format is '(suite bmark cores)+ output_base rep'
+def run_experiment(params, output_base, rep):
     """
     old format (suite bmark #cores)+
-    new format: (suite bmark #cores)+ (qosApp driverApp)
+    new format: (suite bmark #cores)+ qos_app driver_params output_base rep
     """
     #print params
     #return
 
     applications = []                            # subrata need to save the benchmark results in a file. and pass the name of that file here
-    for i in range(int((len(params) - 5) / 3)):  # subrata : parsing of the already created experiment list generated by "create_experiment.py"
+    for i in range(int((len(params) - 4) / 3)):  # subrata : parsing of the already created experiment list generated by "create_experiment.py"
         suite = params[3 * i]
         bmark = params[1 + 3 * i]
         cores = int(params[2 + 3 * i])
         applications.append([suite, bmark, cores])
     logging.info('Starting experiment with %d applications' % (len(applications)))
     
-    qosApp = params[-5]
-    driverApp = params[-4]
-    driverWorkload = params[-3]
+    driver_params = params[-3]
+    qos_app = params[-4]
+    #driverWorkload = params[-3]
 
     # Cab contains 8 cores per SMP
     #reporter_core = 0    #subrata : reporter will be replaced by mongodB (interactive) => use two cores. YCSB will be in the other socket 2 cores anything between (8-15)
-    qosApp_core = [0,1]    #subrata : specify the cores that qos app would use
+    qos_cores = [0,1]    #subrata : specify the cores that qos app would use
     starting_core = 2
     ending_core = 7
     current_core = 2
@@ -226,70 +213,77 @@ def run_experiment(params, output_path, rep):
             # TODO, error
             pass
 
-    print applications
+    logging.info('Applications: ' + str(applications))
     # Pin ourself to the other socket
     #self_pin(ending_core+1)   # subrata : self pining of "this" python driver. similarly pin the benchmark driver YCSB/ apache bench etc. Pin tghem on the other socket to reduce intf
     self_pin(max_core)   # subrata : self pining of "this" python driver. similarly pin the benchmark driver YCSB/ apache bench etc. Pin tghem on the other socket to reduce intf
    
     #subrata: based on the already generated unique output path, create a temporary data store path for qos app (in /tmp/)
-    dataStoreFileForQoS = createQoSAppDataStorePath(output_path)
+    #dataStoreFileForQoS = createQoSAppDataStorePath(output_path)
 
-    driverResultsPath = output_path + "_driver_output.txt"
-    #now run and initialize the qos app...at the end of the experiment we will kill this qos app, so at this moment do not worry about the state 
-    qos_pid = run_and_initialize_qos(qosApp, dataStoreFileForQoS, driverApp, qosApp_core, driverWorkload)
+    #now run and initialize the qos app...at the end of the experiment we will kill this qos app, so at this moment do not worry about the state
+    qos_data_dir = create_qos_app_directory()
+    try: 
+        qos_pid = start_and_load_qos(qos_app, qos_data_dir, qos_cores, driver_params)
 
-    ensure_data_dir()
+        ensure_data_dir()
 
-    experiment = ".".join(['%(suite)s_%(bmark)s_%(cores)d' % locals() for suite, bmark, cores in applications])
-    pid_file = './logs/%(experiment)s.%(rep)d.reporter.pid' % locals()    
+        experiment = ".".join(['%(suite)s_%(bmark)s_%(cores)d' % locals() for suite, bmark, cores in applications])
 
+        threads = []
 
-    threads = []
+        # Launch batch applications...
+        for i in range(len(applications)):
+            application = applications[i]
+            cores = core_allocations[i]
+            suite = application[0]
+            bmark = application[1]
+            if suite == 'parsec':
+                # Notice that the parameters here reflect the def wrapper() function in the decorator
+                threads.append(run_parsec(add_slot(), bmark, cores))
+            elif suite == 'spec_fp' or suite == 'spec_int':
+                threads.append(run_spec(add_slot(), bmark, cores))
+            else:
+                raise Exception('Bad suite: %(suite)s' % locals())
 
-    # Launch applications...
-    for i in range(len(applications)):
-        application = applications[i]
-        cores = core_allocations[i]
-        suite = application[0]
-        bmark = application[1]
-        if suite == 'parsec':
-            # Notice that the parameters here reflect the def wrapper() function in the decorator
-            threads.append(run_parsec(add_slot(), bmark, cores))
-        elif suite == 'spec_fp' or suite == 'spec_int':
-            threads.append(run_spec(add_slot(), bmark, cores))
-        else:
-            raise Exception('Bad suite: %(suite)s' % locals())
+        driver = None
+        try:
+            run_driver(output_base, qos_app, qos_pid, driver_cores, driver_params) 
+        except Exception as e:
+            logging.exception("Error: Failed to start reporter")
+            with lock:
+                for key in proces:
+                    if procs[key] is not None:
+                        procs[key].kill()
+                        procs[key] = None
+            for thread in threads:
+	            thread.join()
+            sys.exit(1)
 
-    reporter = None
-    try:
-        reporter = run_driver(output_path, pid_file, qosApp, qos_pid, driverApp, driver_core, driverWorkload, driverResultsPath) 
-    except Exception as e:
-        logging.exception("Error: Failed to start reporter")
+        # TODO: Subrata : this is not the cleanest way to handle this. What would an abrupt exit do ?  It has created some other process...I am not sure how to handle the following
+        # Kill the benchmark threads as the main thread running the driver has finished
+        with lock:
+            for key in procs:
+                if procs[key] is not None:
+                    procs[key].kill()
+                    procs[key] = None    
+
+        # Wait for threads to return
         for thread in threads:
-	    thread.exit()
-        sys.exit(1)
-
-    # TODO: Subrata : this is not the cleanest way to handle this. What would an abrupt exit do ?  It has created some other process...I am not sure how to handle the following
-    # Kill the benchmark threads as the main thread running the driver has finished
-    with lock:
-        for key in procs:
-            if procs[key] is not None:
-                procs[key].kill()
-                procs[key] = None    
-
-    # Wait for threads to return
-    for thread in threads:
-        thread.join()
+            thread.join()
     
-    # now also kill the qos application
-    #subprocess.check_call('/bin/kill `/bin/cat %(pid_file)s`' % locals(), shell=True)
+        # now also kill the qos application
+        #subprocess.check_call('/bin/kill `/bin/cat %(pid_file)s`' % locals(), shell=True)
     
-    #subrata: now kill the qos app as well. We will relaunch it during next experiment run
+        #subrata: now kill the qos app as well. We will relaunch it during next experiment run
 
-    subprocess.check_call('/bin/kill %(qos_pid)s' % locals(), shell=True)
+        subprocess.check_call(['/bin/kill', qos_pid])
+    except Exception as e:
+        logging.exception('Problem while running experiment' + str(e))
+    finally:
+        #subrata: now since this experiment has completed, remove the directory used for data store
+        remove_dir(qos_data_dir)
 
-    #subrata: now since this experiment has completed, remove the file used for data store
-    removeOldDir(dataStoreFileForQoS)
 
 def send_request(host, port, endpoint, method='GET', body=None):
     url = 'http://%(host)s:%(port)d/%(endpoint)s' % locals()
@@ -338,7 +332,7 @@ if __name__ == '__main__':
     if len(sys.argv) == 3:
         # Host and port of the master...
        run_slave(sys.argv[1], int(sys.argv[2]))
-    elif (len(sys.argv) - 3) % 3 == 0:
+    elif (len(sys.argv) - 5) % 3 == 0:
         # Parameters given on the command line
         run_experiment(sys.argv[1:], sys.argv[-2], int(sys.argv[-1]))
     else:

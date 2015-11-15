@@ -17,27 +17,26 @@ def read_applications(cores):
                 applications.append([suite, line.strip(), str(app_cores)])
     return applications
 
-def create_output_path(combination, rep):
-    path = 'data/' + str(len(combination)) + '_' + '.'.join([ "_".join(app) for app in combination])
-    path += '.%(rep)d.reporter.perf_counters' % locals()
+def create_output_path(combination, qos_app, rep):
+    app_str = '.'.join(['_'.join(app) for app in combination])
+    path = 'data/'
+    path += '_'.join([qos_app, str(len(combination)), app_str])
+    path += '.%(rep)d.' % locals()
     return path
-
 
 def main(reps, cores, maxapps):
     applications = read_applications(cores)
+    qos_app = "mongodb"
+    driver_workload = "workloada"
+
     for rep in range(reps):
         for app_count in range(2, maxapps + 1):
             for combination in itertools.combinations(applications, app_count):
                 combo = " ".join([" ".join(app) for app in combination])
-                output = create_output_path(combination, rep)
+                output_base = create_output_path(combination, qos_app, rep)
 
 		# Subrata: lets handle one qosApp and driver combination at a time. As new applications/driver changes the way they should be handled. 
-                # Hardcoding qos app name, driver name and driver workload here
-		qosApp = "mongoDB"
-		driverApp = "ycsb"
-		driverPath= "/p/lscratche/mitra3/apps/YCSB"
-		driverWorkload = driverPath + "/workloads/workloada"
-                print('%(combo)s %(qosApp)s %(driverApp)s %(driverWorkload)s %(output)s %(rep)d' % locals())
+                print('%(combo)s %(qos_app)s %(driver_workload)s %(output_base)s %(rep)d' % locals())
 #
 # Parameters: create_experiments.py REPS CORES MAXAPPS
 #

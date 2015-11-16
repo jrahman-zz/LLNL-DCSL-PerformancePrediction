@@ -9,4 +9,4 @@ if [ ! -d "${DATA_DIR}" ]; then
     exit 1
 fi
 
-${MONGO_DIR}/bin/mongod --dbpath "${DATA_DIR}" --pidfilepath "${DATA_DIR}/app.pid" --quiet
+${MONGO_DIR}/bin/mongod --dbpath "${DATA_DIR}" --pidfilepath "${DATA_DIR}/app.pid" --quiet 2> /dev/null 1> /dev/null

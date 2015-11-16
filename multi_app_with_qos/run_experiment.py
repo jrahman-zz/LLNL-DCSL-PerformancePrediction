@@ -62,6 +62,16 @@ def run_thread(func):
         return thread
     return wrapper
 
+# List containing completion counts for the ith process
+run_counts = []
+def add_slot():
+    """
+    Add a new slot for another batch application
+    """
+    global run_counts
+    run_counts.append(0)
+    return len(run_counts) - 1
+
 @run_thread
 def run_spec(bmark, cores):
     cmd = base_command(cores)
@@ -82,43 +92,43 @@ def run_driver(output_base, qos_app, qos_pid, driver_cores, driver_params):
     Run performance driver to determine the performance of the QoS application
     """
     logging.info('Starting QoS driver...')
-   
-    perf_output_path = '%(output_base)s.perf'
-    driver_output_path = '%(output_base)s.driver'
+  
+    perf_output_path = '%(output_base)s.perf' % locals()
+    driver_output_path = '%(output_base)s.driver' % locals()
  
     cmd = '../bin/time 2> "%(perf_output_path)s" ' % locals()
-    cmd += '| 3>>"%(perf_output_path)s" taskset -c %(driver_cores)s ' % locals()  # subrata cores => comma seperated list of cores
+    cmd += '| 3>>"%(perf_output_path)s" ' % locals()
     cmd += '/usr/bin/perf stat -I 1000 -D 4000 -e cycles,instructions --append --log-fd=3 -x " " '
     cmd += '-p %(qos_pid)s ' % locals()  # subrata start collecting data on the existing pid of the qos app.
     logging.info('Perf: ' + str(cmd))
 
     # Context manager will control the lifetime of the process
-    with subprocess.Popen(cmd, shell=True) as perf_proc:
+    perf_proc = subprocess.Popen(cmd, shell=True)
+    try:
         # jason: note in this command we are already starting to
         # monitor QoS app performance counter with 4 sec delay
         # but the driverhas not started yet
 
         # subrata: now start the driver (e.g. ycsb, which would drive qosApp, i.e. mongoDB .. 
         driver_cmd = base_command(driver_cores)
-        driver_cmd += ['sh', 'apps/%(qos_app)s/run_driver.sh', driver_params, driver_output_path]
-        logging.info('Driver: ' + str(driver_run_cmd))
+        driver_cmd += ['sh', 'apps/%(qos_app)s/run_driver.sh' % locals(), driver_params, driver_output_path]
+        logging.info('Driver: ' + str(driver_cmd))
         # Subrata: during QoS run, we will wait till the end of the run. We have already created the benchmarks threads. After this driver run finishes we will kill all
-        subprocess.check_call(driver_run_cmd)
+        subprocess.check_call(driver_cmd)
+        logging.info('Finished running driver')
+
+
+        # Sanity check to ensure perf measurement is still working
+        if perf_proc.poll() is not None:
+            perf_proc = None
+            raise Exeception('Performance counters not measured')
+    finally:
+        if perf_proc is not None:
+            perf_proc.kill()
 
     # Jason: We will not return here until after the driver and performance counter
     #           monitoring processes have run to completion
     return
-
-
-# List containing completion counts for the ith process
-run_counts = []
-def add_slot():
-    """
-    Add a new slot for another batch application
-    """
-    global run_counts
-    run_counts.append(0)
-    return len(run_counts) - 1
 
 def start_and_load_qos(qos_app, qos_data_dir, qos_cores, driver_params):
     """
@@ -163,7 +173,7 @@ def start_and_load_qos(qos_app, qos_data_dir, qos_cores, driver_params):
 
     # Sleep for 10 seconds to allow the QoS application to settle after loading
     logging.info("Sleeping for QoS to settle after loading")
-    time.sleep(10)
+    time.sleep(25)
 
     # Read the PID file that the 
     return qos_pid
@@ -201,7 +211,7 @@ def run_experiment(params, output_base, rep):
     starting_core = 2
     ending_core = 7
     current_core = 2
-    driver_core = [8,9]
+    driver_cores = [8,9]
     max_core = 15
     core_allocations = []
     for application in applications:
@@ -248,11 +258,13 @@ def run_experiment(params, output_base, rep):
 
         driver = None
         try:
+            logging.info('Starting driver')
             run_driver(output_base, qos_app, qos_pid, driver_cores, driver_params) 
+            logging.info('Finished running driver')
         except Exception as e:
             logging.exception("Error: Failed to start reporter")
             with lock:
-                for key in proces:
+                for key in procs:
                     if procs[key] is not None:
                         procs[key].kill()
                         procs[key] = None
@@ -277,7 +289,8 @@ def run_experiment(params, output_base, rep):
     
         #subrata: now kill the qos app as well. We will relaunch it during next experiment run
 
-        subprocess.check_call(['/bin/kill', qos_pid])
+        subprocess.check_call(['/bin/kill', str(qos_pid)])
+        time.sleep(10) # Wait for QoS app to fully terminate
     except Exception as e:
         logging.exception('Problem while running experiment' + str(e))
     finally:
@@ -337,4 +350,3 @@ if __name__ == '__main__':
         run_experiment(sys.argv[1:], sys.argv[-2], int(sys.argv[-1]))
     else:
         print('Error: Invalid parameters')
-        sys.exit(1)

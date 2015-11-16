@@ -22,7 +22,7 @@ def self_pin(core):
     subprocess.check_call(cmd)
 
 def base_command(cores):
-    return ['taskset', '-c', ','.join(map(lambda s: str(s), cores))]
+    return ['setsid', 'taskset', '-c', ','.join(map(lambda s: str(s), cores))]
 
 # 
 procs = dict()
@@ -62,6 +62,13 @@ def run_thread(func):
         return thread
     return wrapper
 
+def kill_process_group(proc):
+    if proc.poll() is None:
+        pid = proc.pid
+        pgroup = int(subprocess.check_output('ps -o pgid= %(pid)s' % locals(), shell=True).decode('utf-8').strip())
+        logging.info('Killing process group: %(pgroup)s' % locals())
+        subprocess.check_call('kill -9 -%(pgroup)s' % locals(), shell=True)
+
 # List containing completion counts for the ith process
 run_counts = []
 def add_slot():
@@ -75,7 +82,7 @@ def add_slot():
 @run_thread
 def run_spec(bmark, cores):
     cmd = base_command(cores)
-    cmd += ['runspec', '--nobuild', '--config', 'research_config', '--action', 'onlyrun', '--size', 'ref', bmark]
+    cmd += ['runspec', '--nosetprocgroup', '--nobuild', '--config', 'research_config', '--action', 'onlyrun', '--size', 'ref', bmark]
     logging.info('Starting %(bmark)s' % locals())
     return subprocess.Popen(cmd)
 
@@ -99,11 +106,12 @@ def run_driver(output_base, qos_app, qos_pid, driver_cores, driver_params):
     cmd = '../bin/time 2> "%(perf_output_path)s" ' % locals()
     cmd += '| 3>>"%(perf_output_path)s" ' % locals()
     cmd += '/usr/bin/perf stat -I 1000 -D 4000 -e cycles,instructions --append --log-fd=3 -x " " '
-    cmd += '-p %(qos_pid)s ' % locals()  # subrata start collecting data on the existing pid of the qos app.
-    logging.info('Perf: ' + str(cmd))
+    cmd += '-p %(qos_pid)s ' % locals()  # subrata start collecting data on the existing pid of the qos app.i
+    perf_cmd = ['setsid', 'sh', '-c', cmd]
+    logging.info('Perf: ' + str(perf_cmd))
 
     # Context manager will control the lifetime of the process
-    perf_proc = subprocess.Popen(cmd, shell=True)
+    perf_proc = subprocess.Popen(perf_cmd)
     try:
         # jason: note in this command we are already starting to
         # monitor QoS app performance counter with 4 sec delay
@@ -115,8 +123,6 @@ def run_driver(output_base, qos_app, qos_pid, driver_cores, driver_params):
         logging.info('Driver: ' + str(driver_cmd))
         # Subrata: during QoS run, we will wait till the end of the run. We have already created the benchmarks threads. After this driver run finishes we will kill all
         subprocess.check_call(driver_cmd)
-        logging.info('Finished running driver')
-
 
         # Sanity check to ensure perf measurement is still working
         if perf_proc.poll() is not None:
@@ -124,7 +130,7 @@ def run_driver(output_base, qos_app, qos_pid, driver_cores, driver_params):
             raise Exeception('Performance counters not measured')
     finally:
         if perf_proc is not None:
-            perf_proc.kill()
+            kill_process_group(perf_proc)
 
     # Jason: We will not return here until after the driver and performance counter
     #           monitoring processes have run to completion
@@ -173,7 +179,7 @@ def start_and_load_qos(qos_app, qos_data_dir, qos_cores, driver_params):
 
     # Sleep for 10 seconds to allow the QoS application to settle after loading
     logging.info("Sleeping for QoS to settle after loading")
-    time.sleep(25)
+    time.sleep(5)
 
     # Read the PID file that the 
     return qos_pid
@@ -256,7 +262,8 @@ def run_experiment(params, output_base, rep):
             else:
                 raise Exception('Bad suite: %(suite)s' % locals())
 
-        driver = None
+        logging.info('Sleeping to allow batch applictions to start...')
+        time.sleep(30)
         try:
             logging.info('Starting driver')
             run_driver(output_base, qos_app, qos_pid, driver_cores, driver_params) 
@@ -266,7 +273,7 @@ def run_experiment(params, output_base, rep):
             with lock:
                 for key in procs:
                     if procs[key] is not None:
-                        procs[key].kill()
+                        kill_process_group(procs[key])
                         procs[key] = None
             for thread in threads:
 	            thread.join()
@@ -277,7 +284,7 @@ def run_experiment(params, output_base, rep):
         with lock:
             for key in procs:
                 if procs[key] is not None:
-                    procs[key].kill()
+                    kill_process_group(procs[key])
                     procs[key] = None    
 
         # Wait for threads to return

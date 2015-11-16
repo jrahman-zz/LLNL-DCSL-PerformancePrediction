@@ -21,7 +21,7 @@ def create_output_path(combination, qos_app, rep):
     app_str = '.'.join(['_'.join(app) for app in combination])
     path = 'data/'
     path += '_'.join([qos_app, str(len(combination)), app_str])
-    path += '.%(rep)d.' % locals()
+    path += '.%(rep)d' % locals()
     return path
 
 def main(reps, cores, maxapps):

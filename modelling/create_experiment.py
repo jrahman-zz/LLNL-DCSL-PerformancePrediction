@@ -6,7 +6,6 @@ import pandas as pd
 import util
 import sys
 
-
 fraction_options = [0.1, 0.15, 0.2, 0.25, 0.3]
 def get_fractions(idx, max_apps):
     fractions = dict()
@@ -21,7 +20,6 @@ def create_experiment(max_apps, reps):
             for idx in range(len(fraction_options)**(max_apps-1)):
                 fractions = get_fractions(idx, max_apps)
                 print('%(fractions)s %(rank)s %(rep)s' % locals())
-
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:

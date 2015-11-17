@@ -20,68 +20,80 @@ def parse_experiment(exp):
     parsed_experiment['rep'] = int(exp.split()[2])
     return parsed_experiment
 
-def build_training(apps, data, fractions, maxapps):
+def create_training(apps, data, fraction):
     training_data = []
-    for app_count in range(2, maxapps+1):
-        logging.info('Creating training data for %(app_count)d apps' % locals())
-        columns = dict()
-        total_entries = 0
-        target_fraction = fractions[app_count]
-        filled_entries = 0
-        combinations = [sorted(c) for c in itertools.combinations(apps, app_count - 1)]
-        for combination in combinations:
-            total_entries += len(apps)
-            columns['.'.join(sorted(combination))] = set()
-        logging.info('Total entries: %(total_entries)d' % locals())
-        for combination in combinations:
-            # Try to fill in at least one entry per column first
-            column_key = '.'.join(sorted(combination))
-            filled_fraction = float(filled_entries) / float(total_entries)
-            print(filled_fraction, target_fraction)
-            if len(columns[column_key]) == 0 and filled_fraction < target_fraction:
-                # Pick a random app first
+
+    # For each column, track the apps (row) that have been filled
+    columns = dict()
+    total_entries = 0
+    filled_entries = 0
+
+    combinations = [sorted(c) for c in itertools.combinations(apps, app_count - 1)]
+    for combination in combinations:
+        total_entries += len(apps)
+        columns['.'.join(sorted(combination))] = set()
+    logging.info('Total entries: %(total_entries)d' % locals())
+    
+    for combination in combinations:
+        # Try to fill in at least one entry per column first
+        column_key = '.'.join(sorted(combination))
+        filled_fraction = float(filled_entries) / float(total_entries)
+        print(filled_fraction, target_fraction)
+        if len(columns[column_key]) == 0 and filled_fraction < target_fraction:
+            # Pick a random row (app) within the column
+            choice = random.choice(apps)
+            while choice in columns[column_key]:
                 choice = random.choice(apps)
-                while choice in columns[column_key]:
-                    choice = random.choice(apps)
-                # For A.B.C Look at the different combinations such as [A, B.C], [B, A.C], etc
-                entry_apps = sorted([choice] + [app for app in combination])
-                for i in range(len(entry_apps)):
-                    first_app = entry_apps[i]
-                    remaining_apps = '.'.join(entry_apps[0:i] + entry_apps[i+1:])
-                    entry_key = '.'.join(entry_apps)
-                    if remaining_apps in columns and first_app not in columns[remaining_apps] and entry_key in data:
-                        
-                        print(entry_key, remaining_apps)
-                        filled_entries += 1
-                        columns[remaining_apps].add(first_app)
-                        training_data.append((first_app, remaining_apps, data[entry_key]))
-        
-        # Now that we've filled at least one entry per column, fill in extra
-        all_keys = [sorted(c) for c in itertools.combinations(apps, app_count)]
-        random.shuffle(all_keys)
-        idx = 0
-        while idx < len(all_keys) and float(filled_entries) / float(total_entries) < target_fraction:
-            entry_apps = all_keys[idx]
-            idx += 1
-            entry_key = '.'.join(entry_apps)
-            if entry_key not in data:
-                print('Entry: %(entry_key)s not in data' % locals())
-                continue
+            # For A.B.C Look at the different combinations such as [A, B.C], [B, A.C], etc
+            entry_apps = sorted([choice] + [app for app in combination])
             for i in range(len(entry_apps)):
                 first_app = entry_apps[i]
                 remaining_apps = '.'.join(entry_apps[0:i] + entry_apps[i+1:])
-                if first_app not in columns[remaining_apps]:
+                entry_key = '.'.join(entry_apps)
+                if remaining_apps in columns and first_app not in columns[remaining_apps] and entry_key in data:
+                        
+                    print(entry_key, remaining_apps)
                     filled_entries += 1
                     columns[remaining_apps].add(first_app)
                     training_data.append((first_app, remaining_apps, data[entry_key]))
+        
+    # Now that we've filled at least one entry per column, fill in extra
+    all_keys = [sorted(c) for c in itertools.combinations(apps, app_count)]
+    random.shuffle(all_keys)
+    idx = 0
+    while idx < len(all_keys) and float(filled_entries) / float(total_entries) < target_fraction:
+        entry_apps = all_keys[idx]
+        idx += 1
+        entry_key = '.'.join(entry_apps)
+        if entry_key not in data:
+            print('Entry: %(entry_key)s not in data' % locals())
+            continue
+        for i in range(len(entry_apps)):
+            first_app = entry_apps[i]
+            remaining_apps = '.'.join(entry_apps[0:i] + entry_apps[i+1:])
+            if first_app not in columns[remaining_apps]:
+                filled_entries += 1
+                columns[remaining_apps].add(first_app)
+                training_data.append((first_app, remaining_apps, data[entry_key]))
+    # Check the number of columns with no entry...
+    empty_columns = set()
+    for key, value in columns.items():
+        if len(value) == 0:
+            print('Column: %(key)s is empty' % locals())
+            empty_columns.add(key)
+    print('There are %d empty_columns' % (len(empty_columns)))
+    return training_data, empty_columns
 
-        # Check the number of columns with no entry...
-        empty_columns = []
-        for key, value in columns.items():
-            if len(value) == 0:
-                print('Column: %(key)s is empty' % locals())
-                empty_columns.append(key)
-        print('There are %d empty_columns' % (len(empty_columns)))
+def build_training(apps, data, fractions, maxapps):
+    training_data = []
+    empty_columns = []
+    for app_count in range(2, maxapps+1):
+        logging.info('Creating training data for %(app_count)d apps' % locals())
+        data_points, columns = crete_training(apps, data, fractions[app_count])
+        for data_point in data_points:
+            training_data.append(data_point)
+        for column in columns:
+            empty_columns.append(column)
     return training_data, empty_columns
    
 def load_bubbles():
@@ -136,7 +148,6 @@ def run_experiment(fractions, rank, rep):
     # Create Rating objects for the entire dataset
     test = sc.parallelize([(key, value) for key, value in bubble_data.items()])
     test = test.flatMap(process_value)
-    print(test.collect()) # DEBUG
     test = test.map(lambda x: Rating(ylabels[x[0]], xlabels[x[1]], x[2]))
 
     predictions = model.predictAll(test.map(lambda x: (x[0], x[1]))).map(lambda x: ((x[0], x[1]), x[2]))
@@ -150,21 +161,10 @@ def run_experiment(fractions, rank, rep):
     # x[0] is a tuple with the y and x axis numeric labels x[1] is a (predicted, observed) tuple
     test_predictions = test_predictions.map(lambda x: (ymapping[x[0][0]], xmapping[x[0][1]], (x[1][0] - x[1][1])/x[1][1]))
     # test_predictions tuples contain (yappname, xappnames, percent_error, observed_bubble)
-    errors = test_predictions.map(lambda x: (sorted([x[0]] + x[1].split('.')), x[0], x[1], x[2])).collect()
-    
-    # Track per combination error as a list
-    errors = dict()
-    for tup in test_predictions.collect():
-        key = tup[0]
-        if key not in errors:
-            errors[key] = []
-        # Tuple format is yapp xapps relative_error observed_bubble
-        errors[key].append((tup[1], tup[2], tup[3], tup[4]))
-   
-    relative_errors = {key: np.mean([tup[3] for tup in errors[key]]) for key in errors.keys()}
+    errors = test_predictions.map(lambda x: ('.'.join(sorted([x[0]] + x[1].split('.'))), x[0], x[1], x[2])).collect()
     
     print('apps yapp xapps rel_error observed rank fraction rep')
-    for apps, yapp, xapps, error, observed in ratings:
+    for apps, yapp, xapps, error, observed in errors:
         fraction = fractions[len(apps.split('.'))]
         observed = bubble_sizes[apps]
         print('%(apps)s %(yapp)s %(xapps)s %(error)f %(observed)f %(rank)d %(fraction)f %(rep)f' % locals())

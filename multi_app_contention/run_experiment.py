@@ -21,9 +21,15 @@ def self_pin(core):
     subprocess.check_call(cmd)
 
 def base_command(cores):
-    return ['taskset', '-c', ','.join(map(lambda s: str(s), cores))]
+    return ['setsid', 'taskset', '-c', ','.join(map(lambda s: str(s), cores))]
 
-# 
+def kill_process_group(proc):
+    if proc.poll() is None:
+        pid = proc.pid
+        pgroup = int(subprocess.check_output('ps -o pgid= %(pid)s' % locals(), shell=True).decode('utf-8').strip())
+        logging.info('Killing process group: %(pgroup)s' % locals())
+        subprocess.check_call('kill -9 -%(pgroup)s' % locals(), shell=True)
+
 procs = dict()
 lock = threading.Lock()
 
@@ -59,7 +65,7 @@ def run_thread(func):
                         for key in procs:
                             if procs[key] is not None:
                                 try:
-                                    procs[key].kill()
+                                    kill_process_group(procs[key])
                                 except Exception as e:
                                     logging.exception("Failed to kill proc")
                     break

@@ -1,6 +1,0 @@
-cluster run_experiment  /g/g19/rahman3/dcsl/multi_app_contention/run_experiment.py    null    null    null
-cluster reporter    /g/g19/rahman3/dcsl/bin/reporter    null    null    null
-cluster timep       /g/g19/rahman3/dcsl/bin/time    null    null    null
-cluster runspec     /p/lscratche/rahman3/apps/SPEC2006/bin/runspec null    null    null
-cluster parsecmgmt  /p/lscratche/rahman3/apps/parsec-3.0/bin/parsecmgmt null    null    null
-

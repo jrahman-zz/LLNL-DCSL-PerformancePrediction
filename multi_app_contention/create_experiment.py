@@ -3,6 +3,9 @@
 #import itertools
 import sys
 
+# Only 6 cores available to the application of interest
+MAX_CORES=6
+
 def read_applications(cores):
     suites = ['spec_fp', 'spec_int', 'parsec']
     applications = []
@@ -22,18 +25,25 @@ def create_output_path(app_count, apps, rep):
     path += '.%(rep)d.reporter.perf_counters' % locals()
     return path
 
-def decode_apps(idx, apps, app_count):
+def decode_apps(idx, apps, app_count, cores):
     app_list = []
+    cores_used = 0
     while app_count > 0:
         app_list.append(apps[idx % len(apps)])
+        if app_list[-1][0] == 'parsec':
+            cores_used += cores
+        else:
+            cores_used += 1
         idx = int(idx / len(apps))
         app_count -= 1
-    return sorted(app_list)
+    return sorted(app_list), cores_used
 
-def get_apps(app_count, applications):
+def get_apps(app_count, applications, cores):
     apps = dict()
     for i in range(len(applications)**app_count):
-        app_list = decode_apps(i, applications, app_count)
+        app_list, cores_used = decode_apps(i, applications, app_count, cores)
+        if cores_used > MAX_CORES:
+            continue
         key = " ".join([" ".join(app) for app in app_list])
         value =  ".".join(["_".join(app) for app in app_list]) 
         apps[key] = value
@@ -43,7 +53,7 @@ def main(reps, cores, maxapps):
     applications = read_applications(cores)
     for rep in range(reps):
         for app_count in range(2, maxapps + 1):
-            for apps, apps_dot in get_apps(app_count, applications).items():
+            for apps, apps_dot in get_apps(app_count, applications, cores).items():
                 output = create_output_path(app_count, apps_dot, rep)
                 print('%(apps)s %(output)s %(rep)d' % locals())
 #

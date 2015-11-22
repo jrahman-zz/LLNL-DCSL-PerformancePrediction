@@ -12,15 +12,15 @@ fi
 
 CWD=`pwd`
 
-YCSBDIR="${APPS_DIR}/ycsb-0.3.1"
+YCSBDIR="${APPS_DIR}/ycsb-0.4.0"
 if [ ! -d "${YCSBDIR}" ]; then
-    wget http://github.com/brianfrankcooper/YCSB/releases/download/0.3.1/ycsb-0.3.1.tar.gz
-    tar -C "${APPS_DIR}" -zxvf ycsb-0.3.1.tar.gz
+    wget http://github.com/brianfrankcooper/YCSB/releases/download/0.4.0/ycsb-0.4.0.tar.gz
+    tar -C "${APPS_DIR}" -zxvf ycsb-0.4.0.tar.gz
     if [ $? -ne 0 ]; then
         echo "Error: Failed to untar YCSB"
         exit 1
     fi
-    rm ycsb-0.3.1.tar.gz
+    rm ycsb-0.4.0.tar.gz
 fi
 
 #if [ ! -d "$YCSBDIR" ]; then

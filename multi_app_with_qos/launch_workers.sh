@@ -10,6 +10,10 @@ HOSTNAME=$2
 PORT=$3
 OUTFILE="batch.sh"
 
+OUTPUT_DIR="/p/lscratche/${USER}/job_output"
+mkdir -p "${OUTPUT_DIR}"
+OUTPUT_PATH="${OUTPUT_DIR}/multi_app_with_qos-%j-%2t.out"
+
 (
 cat << EOF
 #/bin/bash
@@ -20,7 +24,7 @@ cat << EOF
 #MSUB -V
 
 cd "${PWD}"
-srun -n${NODES} -N${NODES} -c16 ~/mypy/bin/python ./run_experiment.py ${HOSTNAME} ${PORT}
+srun -o ${OUTPUT_PATH} -n${NODES} -N${NODES} -c16 ~/mypy/bin/python ./run_experiment.py ${HOSTNAME} ${PORT}
 
 EOF
 ) > "${OUTFILE}"

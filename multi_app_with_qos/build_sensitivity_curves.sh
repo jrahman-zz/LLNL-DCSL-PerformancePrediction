@@ -2,6 +2,10 @@
 
 NODES=1
 
+OUTPUT_DIR="/p/lscratche/${USER}/job_output"
+mkdir -p "${OUTPUT_DIR}"
+OUTPUT_PATH=${OUTPUT_DIR}/build_sensitivity_curve-%j-%2t.out"
+
 for REP in `seq 1 5`; do
     while read LINE; do
         IFS=' ' read -r -a QOS <<< "${LINE}"
@@ -16,7 +20,7 @@ for REP in `seq 1 5`; do
 #MSUB -V
 
 cd "${PWD}"
-srun -n${NODES} -N${NODES} -c16 ~/mypy/bin/python ./run_sensitivity_curve.py ${LINE} ${REP}
+srun -o ${OUTPUT_PATH} -n${NODES} -N${NODES} -c16 ~/mypy/bin/python ./run_sensitivity_curve.py ${LINE} ${REP}
 EOL
 } > "${OUTPUT_FILE}"
     done < manifest/qos

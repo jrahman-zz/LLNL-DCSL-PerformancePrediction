@@ -134,11 +134,12 @@ def run_experiment(params, output_base, rep):
     self_pin(max_core)   # subrata : self pining of "this" python driver. similarly pin the benchmark driver YCSB/ apache bench etc. Pin tghem on the other socket to reduce intf
    
     #subrata: based on the already generated unique output path, create a temporary data store path for qos app (in /tmp/)
-    #dataStoreFileForQoS = createQoSAppDataStorePath(output_path)
 
     #now run and initialize the qos app...at the end of the experiment we will kill this qos app, so at this moment do not worry about the state
-    qos_data_dir = driver.create_qos_app_directory()
+    qos_pid = None
+    qos_data_dir = None
     try: 
+        qos_data_dir = driver.create_qos_app_directory()
         qos_pid = driver.start_and_load_qos(qos_app, qos_data_dir, qos_cores, driver_params)
 
         ensure_data_dir()
@@ -189,15 +190,18 @@ def run_experiment(params, output_base, rep):
         for thread in threads:
             thread.join()
     
-        #subrata: now kill the qos app as well. We will relaunch it during next experiment run
-
-        subprocess.check_call(['/bin/kill', str(qos_pid)])
-        time.sleep(10) # Wait for QoS app to fully terminate
     except Exception as e:
         logging.exception('Problem while running experiment' + str(e))
     finally:
+        #subrata: now kill the qos app as well. We will relaunch it during next experiment run
+
+        if qos_pid is not None:
+            subprocess.check_call(['/bin/kill', str(qos_pid)])
+            time.sleep(10) # Wait for QoS app to fully terminate
+
         #subrata: now since this experiment has completed, remove the directory used for data store
-        driver.remove_dir(qos_data_dir)
+        if qos_data_dir is not None:
+            driver.remove_dir(qos_data_dir)
 
 
 def send_request(host, port, endpoint, method='GET', body=None):

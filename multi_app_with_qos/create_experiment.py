@@ -5,6 +5,14 @@ import sys
 # Only 6 cores available to the application of interest
 MAX_CORES=6
 
+def read_qos_applications():
+    path = 'manifest/qos'
+    qos_apps = []
+    with open(path, 'r') as f:
+        for line in f:
+            qos_apps.append(line.strip().split())
+    return qos_apps
+
 def read_applications(cores):
     suites = ['spec_fp', 'spec_int', 'parsec']
     applications = []
@@ -57,7 +65,8 @@ def get_apps(app_count, applications, cores):
 
 def main(reps, cores, maxapps):
     applications = read_applications(cores)
-    for qos_app, driver_workload in [('mongodb', 'workloada')]:
+    qos_applications = read_qos_applications()
+    for qos_app, driver_workload in qos_applications:
         for rep in range(reps):
             for app_count in range(2, maxapps + 1):
                 for apps, apps_dot in get_apps(app_count, applications, cores).items():

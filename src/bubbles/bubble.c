@@ -45,7 +45,7 @@ void *thread_main(void *param) {
 }
 
 int main (int argc, char* argv[]) {
-  if (argc < 3) {
+  if (argc < 2) {
     fprintf(stderr, "Invalid parameters\n");
     return 1;
   }
@@ -53,8 +53,16 @@ int main (int argc, char* argv[]) {
   register unsigned lfsr = time(0);
  
   struct params params;
-  params.factor = atof(argv[1]);
-  params.delay_ms = atoi(argv[2]);
+  if (argc >= 3) {
+    // Variable bubble mode
+    params.factor = atof(argv[1]);
+    params.delay_ms = atoi(argv[2]);
+  } else if (argc == 2) {
+    // Fixed bubble mode
+    params.factor = 1;
+    params.delay_ms = 1000;
+    footprint = atoi(argv[1]) * 1024;
+  }
 
   if (argc >= 4) {
     params.bubbles = atoi(argv[3]);

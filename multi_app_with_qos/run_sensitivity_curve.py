@@ -2,6 +2,9 @@
 
 import sys
 import driver
+import logging
+import subprocess
+import time
 
 MIN_CORE=0
 MAX_CORE=7
@@ -9,17 +12,20 @@ MAX_CORE=7
 DRIVER_CORES=[8,9]
 QOS_CORES=[0,1]
 
-SIZES = [256, 515, 1024, 2048, 3072, 4096, 6144, 8192, 12288, 16384, 24576, 32768, 49152, 65536]
+SIZES = [256, 512, 1024, 2048, 3072, 4096, 6144, 8192, 12288, 16384, 18000, 21000, 24576, 32768, 49152, 65536]
+
+#SIZES = [256, 512]
 
 def run_bubble(bubble_size):
     cmd = base_command(range(MAX_CORE-2,MAX_CORE))
     cmd += ['../bin/bubble', bubble_size]
     return subprocess.Popen(cmd)
 
-def main(qos_app, driver_params):
-    for size in sizes:
+def main(qos_app, driver_params, rep):
+    global SIZES
+    for size in SIZES:
 
-        output_base = '%(qos_app)s.%(size)d.%(rep)s' % locals()
+        output_base = 'sensitivity_data/%(qos_app)s.%(size)d.%(rep)s' % locals()
         qos_data_dir = None
         bubble_proc = None
         qos_pid = None
@@ -34,7 +40,7 @@ def main(qos_app, driver_params):
             if bubble_proc is not None:
                 driver.kill_process_group(bubble_proc)
             if qos_data_dir is not None:
-                driver.remove_directory(qos_data_dir)
+                driver.remove_dir(qos_data_dir)
                           
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
@@ -44,4 +50,5 @@ if __name__ == '__main__':
     qos_app = sys.argv[1]
     driver_params = sys.argv[2]
     rep = int(sys.argv[3])
+    main(qos_app, driver_params, rep)
     

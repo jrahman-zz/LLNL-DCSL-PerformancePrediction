@@ -1,10 +1,3 @@
-/**
- * Author: Yunqi Zhang
- * Email: yunqi@umich.edu
- *
- * Original Bubble by: Jason Mars (mars.ninja@gmail.com)
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -25,70 +18,18 @@ struct params {
   int bubbles;
 };
 
+#define NUM_THREADS 1
+
 volatile unsigned int footprint = MIN_FOOTPRINT;
 volatile unsigned int keep_running = 1;
 
-void *thread_main(void *param) {
-  struct params* params = (struct params*)param;
-
-  while(1) {
-    usleep(1000 * params->delay_ms);
-    if (footprint * params->factor > MAX_FOOTPRINT) {
-      if (--(params->bubbles) == 0) {
-        keep_running = 0;
-      }
-      footprint = MIN_FOOTPRINT;
-    } else {
-      footprint *= params->factor;
-    }
-  }
-}
-
-int main (int argc, char* argv[]) {
-  if (argc < 2) {
-    fprintf(stderr, "Invalid parameters\n");
-    return 1;
-  }
- 
+void thread_main(void *param) { 
+  register char main_thread = (int)param == 0;
   register unsigned lfsr = time(0);
- 
-  struct params params;
-  if (argc >= 3) {
-    // Variable bubble mode
-    params.factor = atof(argv[1]);
-    params.delay_ms = atoi(argv[2]);
-  } else if (argc == 2) {
-    // Fixed bubble mode
-    params.factor = 1;
-    params.delay_ms = 1000;
-    footprint = atoi(argv[1]) * 1024;
-  }
-
-  if (argc >= 4) {
-    params.bubbles = atoi(argv[3]);
-  } else {
-    params.bubbles = 0;
-  }
-
-  if (params.factor <= 0 || params.delay_ms <= 0) {
-    fprintf(stderr, "Invalid parameters\n");
-    return 1;
-  }
-
-  data_chunk = (char*) malloc (MAX_FOOTPRINT * sizeof(char));
-  int i;
-
-  // Start background thread to change size
-  pthread_t tid;
-  if (pthread_create(&tid, NULL, thread_main, (void*)&params)) {
-    fprintf(stderr, "Failed to create background thread: %d\n");
-    return 1;
-  }
-
   register unsigned int fp = 0;
-  while (keep_running) {
-    
-    if (fp != footprint) {
+  int i;
+  while (keep_running) {   
+    if (fp != footprint && main_thread != 0) {
        struct timespec tv;
        clock_gettime(CLOCK_MONOTONIC, &tv);
        fprintf(stderr, "bubble %d %f\n", footprint, tv.tv_sec + (double)tv.tv_nsec / 1000000000.0);
@@ -122,5 +63,61 @@ int main (int argc, char* argv[]) {
       eighth_chunk[i + CACHE_LINE_SIZE]++;
     }
   }
+  return 0;
+}
+
+int main (int argc, char* argv[]) {
+  if (argc < 2) {
+    fprintf(stderr, "Invalid parameters\n");
+    return 1;
+  }
+  
+  struct params params;
+  if (argc >= 3) {
+    // Variable bubble mode
+    params.factor = atof(argv[1]);
+    params.delay_ms = atoi(argv[2]);
+  } else if (argc == 2) {
+    // Fixed bubble mode
+    params.factor = 1;
+    params.delay_ms = 1000;
+    footprint = atoi(argv[1]) * 1024;
+  }
+
+  if (argc >= 4) {
+    params.bubbles = atoi(argv[3]);
+  } else {
+    params.bubbles = 0;
+  }
+
+  if (params.factor <= 0 || params.delay_ms <= 0) {
+    fprintf(stderr, "Invalid parameters\n");
+    return 1;
+  }
+
+  data_chunk = (char*) malloc (MAX_FOOTPRINT * sizeof(char));
+  int i;
+
+  // Start background thread to change size
+  pthread_t tid;
+  for (i = 0; i < NUM_THREADS; i++) {
+    if (pthread_create(&tid, NULL, thread_main, (void*)i) != 0) {
+      fprintf(stderr, "Failed to create background thread: %d\n");
+      return 1;
+    }
+  }
+
+  while(keep_running) {
+    usleep(1000 * params.delay_ms);
+    if (footprint * params.factor > MAX_FOOTPRINT) {
+      if (--(params.bubbles) == 0) {
+        keep_running = 0;
+      }
+      footprint = MIN_FOOTPRINT;
+    } else {
+      footprint *= params.factor;
+    }
+  }
+
   return 0;
 }

@@ -6,6 +6,11 @@ import pandas as pd
 import util
 import sys
 
+#
+# Define the set of experiments for the model
+# Since ALS uses a random initialization, we run multiple reps
+#
+
 fraction_options = [0.1, 0.15, 0.2, 0.25, 0.3]
 def get_fractions(idx, max_apps):
     fractions = dict()

@@ -13,12 +13,11 @@ if __name__ == '__main__':
         print('Error: Usage prepare_data.py datafile xlabelfile ylabelfile')
         sys.exit(1)
 
-    # Construct the application list from the multi application bubble sizes
-    data = util.read_data('multi_bubble_sizes') 
+    # Construct the application list from the single application bubble sizes
+    data = util.read_data('multi_app_bubble_sizes') 
 
     bubble = 'mean_bubble'
     data = data[data[bubble] == data[bubble]]
-    data = data[data['parsec_fluidanimate'] == 0]
     datafile = sys.argv[1]
     xlabelfile = sys.argv[2]
     ylabelfile = sys.argv[3]

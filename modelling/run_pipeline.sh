@@ -1,20 +1,17 @@
 #!/bin/bash
 
-if [ $# -ne 1 ]; then
-    echo "Usage run_pipeline.sh MULTIAPPDATA"
+if [ $# -ne 2 ]; then
+    echo "Usage: run_pipeline.sh MULTIAPPDATA PORT"
     exit 1
 fi
 
-./prepare_labels.py ${1} xlabels ylabels
+DATA=${1}
+PORT=${2}
+
+./prepare_data.py ${DATA} xlabels ylabels
 if [ $? -ne 0 ]; then
     echo "Error: prepare_data.py failed"
     exit 2
-fi
-
-srun -n1 -N1 -c4 -ppdebug "${SPARKHOME}/bin/spark-submit" --master local[4] als.py output
-if [ $? -ne 0 ]; then
-    echo "Error als.py failed"
-    exit 3
 fi
 
 # TODO, final error analysis

@@ -12,15 +12,21 @@ import json
 import requests
 import logging
 
+data_file = 'als_data'
+
 def parse_experiment(exp):
-    """ Format: 'appcount:fraction,appcount:fraction,...,appcount:fraction rank rep' """
+    """
+    Format: 'appcount:fraction,appcount:fraction,...,appcount:fraction rank rep'
+    Note that we define a different fraction per appcount
+    so we can vary the density for each section of the matrix
+    """
     parsed_experiment = dict()
     parsed_experiment['fractions'] = {int(pair.split(':')[0]): float(pair.split(':')[1]) for pair in exp.split()[0].split(',')}
     parsed_experiment['rank'] = int(exp.split()[1])
     parsed_experiment['rep'] = int(exp.split()[2])
     return parsed_experiment
 
-def create_training(apps, data, fraction):
+def create_training(apps, data, fraction, app_count):
     training_data = []
 
     # For each column, track the apps (row) that have been filled
@@ -34,6 +40,7 @@ def create_training(apps, data, fraction):
         columns['.'.join(sorted(combination))] = set()
     logging.info('Total entries: %(total_entries)d' % locals())
     
+    # The app_count-1 sized subsets represent the column keys
     for combination in combinations:
         # Try to fill in at least one entry per column first
         column_key = '.'.join(sorted(combination))
@@ -44,8 +51,8 @@ def create_training(apps, data, fraction):
             choice = random.choice(apps)
             while choice in columns[column_key]:
                 choice = random.choice(apps)
+            entry_apps = sorted([choice] + combination)
             # For A.B.C Look at the different combinations such as [A, B.C], [B, A.C], etc
-            entry_apps = sorted([choice] + [app for app in combination])
             for i in range(len(entry_apps)):
                 first_app = entry_apps[i]
                 remaining_apps = '.'.join(entry_apps[0:i] + entry_apps[i+1:])
@@ -54,10 +61,12 @@ def create_training(apps, data, fraction):
                         
                     print(entry_key, remaining_apps)
                     filled_entries += 1
+                    # Record that the row with first app has been filled in the column
                     columns[remaining_apps].add(first_app)
                     training_data.append((first_app, remaining_apps, data[entry_key]))
         
-    # Now that we've filled at least one entry per column, fill in extra
+    # Now that we've filled at least one entry per column
+    # fill in extra until we hit the target fraction
     all_keys = [sorted(c) for c in itertools.combinations(apps, app_count)]
     random.shuffle(all_keys)
     idx = 0
@@ -89,7 +98,7 @@ def build_training(apps, data, fractions, maxapps):
     empty_columns = []
     for app_count in range(2, maxapps+1):
         logging.info('Creating training data for %(app_count)d apps' % locals())
-        data_points, columns = crete_training(apps, data, fractions[app_count])
+        data_points, columns = create_training(apps, data, fractions[app_count], app_count)
         for data_point in data_points:
             training_data.append(data_point)
         for column in columns:
@@ -98,7 +107,7 @@ def build_training(apps, data, fractions, maxapps):
    
 def load_bubbles():
     bubbles = dict()
-    with open('bubble_sizes', 'r') as f:
+    with open(data_file, 'r') as f:
         for line in f:
             values = line.strip().split()
             bubbles[values[0]] = float(values[1])
@@ -106,8 +115,8 @@ def load_bubbles():
 
 def load_mappings():
     # The ALS implementation uses numeric labels for items
-    # So we need to maintain a consistent set of mappings from application and application
-    # combinations into those numeric labels used by the ALS algorithm
+    # So we need to maintain a consistent set of mappings from applications and
+    # application combinations into numeric labels used by the ALS algorithm
     ylabels = {line.strip().split(',')[0]: int(line.strip().split(',')[1]) for line in open('ylabels')}
     xlabels = {line.strip().split(',')[0]: int(line.strip().split(',')[1]) for line in open('xlabels')}
     ymapping = [line.strip().split(',')[0] for line in open('ylabels')]

@@ -39,3 +39,8 @@ if [ $? -ne 0 ]; then
     exit 6
 fi
 
+~/py27/bin/pip install seaborn
+if [ $? -ne 0 ]; then
+    exit 7
+fi
+

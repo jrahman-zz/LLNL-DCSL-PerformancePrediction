@@ -94,7 +94,7 @@ def main():
 
     # Raw Data
     bubble_sizes, none = util.read_single_app_bubbles('single_bubble_sizes')
-    data = util.read_data('multi_app_bubble_sizes')
+    data = util.read_data('experiment_data')
 
     # Get set of applications in use
     apps = []

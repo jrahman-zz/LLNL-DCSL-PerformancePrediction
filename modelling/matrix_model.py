@@ -1,4 +1,4 @@
-#!/usr/apps/python3.4.2/bin/python3
+#!/bin/env ${HOME}/py27/bin/python
 
 import numpy as np
 import numpy.linalg as npla
@@ -48,7 +48,7 @@ so in turn we attempt to find a solution with minimum error
  # Meta information
 bubble_type = 'mean_bubble'
 #sample_fractions = [0.05, 0.1, 0.15, 0.2, 0.25]
-sample_fractions = [0.2]
+sample_fractions = [0.05, 0.1, 0.2, 0.3]
 sizes = [2, 3]
 
 def dist_plot(naive_data, pred_data, naive_label, pred_label, filename):
@@ -59,28 +59,30 @@ def dist_plot(naive_data, pred_data, naive_label, pred_label, filename):
     plt.close('all')
 
 def dist_plotting(config, data, apps):
+    
+    cutoff = -160
     for size in config:
-        pruned = data[data['app_count'] == size]
-        naive_error = 100 * (pruned[bubble_type] - pruned['naive_sum_bubble']) / pruned[bubble_type]
-        pred_error = 100 * (pruned[bubble_type] - pruned['pred_bubble']) / pruned[bubble_type]
+        pruned = pd.DataFrame(data[data['app_count'] == size])
+        pruned['naive_error'] = 100 * (pruned[bubble_type] - pruned['naive_sum_bubble']) / pruned[bubble_type]
+        pruned['pred_error'] = 100 * (pruned[bubble_type] - pruned['pred_bubble']) / pruned[bubble_type]
 
-        filename = ':'.join(['%s=%s' % (str(size), str(fraction)) for size, fraction in config.items()])
-        filename = 'plot_' + filename
-        dist_plot(naive_error, pred_error, 'Naive Error', 'Model Error', '%(filename)s:app_count=%(size)s.dist.pdf' % locals())
+        filename = '.'.join(['%s:%s' % (str(s), str(fraction)) for s, fraction in config.items()])
+        filename = 'plot.' + filename
+        dist_plot(pruned[pruned['naive_error'] > cutoff]['naive_error'], pruned[pruned['pred_error'] > cutoff]['pred_error'], 'Naive Error', 'Model Error', '%(filename)s.app_count:%(size)s.dist.pdf' % locals())
 
     for app in apps:
-        pruned = data[data[app] > 0]
-        naive_error = 100 * (pruned[bubble_type] - pruned['naive_sum_bubble']) / pruned[bubble_type]
-        pred_error = 100 * (pruned[bubble_type] - pruned['pred_bubble']) / pruned[bubble_type]
+        pruned = pd.DataFrame(data[data[app] > 0])
+        pruned['naive_error'] = 100 * (pruned[bubble_type] - pruned['naive_sum_bubble']) / pruned[bubble_type]
+        pruned['pred_error'] = 100 * (pruned[bubble_type] - pruned['pred_bubble']) / pruned[bubble_type]
 
-        filename = ':'.join(['%s=%s' % (str(size), str(fraction)) for size, fraction in config.items()])
-        filename = 'plot_' + filename
-        dist_plot(naive_error, pred_error, 'Naive Error', 'Model Error', '%(filename)s:app=%(app)s.dist.pdf' % locals())
+        filename = '.'.join(['%s:%s' % (str(size), str(fraction)) for size, fraction in config.items()])
+        filename = 'plot.' + filename
+        dist_plot(pruned[pruned['naive_error'] > cutoff]['naive_error'], pruned[pruned['pred_error'] > cutoff]['pred_error'], 'Naive Error', 'Model Error', '%(filename)s.app:%(app)s.dist.pdf' % locals())
 
 def curve_plot(data, metric, fraction, label, filename):
     d = data.sort(fraction)
     sns.pointplot(data=d, estimator=np.median, y=metric, x=fraction, join=True)
-    plot.ylabel(label)
+    plt.ylabel(label)
     plt.legend()
     plt.savefig(filename)
     plt.close('all')
@@ -92,7 +94,6 @@ def curve_plotting(configurations, data, apps):
         data:
         apps:
     """
-    sizes = [size for size in configurations]
     # For now, trim to only include situations with equal fractions per co-location count
     for i in range(0, len(sizes) - 1):
         size_a = sizes[i]
@@ -200,7 +201,7 @@ def main():
         i = 0
         for size in samples:
             sample = samples[size]
-            for idx, applications in sample['apps'].items():
+            for idx, applications in sample['apps'].iteritems():
                 rhs[i, 0] = sample['mean_bubble'][idx]
                 for app in applications.split('.'):
                     equation_matrix[i, idxs[app]] += 1
@@ -243,7 +244,7 @@ def main():
         data['naive_sum_bubble'] = naive
 
         # Track stats across multiple sample sizes
-        error = data[bubble_type] - data['pred_bubble']
+        error = 100*(data[bubble_type] - data['pred_bubble'])/data[bubble_type]
 
         for size, fraction in configuration.items():
             error_data['%(size)d_fraction' % locals()].append(fraction)

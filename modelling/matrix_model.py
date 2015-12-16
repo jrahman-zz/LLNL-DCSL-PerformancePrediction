@@ -47,7 +47,6 @@ so in turn we attempt to find a solution with minimum error
 
  # Meta information
 bubble_type = 'mean_bubble'
-#sample_fractions = [0.05, 0.1, 0.15, 0.2, 0.25]
 sample_fractions = [0.05, 0.1, 0.2, 0.3]
 sizes = [2, 3]
 
@@ -59,29 +58,31 @@ def dist_plot(naive_data, pred_data, naive_label, pred_label, filename):
     plt.close('all')
 
 def dist_plotting(config, data, apps):
+    cutoff = -150
     
-    cutoff = -160
+    def func(data, filename):
+        d = pd.DataFrame(data)
+        d['naive_error'] = 100 * (d[bubble_type] - d['naive_sum_bubble']) / d[bubble_type]
+        d['pred_error'] = 100 * (d[bubble_type] - d['pred_bubble']) / d[bubble_type]
+        f = d[d['naive_error'] > cutoff]
+        g = d[d['pred_error'] > cutoff]
+        dist_plot(f['naive_error'], g['pred_error'], 'Naive Error', 'Model Error', filename)
+
+    base_filename = '.'.join(['%s:%s' % (str(s), str(fraction)) for s, fraction in config.items()])
+    filename = 'plot.%(base_filename)s.dist.pdf' % locals()
+    func(data, filename)
+
     for size in config:
-        pruned = pd.DataFrame(data[data['app_count'] == size])
-        pruned['naive_error'] = 100 * (pruned[bubble_type] - pruned['naive_sum_bubble']) / pruned[bubble_type]
-        pruned['pred_error'] = 100 * (pruned[bubble_type] - pruned['pred_bubble']) / pruned[bubble_type]
-
-        filename = '.'.join(['%s:%s' % (str(s), str(fraction)) for s, fraction in config.items()])
-        filename = 'plot.' + filename
-        dist_plot(pruned[pruned['naive_error'] > cutoff]['naive_error'], pruned[pruned['pred_error'] > cutoff]['pred_error'], 'Naive Error', 'Model Error', '%(filename)s.app_count:%(size)s.dist.pdf' % locals())
-
+        filename = 'plot.%(base_filename)s.app_count:%(size)s.dist.pdf' % locals()
+        func(data[data['app_count'] == size], filename)
+    
     for app in apps:
-        pruned = pd.DataFrame(data[data[app] > 0])
-        pruned['naive_error'] = 100 * (pruned[bubble_type] - pruned['naive_sum_bubble']) / pruned[bubble_type]
-        pruned['pred_error'] = 100 * (pruned[bubble_type] - pruned['pred_bubble']) / pruned[bubble_type]
-
-        filename = '.'.join(['%s:%s' % (str(size), str(fraction)) for size, fraction in config.items()])
-        filename = 'plot.' + filename
-        dist_plot(pruned[pruned['naive_error'] > cutoff]['naive_error'], pruned[pruned['pred_error'] > cutoff]['pred_error'], 'Naive Error', 'Model Error', '%(filename)s.app:%(app)s.dist.pdf' % locals())
+        filename = 'plot.%(base_filename)s.app:%(app)s.dist.pdf' % locals()
+        func(data[data['app'] > 0], filename)
 
 def curve_plot(data, metric, fraction, label, filename):
     d = data.sort(fraction)
-    sns.pointplot(data=d, estimator=np.median, y=metric, x=fraction, join=True)
+    sns.pointplot(data=d, estimator=np.median, y=metric, x=fraction, hue='type', join=True, markers=['^', 'D', 'o'])
     plt.ylabel(label)
     plt.legend()
     plt.savefig(filename)
@@ -105,7 +106,7 @@ def curve_plotting(configurations, data, apps):
         label = metric
         curve_plot(data, metric, fraction, label, filename)
 
-def evaluate(config, data, apps):
+def print_evaluation(config, data, apps):
     config_prefix = ':'.join(['%(key)d=%(value)f' % locals() for key, value in config.items()])
     model_types = {'pred_bubble': 'MM', 'naive_sum_bubble': 'NS'}
     for model_type, model_prefix in model_types.items():
@@ -143,29 +144,170 @@ def evaluate(config, data, apps):
             print('%(model_prefix)s,app=%(app)s,std,%(std)f' % locals())
 
 
+def create_model(data, bubble_sizes, apps, configuration):
+   
+    idxs = {apps[i]: i for i in range(len(apps))}
+    # Stratified sampling
+    samples = dict()
+    for size in configuration:
+        grouped = data.groupby('apps', as_index=False).agg({bubble_type: np.mean})
+        samples[size] = grouped.sample(frac=configuration[size])
+
+    size = sum([len(sample) for sample in samples.values()])
+     
+    # Square matrix with bubble sizes on axis
+    bubble_matrix = npmat.zeros((len(apps), len(apps)))
+    for app in apps:
+        idx = idxs[app]
+        bubble_matrix[idx,idx] = bubble_sizes[app]
+
+    rows = size
+    columns = len(apps)
+
+    equation_matrix = npmat.zeros((rows, columns))
+    rhs = npmat.zeros((rows, 1))
+    naive_sum = npmat.zeros((rows, 1))
+    i = 0
+    for size in samples:
+        sample = samples[size]
+        for idx, applications in sample['apps'].iteritems():
+            rhs[i, 0] = sample['mean_bubble'][idx]
+            for app in applications.split('.'):
+                equation_matrix[i, idxs[app]] += 1
+                naive_sum[i,0] += bubble_sizes[app]
+            i += 1
+
+    final_equation_matrix = equation_matrix * bubble_matrix
+    
+    # Find least squares solution to over-determined system
+    sol, residuals, rank, s = npla.lstsq(final_equation_matrix, rhs)
+    
+    #diff = naive_sum - rhs
+    #residual_rmse = np.sqrt(diff.T * diff / columns)
+    #max_error = np.max(diff)
+    #std = np.std(diff)
+    #mean_error = np.mean(diff)
+
+    diff = 100 * (rhs - final_equation_matrix * sol) / rhs
+    residual_rmse = np.sqrt(diff.T * diff / columns)
+    max_error = np.max(np.abs(diff))
+    std = np.std(diff)
+    mean_error = np.mean(diff)
+    median_error = np.median(diff,axis=0)[0, 0]
+    
+    return sol, {
+                    'train.mean_error': mean_error,
+                    'train.median_error': median_error,
+                    'train.max_error': max_error,
+                    'train.std': std
+                }
+
+def evaluate(data, bubble_sizes, apps, configuration):
+    
+    idxs = {apps[i]: i for i in range(len(apps))}
+
+    sol, train_stats = create_model(data, bubble_sizes, apps, configuration)
+
+    # Build evaluation error on entire set
+    pred = np.zeros(len(data))
+    naive = np.zeros(len(data))
+    for app in idxs:
+        pred += data[app] * sol[idxs[app], 0] * bubble_sizes[app]
+
+    # Track stats across multiple sample sizes
+    error = 100*(data[bubble_type] - pred)/data[bubble_type]
+
+    max_error = np.max(np.abs(error))
+    mean_error = np.mean(error)
+    median_error = np.mean(error)
+    std = np.std(error)
+
+    test_stats = {
+                    'test.max_error': np.max(np.abs(error)),
+                    'test.mean_error': np.mean(error),
+                    'test.median_error': np.median(error),
+                    'test.std': np.median(error)
+                 }
+
+    for size, fraction in configuration.items():
+        test_stats['%(size)d_fraction' % locals()] = fraction
+
+    test_stats.update(train_stats)
+    return sol, pred, test_stats
+
+def build_error_distributions(data, bubble_sizes, apps, configurations):
+    
+    idxs = {apps[i]: i for i in range(len(apps))}
+    for configuration in configurations:
+        sol, pred, stats = evaluate(data, bubble_sizes, apps, configuration)
+        data['pred_bubble'] = pred
+        
+        # Build naive sum estimate
+        naive_sum = np.zeros(len(data))
+        for app in idxs:
+            naive_sum += bubble_sizes[app] * data[app]
+        data['naive_sum_bubble'] = naive_sum
+        dist_plotting(configuration, data, apps)
+        print_evaluation(configuration, data, apps)
+
+def build_learning_curves(data, bubble_sizes, apps, configurations):
+
+    idxs = {apps[i]: i for i in range(len(apps))}
+    # Dictionary to hold error data for learning curves
+    error_data = {'%(size)d_fraction' % locals(): [] for size in sizes}
+    error_data['rep'] = []
+    error_data['type'] = []
+    metrics = ['mean_error', 'median_error', 'max_error', 'std']
+    for metric in metrics:
+        error_data[metric] = []
+
+    # Compute naive error stats
+    naive_error = np.zeros(len(data))
+    for app in idxs:
+        naive_error += data[app] * bubble_sizes[app]
+    naive_error = 100 * (data[bubble_type] - naive_error) / data[bubble_type]
+    naive_stats = {
+                    'naive_sum.mean_error': np.mean(naive_error),
+                    'naive_sum.median_error': np.median(naive_error),
+                    'naive_sum.max_error': np.max(np.abs(naive_error)),
+                    'naive_sum.std': np.std(naive_error)
+                  }
+
+    reps = 50
+    for configuration in configurations:
+        print('Building for config: ' + str(configuration))
+        for rep in range(reps):
+            sol, pred, stats = evaluate(data, bubble_sizes, apps, configuration)
+            stats.update(naive_stats)
+            for prefix in ['test', 'train', 'naive_sum']:
+                error_data['type'].append(prefix)
+                for metric in metrics:
+                    error_data[metric].append(stats['%(prefix)s.%(metric)s' % locals()])
+                error_data['rep'].append(rep)
+                for size in sizes:
+                    key = '%(size)d_fraction' % locals()
+                    error_data[key].append(stats[key])
+
+    error_data = pd.DataFrame(error_data)
+    print(error_data)
+    curve_plotting(configurations, error_data, apps)
+
 def main():
  
     # Create fraction configurations
     fracs = [sample_fractions for i in range(len(sizes))]
     fractions = itertools.product(*fracs)
     configurations = [{sizes[i]: tup[i] for i in range(len(sizes))} for tup in fractions]
-
-    # Dictionary to hold error data for learning curves
-    error_data = {'%(size)d_fraction' % locals(): [] for size in sizes}
-    for metric in ['mean_error', 'median_error', 'max_error', 'std']:
-        error_data[metric] = []
     
     # Raw Data
     bubble_sizes, none = util.read_single_app_bubbles('single_bubble_sizes')
-    data = util.read_data('experiment_data')
+    data = util.read_contention_data('experiment_data')
 
     # Get set of applications in use
     apps = []
     for app_set in data['apps']:
         apps += [app for app in app_set.split('.')]
     apps = list(set(apps))
-
-    idxs = {apps[i]: i for i in range(len(apps))}
  
     # Pre-NaN filter count
     count = len(data)
@@ -174,90 +316,9 @@ def main():
     data = pd.DataFrame(data[data[bubble_type] == data[bubble_type]])
     print('Filtered %d NaN rows' %(count - len(data)))
 
-    for configuration in configurations:
-        # Stratified sampling
-        samples = dict()
-        for size in configuration:
-            grouped = data.groupby('apps', as_index=False).agg({bubble_type: np.mean})
-            sd = data.groupby('apps', as_index=False).agg({bubble_type: np.std})
-            samples[size] = grouped.sample(frac=configuration[size])
-
-        size = sum([len(sample) for sample in samples.values()])
-     
-        # Square matrix with bubble sizes on axis
-        bubble_matrix = npmat.zeros((len(apps), len(apps)))
-        for app in apps:
-            idx = idxs[app]
-            bubble_matrix[idx,idx] = bubble_sizes[app]
-
-        rows = size
-        columns = len(apps)
-
-        print('Rows: %(rows)d, columns: %(columns)d' % locals())
-
-        equation_matrix = npmat.zeros((rows, columns))
-        rhs = npmat.zeros((rows, 1))
-        naive_sum = npmat.zeros((rows, 1))
-        i = 0
-        for size in samples:
-            sample = samples[size]
-            for idx, applications in sample['apps'].iteritems():
-                rhs[i, 0] = sample['mean_bubble'][idx]
-                for app in applications.split('.'):
-                    equation_matrix[i, idxs[app]] += 1
-                    naive_sum[i,0] += bubble_sizes[app]
-                i += 1
-
-        final_equation_matrix = equation_matrix * bubble_matrix
-        print(str(final_equation_matrix) + ' = ' + str(rhs))
-    
-        sol, residuals, rank, s = npla.lstsq(final_equation_matrix, rhs)
-        diff = final_equation_matrix * sol
-        diff = diff - rhs
-        residual_rmse = np.sqrt(diff.T * diff / columns)
-        max_error = np.max(diff)
-        std = np.std(diff)
-        mean_error = np.mean(diff)
-        print('MM,rank,%(rank)d' % locals())
-        print('MM,residual_rmse,%(residual_rmse)f' % locals())
-        print('MM,train_max_error,%(max_error)f' % locals())
-        print('MM,train_std,%(std)f' % locals())
-        print('MM,train_mean_error,%(mean_error)f' % locals())
-    
-        diff = naive_sum - rhs
-        residual_rmse = np.sqrt(diff.T * diff / columns)
-        max_error = np.max(diff)
-        std = np.std(diff)
-        mean_error = np.mean(diff)
-        print('NS,residual_rmse,%(residual_rmse)f' % locals())
-        print('NS,max_error,%(max_error)f' % locals())
-        print('NS,std,%(std)f' % locals())
-        print('NS,mean_error,%(mean_error)f' % locals())
-
-        # Build evaluation error on entire set
-        pred = np.zeros(len(data))
-        naive = np.zeros(len(data))
-        for app in idxs:
-            pred += data[app] * sol[idxs[app], 0] * bubble_sizes[app]
-            naive += data[app] * bubble_sizes[app]
-        data['pred_bubble'] = pred
-        data['naive_sum_bubble'] = naive
-
-        # Track stats across multiple sample sizes
-        error = 100*(data[bubble_type] - data['pred_bubble'])/data[bubble_type]
-
-        for size, fraction in configuration.items():
-            error_data['%(size)d_fraction' % locals()].append(fraction)
-        error_data['mean_error'].append(np.mean(error))
-        error_data['median_error'].append(np.median(error))
-        error_data['max_error'].append(np.max(np.abs(error)))
-        error_data['std'].append(np.std(error))
-
-        dist_plotting(configuration, data, apps)
-        evaluate(configuration, data, apps)
-    
-    error_data = pd.DataFrame(error_data)
-    curve_plotting(configurations, error_data, apps)
+    #build_error_distributions(data, bubble_sizes, apps, configurations)  
+ 
+    build_learning_curves(data, bubble_sizes, apps, configurations)     
 
 if __name__ == '__main__':
     main()

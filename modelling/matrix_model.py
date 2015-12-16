@@ -226,7 +226,7 @@ def evaluate(data, bubble_sizes, apps, configuration):
                     'test.max_error': np.max(np.abs(error)),
                     'test.mean_error': np.mean(error),
                     'test.median_error': np.median(error),
-                    'test.std': np.median(error)
+                    'test.std': np.std(error)
                  }
 
     for size, fraction in configuration.items():

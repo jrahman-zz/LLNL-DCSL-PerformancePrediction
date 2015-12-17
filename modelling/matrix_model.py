@@ -47,7 +47,7 @@ so in turn we attempt to find a solution with minimum error
 
  # Meta information
 bubble_type = 'mean_bubble'
-sample_fractions = [0.05, 0.1, 0.2, 0.3]
+sample_fractions = [0.01, 0.025, 0.05, 0.1, 0.2, 0.3]
 sizes = [2, 3]
 
 def dist_plot(naive_data, pred_data, naive_label, pred_label, filename):
@@ -78,7 +78,7 @@ def dist_plotting(config, data, apps):
     
     for app in apps:
         filename = 'plot.%(base_filename)s.app:%(app)s.dist.pdf' % locals()
-        func(data[data['app'] > 0], filename)
+        func(data[data[app] > 0], filename)
 
 def curve_plot(data, metric, fraction, label, filename):
     d = data.sort(fraction)
@@ -182,18 +182,12 @@ def create_model(data, bubble_sizes, apps, configuration):
     # Find least squares solution to over-determined system
     sol, residuals, rank, s = npla.lstsq(final_equation_matrix, rhs)
     
-    #diff = naive_sum - rhs
-    #residual_rmse = np.sqrt(diff.T * diff / columns)
-    #max_error = np.max(diff)
-    #std = np.std(diff)
-    #mean_error = np.mean(diff)
-
     diff = 100 * (rhs - final_equation_matrix * sol) / rhs
     residual_rmse = np.sqrt(diff.T * diff / columns)
     max_error = np.max(np.abs(diff))
     std = np.std(diff)
-    mean_error = np.mean(diff)
-    median_error = np.median(diff,axis=0)[0, 0]
+    mean_error = abs(np.mean(diff))
+    median_error = abs(np.median(diff,axis=0)[0, 0])
     
     return sol, {
                     'train.mean_error': mean_error,
@@ -224,8 +218,8 @@ def evaluate(data, bubble_sizes, apps, configuration):
 
     test_stats = {
                     'test.max_error': np.max(np.abs(error)),
-                    'test.mean_error': np.mean(error),
-                    'test.median_error': np.median(error),
+                    'test.mean_error': abs(np.mean(error)),
+                    'test.median_error': abs(np.median(error)),
                     'test.std': np.std(error)
                  }
 
@@ -267,8 +261,8 @@ def build_learning_curves(data, bubble_sizes, apps, configurations):
         naive_error += data[app] * bubble_sizes[app]
     naive_error = 100 * (data[bubble_type] - naive_error) / data[bubble_type]
     naive_stats = {
-                    'naive_sum.mean_error': np.mean(naive_error),
-                    'naive_sum.median_error': np.median(naive_error),
+                    'naive_sum.mean_error': abs(np.mean(naive_error)),
+                    'naive_sum.median_error': abs(np.median(naive_error)),
                     'naive_sum.max_error': np.max(np.abs(naive_error)),
                     'naive_sum.std': np.std(naive_error)
                   }
@@ -289,7 +283,6 @@ def build_learning_curves(data, bubble_sizes, apps, configurations):
                     error_data[key].append(stats[key])
 
     error_data = pd.DataFrame(error_data)
-    print(error_data)
     curve_plotting(configurations, error_data, apps)
 
 def main():
@@ -316,7 +309,7 @@ def main():
     data = pd.DataFrame(data[data[bubble_type] == data[bubble_type]])
     print('Filtered %d NaN rows' %(count - len(data)))
 
-    #build_error_distributions(data, bubble_sizes, apps, configurations)  
+    build_error_distributions(data, bubble_sizes, apps, configurations)  
  
     build_learning_curves(data, bubble_sizes, apps, configurations)     
 

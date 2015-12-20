@@ -25,7 +25,7 @@ if [ $? -ne 0 ]; then
     exit 4
 fi
 cd matplotlib
-python setup.py install
+~/py27/bin/python setup.py install
 if [ $? -ne 0 ]; then
     cd ..
     rm -rf matplotlib

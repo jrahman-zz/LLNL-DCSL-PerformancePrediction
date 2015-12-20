@@ -3,6 +3,29 @@
 import pandas as pd
 import numpy as np
 
+from scipy import interpolate
+
+# interpolate.interp1d(x, y, kind=1)
+
+def load_sensitivity_curves(filename):
+    """
+    Load and construct sensitivity curves for all
+    """
+    data = pd.read_csv(filename, engine='c')
+    
+    curves = dict()
+
+    # Key contains qos_app-metric pairs
+    for key, group in data.groupby('key'):
+        qos_app, metric = key.split('-')
+        if qos_app not in curves:
+            curves[qos_app] = dict()
+        values = group.groupby('bubble_size_kb', as_index=False).agg({'value': np.mean})
+        x = values['bubble_size_kb']
+        y = values['value']
+        curves[qos_app][metric] = interpolate.interp1d(x, y, kind=1)
+    return curves
+        
 def read_experiment_list():
     experiments = []
     with open('completed_experiments', 'r') as f:
@@ -75,7 +98,7 @@ def parse_row(row):
     parsed['app_count'] = len(apps) / 3
     return parsed
 
-def read_data(filename):
+def read_contention_data(filename):
     """ Format is
         '(suite bmark cores)+ rep mean_ipc mean_bubble median_ipc median_bubble' 
     """

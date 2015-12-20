@@ -45,8 +45,8 @@ def create_training(apps, data, fraction, app_count):
         # Try to fill in at least one entry per column first
         column_key = '.'.join(sorted(combination))
         filled_fraction = float(filled_entries) / float(total_entries)
-        print(filled_fraction, target_fraction)
-        if len(columns[column_key]) == 0 and filled_fraction < target_fraction:
+        print(filled_fraction, fraction)
+        if len(columns[column_key]) == 0 and filled_fraction < fraction:
             # Pick a random row (app) within the column
             choice = random.choice(apps)
             while choice in columns[column_key]:
@@ -70,7 +70,7 @@ def create_training(apps, data, fraction, app_count):
     all_keys = [sorted(c) for c in itertools.combinations(apps, app_count)]
     random.shuffle(all_keys)
     idx = 0
-    while idx < len(all_keys) and float(filled_entries) / float(total_entries) < target_fraction:
+    while idx < len(all_keys) and float(filled_entries) / float(total_entries) < fraction:
         entry_apps = all_keys[idx]
         idx += 1
         entry_key = '.'.join(entry_apps)

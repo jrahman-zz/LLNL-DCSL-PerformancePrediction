@@ -51,8 +51,8 @@ sample_fractions = [0.01, 0.025, 0.05, 0.1, 0.2, 0.3]
 sizes = [2, 3]
 
 def dist_plot(naive_data, pred_data, naive_label, pred_label, filename):
-    sns.distplot(naive_data, kde=False, rug=False, label=naive_label, axlabel='100*(observed_bubble - prediction)/observed_bubble')
-    sns.distplot(pred_data, kde=False, rug=False, label=pred_label, axlabel='100*(observed_bubble - prediction)/observed_bubble')
+    sns.distplot(naive_data, kde=True, rug=False, label=naive_label, axlabel='100*(ObservedBubble - prediction)/ObservedBubble')
+    sns.distplot(pred_data, kde=True, rug=False, label=pred_label, axlabel='100*(observed_bubble - prediction)/ObservedBubble')
     plt.legend()
     plt.savefig(filename)
     plt.close('all')

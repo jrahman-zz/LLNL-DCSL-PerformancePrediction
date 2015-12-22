@@ -90,16 +90,16 @@ def start_and_load_qos(qos_app, qos_data_dir, qos_cores, driver_params):
         subprocess.check_call(loadcmd)
     except Exception as e:
         # In the event of a load failure, terminate the QoS app
-        if qos_pid is not None:
-            subprocess.check_call(['kill', '%(qos_pid)d' % locals()])
-        raise # Retrow th exception so it can bubble upward
+        if qos_proc.poll() is None:
+            kill_process_group(qos_proc)
+        raise # Retrow the exception so it can bubble upward
 
-    # Sleep for 10 seconds to allow the QoS application to settle after loading
+    # Sleep for 5 seconds to allow the QoS application to settle after loading
     logging.info("Sleeping for QoS to settle after loading")
     time.sleep(5)
 
-    # Read the PID file that the 
-    return qos_pid
+    # Return the parent process for the QoS app
+    return qos_proc, qos_pid
 
 def create_qos_app_directory():
     return subprocess.check_output(['/bin/mktemp', '--directory']).decode('utf-8').strip()

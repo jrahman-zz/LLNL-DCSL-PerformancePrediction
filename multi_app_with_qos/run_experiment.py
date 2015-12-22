@@ -140,7 +140,7 @@ def run_experiment(params, output_base, rep):
     qos_data_dir = None
     try: 
         qos_data_dir = driver.create_qos_app_directory()
-        qos_pid = driver.start_and_load_qos(qos_app, qos_data_dir, qos_cores, driver_params)
+        qos_pid, qos_proc = driver.start_and_load_qos(qos_app, qos_data_dir, qos_cores, driver_params)
 
         ensure_data_dir()
 
@@ -195,8 +195,8 @@ def run_experiment(params, output_base, rep):
     finally:
         #subrata: now kill the qos app as well. We will relaunch it during next experiment run
 
-        if qos_pid is not None:
-            subprocess.check_call(['/bin/kill', str(qos_pid)])
+        if qos_proc.poll() is None:
+            driver.kill_process_group(qos_proc)
             time.sleep(10) # Wait for QoS app to fully terminate
 
         #subrata: now since this experiment has completed, remove the directory used for data store

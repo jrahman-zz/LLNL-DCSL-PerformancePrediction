@@ -41,13 +41,13 @@ def main(qos_app, driver_params, rep):
         try:
             bubble_proc = run_bubble(size)
             qos_data_dir = driver.create_qos_app_directory()
-            qos_pid = driver.start_and_load_qos(qos_app, qos_data_dir, QOS_CORES, driver_params)
+            qos_proc, qos_pid = driver.start_and_load_qos(qos_app, qos_data_dir, QOS_CORES, driver_params)
             driver.run_driver(output_base, qos_app, qos_pid, DRIVER_CORES, driver_params)
         finally:
             if bubble_proc is not None:
                 driver.kill_process_group(bubble_proc)
             if qos_pid is not None:
-                subprocess.check_call(['/bin/kill', str(qos_pid)])
+                driver.kill_process_group(qos_proc)
                 time.sleep(15) # Wait for QoS application to fully terminate
             if qos_data_dir is not None:
                 driver.remove_dir(qos_data_dir)

@@ -51,21 +51,21 @@ sample_fractions = [0.01, 0.025, 0.05, 0.1, 0.2, 0.3]
 sizes = [2, 3]
 
 def dist_plot(naive_data, pred_data, naive_label, pred_label, filename):
-    sns.distplot(naive_data, kde=True, rug=False, label=naive_label, axlabel='100*(ObservedBubble - prediction)/ObservedBubble')
-    sns.distplot(pred_data, kde=True, rug=False, label=pred_label, axlabel='100*(observed_bubble - prediction)/ObservedBubble')
+    sns.distplot(naive_data, kde=True, rug=False, label=naive_label, axlabel='100*(prediction - ObservedBubble)/ObservedBubble')
+    sns.distplot(pred_data, kde=True, rug=False, label=pred_label, axlabel='100*(prediction - ObservedBubble)/ObservedBubble')
     plt.legend()
     plt.savefig(filename)
     plt.close('all')
 
 def dist_plotting(config, data, apps):
-    cutoff = -150
+    cutoff = 150
     
     def func(data, filename):
         d = pd.DataFrame(data)
-        d['naive_error'] = 100 * (d[bubble_type] - d['naive_sum_bubble']) / d[bubble_type]
-        d['pred_error'] = 100 * (d[bubble_type] - d['pred_bubble']) / d[bubble_type]
-        f = d[d['naive_error'] > cutoff]
-        g = d[d['pred_error'] > cutoff]
+        d['naive_error'] = 100 * (d['naive_sum_bubble'] - d[bubble_type]) / d[bubble_type]
+        d['pred_error'] = 100 * (d['pred_bubble'] - d[bubble_type]) / d[bubble_type]
+        f = d[(d['naive_error'] < cutoff) & (d['naive_error'] > -cutoff)]
+        g = d[(d['pred_error'] < cutoff) & (d['pred_error'] > -cutoff)]
         dist_plot(f['naive_error'], g['pred_error'], 'Naive Error', 'Model Error', filename)
 
     base_filename = '.'.join(['%s:%s' % (str(s), str(fraction)) for s, fraction in config.items()])
@@ -100,7 +100,7 @@ def curve_plotting(configurations, data, apps):
         size_a = sizes[i]
         size_b = sizes[i + 1]
         data = data[data['%(size_a)d_fraction' % locals()] == data['%(size_b)d_fraction' % locals()]]       
-    for metric in ['mean_error', 'median_error', 'max_error', 'std']:
+    for metric in ['mean_error', 'median_error', 'p95_error', 'std']:
         filename = 'metric:%(metric)s.learning_curve.pdf' % locals()
         fraction='2_fraction'
         label = metric
@@ -182,9 +182,9 @@ def create_model(data, bubble_sizes, apps, configuration):
     # Find least squares solution to over-determined system
     sol, residuals, rank, s = npla.lstsq(final_equation_matrix, rhs)
     
-    diff = 100 * (rhs - final_equation_matrix * sol) / rhs
+    diff = 100 * (final_equation_matrix * sol - rhs) / rhs
     residual_rmse = np.sqrt(diff.T * diff / columns)
-    max_error = np.max(np.abs(diff))
+    p95_error = np.percentile(np.abs(diff), 95)
     std = np.std(diff)
     mean_error = abs(np.mean(diff))
     median_error = abs(np.median(diff,axis=0)[0, 0])
@@ -192,7 +192,7 @@ def create_model(data, bubble_sizes, apps, configuration):
     return sol, {
                     'train.mean_error': mean_error,
                     'train.median_error': median_error,
-                    'train.max_error': max_error,
+                    'train.p95_error': p95_error,
                     'train.std': std
                 }
 
@@ -209,18 +209,18 @@ def evaluate(data, bubble_sizes, apps, configuration):
         pred += data[app] * sol[idxs[app], 0] * bubble_sizes[app]
 
     # Track stats across multiple sample sizes
-    error = 100*(data[bubble_type] - pred)/data[bubble_type]
+    error = 100*(pred - data[bubble_type])/data[bubble_type]
 
-    max_error = np.max(np.abs(error))
-    mean_error = np.mean(error)
-    median_error = np.mean(error)
+    p95_error = np.percentile(np.abs(error), 95)
+    mean_error = np.abs(np.mean(error))
+    median_error = np.abs(np.median(error))
     std = np.std(error)
 
     test_stats = {
-                    'test.max_error': np.max(np.abs(error)),
-                    'test.mean_error': abs(np.mean(error)),
-                    'test.median_error': abs(np.median(error)),
-                    'test.std': np.std(error)
+                    'test.p95_error': p95_error,
+                    'test.mean_error': mean_error,
+                    'test.median_error': median_error,
+                    'test.std': std
                  }
 
     for size, fraction in configuration.items():
@@ -251,7 +251,7 @@ def build_learning_curves(data, bubble_sizes, apps, configurations):
     error_data = {'%(size)d_fraction' % locals(): [] for size in sizes}
     error_data['rep'] = []
     error_data['type'] = []
-    metrics = ['mean_error', 'median_error', 'max_error', 'std']
+    metrics = ['mean_error', 'median_error', 'p95_error', 'std']
     for metric in metrics:
         error_data[metric] = []
 
@@ -261,9 +261,9 @@ def build_learning_curves(data, bubble_sizes, apps, configurations):
         naive_error += data[app] * bubble_sizes[app]
     naive_error = 100 * (data[bubble_type] - naive_error) / data[bubble_type]
     naive_stats = {
-                    'naive_sum.mean_error': abs(np.mean(naive_error)),
-                    'naive_sum.median_error': abs(np.median(naive_error)),
-                    'naive_sum.max_error': np.max(np.abs(naive_error)),
+                    'naive_sum.mean_error': np.abs(np.mean(naive_error)),
+                    'naive_sum.median_error': np.abs(np.median(naive_error)),
+                    'naive_sum.p95_error': np.percentile(np.abs(naive_error), 95),
                     'naive_sum.std': np.std(naive_error)
                   }
 

@@ -4,10 +4,10 @@ import numpy as np
 import numpy.linalg as npla
 import numpy.matlib as npmat
 import pandas as pd
-import seaborn as sns
 import matplotlib
-matplotlib.use('pdf')
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 import itertools
 import util
@@ -69,15 +69,15 @@ def dist_plotting(config, data, apps):
         dist_plot(f['naive_error'], g['pred_error'], 'Naive Error', 'Model Error', filename)
 
     base_filename = '.'.join(['%s:%s' % (str(s), str(fraction)) for s, fraction in config.items()])
-    filename = 'plot.%(base_filename)s.dist.pdf' % locals()
+    filename = 'plot.%(base_filename)s.dist.png' % locals()
     func(data, filename)
 
     for size in config:
-        filename = 'plot.%(base_filename)s.app_count:%(size)s.dist.pdf' % locals()
+        filename = 'plot.%(base_filename)s.app_count:%(size)s.dist.png' % locals()
         func(data[data['app_count'] == size], filename)
     
     for app in apps:
-        filename = 'plot.%(base_filename)s.app:%(app)s.dist.pdf' % locals()
+        filename = 'plot.%(base_filename)s.app:%(app)s.dist.png' % locals()
         func(data[data[app] > 0], filename)
 
 def curve_plot(data, metric, fraction, label, filename):
@@ -101,7 +101,7 @@ def curve_plotting(configurations, data, apps):
         size_b = sizes[i + 1]
         data = data[data['%(size_a)d_fraction' % locals()] == data['%(size_b)d_fraction' % locals()]]       
     for metric in ['mean_error', 'median_error', 'p95_error', 'std']:
-        filename = 'metric:%(metric)s.learning_curve.pdf' % locals()
+        filename = 'metric:%(metric)s.learning_curve.png' % locals()
         fraction='2_fraction'
         label = metric
         curve_plot(data, metric, fraction, label, filename)

@@ -140,7 +140,7 @@ def run_experiment(params, output_base, rep):
     qos_data_dir = None
     try: 
         qos_data_dir = driver.create_qos_app_directory()
-        qos_pid, qos_proc = driver.start_and_load_qos(qos_app, qos_data_dir, qos_cores, driver_params)
+        qos_proc, qos_pid = driver.start_and_load_qos(qos_app, qos_data_dir, qos_cores, driver_params)
 
         ensure_data_dir()
 

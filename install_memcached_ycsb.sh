@@ -9,10 +9,12 @@ YCSBDIR="${APPS_DIR}/ycsb-${YCSB_VERSION}"
 if [ ! -d "${YCSBDIR}" ]; then
     mkdir -p $YCSBSOURCE
     cp ycsb.pom ${YCSBSOURCE}
+    cp ycsb_distribution.pom ${YCSBSOURCE}
     cd $YCSBSOURCE
     rm -rf YCSB
     git clone https://github.com/brianfrankcooper/YCSB.git
     mv ycsb.pom YCSB/pom.xml
+    mv ycsb_distribution.pom YCSB/distribution/pom.xml
     cd YCSB/
     mvn clean package
     cp distribution/target/ycsb-${YCSB_VERSION}.tar.gz "${APPS_DIR}"

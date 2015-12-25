@@ -8,7 +8,7 @@ import subprocess
 import logging
 
 import matplotlib
-matplotlib.use('pdf')
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -91,11 +91,13 @@ def process_sensitivity(filename):
     
     for level, group in data.groupby('key'):
         d = group.sort('bubble_size_kb')
-        print(level)
         sns.pointplot(data=d, estimator=np.median, y='value', x='bubble_size_kb', join=True)
+        locs, labels = plt.xticks()
+        plt.setp(labels, rotation=45)
         plt.ylabel(level)
+        plt.xlabel('Bubble Size (KB)')
         plt.legend()
-        plt.savefig(level + '.pdf')
+        plt.savefig(level + '.png')
         plt.close()
 
 if __name__ == '__main__':

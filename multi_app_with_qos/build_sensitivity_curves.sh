@@ -15,7 +15,7 @@ for REP in `seq 1 20`; do
 #!/bin/bash
 #MSUB -l nodes=1
 #MSUB -l partition=cab
-#MSUB -l walltime=5:00:00
+#MSUB -l walltime=3:00:00
 #MSUB -q pbatch
 #MSUB -V
 

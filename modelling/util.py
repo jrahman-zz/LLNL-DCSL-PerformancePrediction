@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 
 from scipy import interpolate
+from sklearn.isotonic import IsotonicRegression
 
 # interpolate.interp1d(x, y, kind=1)
 
@@ -13,17 +14,30 @@ def load_sensitivity_curves(filename):
     """
     data = pd.read_csv(filename, engine='c')
     
-    curves = dict()
+    def copy_curve(curve):
+        return lambda x: curve.predict([x])[0]
 
+    curves = dict()
+    
     # Key contains qos_app-metric pairs
-    for key, group in data.groupby('key'):
+    for key, group in data.groupby('key', sort=False):
         qos_app, metric = key.split('-')
         if qos_app not in curves:
             curves[qos_app] = dict()
         values = group.groupby('bubble_size_kb', as_index=False).agg({'value': np.mean})
+        
         x = values['bubble_size_kb']
         y = values['value']
-        curves[qos_app][metric] = interpolate.interp1d(x, y, kind=1)
+        start = y[0]
+        end = y[len(y) - 1]
+        if start < end:
+            increasing = True
+        else:
+            increasing = False
+        curve = IsotonicRegression(increasing=increasing)
+        curve.fit(x, y)
+        #curves[qos_app][metric] = interpolate.interp1d(x, y, kind=1)
+        curves[qos_app][metric] = copy_curve(curve)
     return curves
         
 def read_experiment_list():

@@ -24,6 +24,6 @@ srun -o ${OUTPUT_PATH} -n${NODES} -N${NODES} -c16 ~/mypy/bin/python ./run_sensit
 
 EOL
 } > "${OUTPUT_FILE}"
+        msub "${OUTPUT_FILE}"
     done < manifest/qos
-    msub "${OUTPUT_FILE}"
 done

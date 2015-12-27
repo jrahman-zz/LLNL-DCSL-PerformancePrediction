@@ -25,6 +25,30 @@ def get_mean_ipc(path):
     process_perf('tmp_exp', path)
     return mean_timeseries('tmp_exp.ipc')
 
+def parse_ab(path):
+
+    results = dict()
+
+    with open(path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            prefix = line[0:3]
+            if prefix == '95%':
+                value = int(line.split()[1])
+                results['READ.95thPercentileLatency(us)'] = value * 1000
+            elif prefix == '99%':
+                value = int(line.split()[1])
+                results['READ.99thPercentileLatency(us)'] = value * 1000
+            else:
+                prefix = line[0:6]
+                if prefix == 'Total:':
+                    value = float(line.split()[2])
+                    results['READ.AverageLatency(us)'] = value * 1000
+                elif prefix == 'Reques':
+                    value = float(line.split()[3]) * 1000
+                    results['OVERALL.Throughput(ops_per_sec)'] = value * 1000
+    return results
+
 def parse_ycsb(path):
     metrics = set([
                 'AverageLatency(us)',

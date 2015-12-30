@@ -114,5 +114,46 @@ def apps_to_experiment_name(apps, rep):
     output = str(len(apps)) + '_' + output + '_' + str(rep)
     return output
 
+def parse_ab(path):
+    results = dict()
+    with open(path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            prefix = line[0:3]
+            if prefix == '95%':
+                value = int(line.split()[1])
+                results['READ.95thPercentileLatency(us)'] = value * 1000
+            elif prefix == '99%':
+                value = int(line.split()[1])
+                results['READ.99thPercentileLatency(us)'] = value * 1000
+            else:
+                prefix = line[0:6]
+                if prefix == 'Total:':
+                    value = float(line.split()[2])
+                    results['READ.AverageLatency(us)'] = value * 1000
+                elif prefix == 'Reques':
+                    value = float(line.split()[3])
+                    results['OVERALL.Throughput(ops_per_sec)'] = value
+    return results
+
+def parse_ycsb(path):
+    metrics = set([
+                'AverageLatency(us)',
+                '95thPercentileLatency(us)',
+                '99thPercentileLatency(us)'
+                ])
+    categories = set(['[READ]', '[UPDATE]'])
+    total_runtime = 0
+    results = dict()
+    with open(path, 'r') as f:
+        for line in f:
+            data = line.strip().split(', ')
+            if data[0] == '[OVERALL]' and data[1] == 'Throughput(ops/sec)':
+                results[data[0][1:-1] + '.Throughput(ops_per_sec)'] = float(data[2])
+            if data[0] in categories and data[1] in metrics:
+                results[data[0][1:-1] + '.' + data[1]] = float(data[2])
+    return results
+
+
 if __name__ == '__main__':
     pass

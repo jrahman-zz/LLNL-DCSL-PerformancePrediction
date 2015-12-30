@@ -2,3 +2,10 @@
 
 FILES:
     bubble_sizes - File containing processed_data from single_app_contention
+                    Product of the single_app_contention set of experiments
+    experiment_data - File containing contention data for multiple applications
+                        with reporter to determine observed bubble size
+                    Product of the multi_app_contention set of experiments
+    metric_data - File containing QoS metrics from QoS applications co-located
+                    with batch applications
+                    Product of the multi_app_with_qos set of experiments

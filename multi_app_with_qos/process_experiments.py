@@ -3,69 +3,61 @@
 import util
 import subprocess
 import logging
+import sys
 
-def process_perf(experiment_name, input_file):
-    # input_file is the path to the reporter perf file
-    subprocess.check_call(['../processing/process_perf.py', experiment_name, input_file])
+def read_filelist(directory):
+    data_points = []
+    ycsb_apps = set(['mongodb', 'mysql', 'memcached', 'redis'])
+    files = subprocess.check_output(['ls', directory]).decode('utf-8').split('\n')
+    for f in files:
+        try:
+            values = f.split('.')
+            data_points.append({
+                'qos_app': values[0],
+                'app_count': values[1],
+                'filetype': values[-1],
+                'file': '%(directory)s/' % locals() + f.strip(),
+                'driver': 'ycsb',
+                'rep': values[-2],
+                'apps': '.'.join(sorted(values[2:-2])),
+                'driver': 'ycsb'
+            })
+            if data_points[-1]['qos_app'] not in ycsb_apps:
+                data_points[-1]['driver'] = 'ab'
+        except:
+            pass
+    return data_points
 
-def mean_timeseries(path):
-    return float(subprocess.check_output(['../processing/average_timeseries.py', path, 'mean']))
+def process_experiments(filename):
+    data_points = read_filelist('data')
 
-def median_timeseries(path):
-    return float(subprocess.check_output(['../processing/average_timeseries.py', path, 'median']))
+    data = []    
+    for data_point in data_points:
+        if data_point['filetype'] =='driver':
+            if data_point['driver'] == 'ycsb':
+                metrics = util.parse_ycsb(data_point['file'])
+            elif data_point['driver'] == 'ab':
+                metrics = util.parse_ycsb(data_point['file'])
+            for metric in metrics:
+                data.append({
+                        'key': data_point['qos_app'] + '-' + metric,
+                        'qos_app': data_point['qos_app'],
+                        'apps': data_point['apps'],
+                        'metric': metric,
+                        'rep': data_point['rep'],
+                        'value': metrics[metric]
+                })
+    
+    with open(filename, 'w') as f:
+        # Print header row
+        idxs = list(data[0].keys())
+        f.write(','.join(idxs) + '\n')
+        # Print rows
+        for item in data:
+            f.write(','.join([str(item[idx]) for idx in idxs]) + '\n')
 
-def estimate_bubble(ipc):
-    reporter_curve = '../data/reporter_curve.bubble_size.ipc.medians'
-    val = subprocess.check_output(['../processing/estimate_bubble.py', reporter_curve, str(ipc)])
-    return float(val)
-
-def process_experiment(experiment):
-    experiment_name = util.apps_to_experiment_name(experiment['apps'], experiment['rep'])
-    logging.info('Processing %(experiment_name)s...' % locals())
-    experiment_name = 'data/' + experiment_name + '.reporter'
-    reporter_output = experiment['output']
-
-    # Process PERF output into timeseries data
-    process_perf(experiment_name, reporter_output)
-
-    mean_ipc = str(None)
-    mean_bubble = str(None)
-    try:
-        mean_ipc = mean_timeseries(experiment_name + '.ipc')
-        mean_bubble = estimate_bubble(mean_ipc)
-    except subprocess.CalledProcessError as e:
-        logging.exception('Error: %s' % (e.output))
-    except Exception as e:
-        logging.exception('Exception: %s' % (str(e)))
-
-    median_ipc = str(None)
-    median_bubble = str(None)
-    try:
-        median_ipc = median_timeseries(experiment_name + '.ipc')
-        median_bubble = estimate_bubble(median_ipc)
-    except subprocess.CalledProcessError as e:
-        logging.exception('Error: %s' % (e.output))
-    except Exception as e:
-        logging.exception('Exception: %s' % (str(e)))
-
-    rep = experiment['rep']
-    apps = []
-    for app in experiment['apps']:
-        apps.append(app['suite'])
-        apps.append(app['bmark'])
-        apps.append(app['cores'])
-    apps = ' '.join(apps)
-    print('%(apps)s %(rep)s %(mean_ipc)s %(mean_bubble)s %(median_ipc)s %(median_bubble)s' % locals())
-    logging.info('Processed %(experiment_name)s' % locals())
-
-def main():
-    experiments = util.read_experiment_list()
-    for experiment in experiments:
-       try:
-            process_experiment(experiment)
-       except Exception as e:
-            logging.exception('Error: %s' % (str(e)))
-            
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    main()
+    if len(sys.argv) < 2:
+        print('Error: process_experiments.py output_filename')
+    process_experiments(sys.argv[1])

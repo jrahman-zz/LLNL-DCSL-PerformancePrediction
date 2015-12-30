@@ -94,7 +94,7 @@ def process_sensitivity(filename):
         if data_point['type'] == 'driver':
             if data_point['driver'] == 'ycsb':
                 metrics = util.parse_ycsb(data_point['file'])
-            if data_point['driver'] == 'ab':
+            elif data_point['driver'] == 'ab':
                 metrics = util.parse_ab(data_point['file'])
             for metric in metrics:
                 data['key'].append(data_point['qos_app'] + "-" + metric)

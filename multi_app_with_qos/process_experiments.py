@@ -19,7 +19,7 @@ def read_filelist(directory):
                 'file': '%(directory)s/' % locals() + f.strip(),
                 'driver': 'ycsb',
                 'rep': values[-2],
-                'apps': '.'.join(sorted(values[2:-2])),
+                'apps': '.'.join(sorted(['_'.join(value.split('_')[:-1]) for value in values[2:-2]])),
                 'driver': 'ycsb'
             })
             if data_points[-1]['qos_app'] not in ycsb_apps:

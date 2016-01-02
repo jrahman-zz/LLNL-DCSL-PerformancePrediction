@@ -81,15 +81,15 @@ def dist_plotting(config, data, apps):
         dist_plot(f['naive_error'], g['pred_error'], 'Naive Error', 'Model Error', filename)
 
     base_filename = '.'.join(['%s:%s' % (str(s), str(fraction)) for s, fraction in config.items()])
-    filename = 'plot.%(base_filename)s.dist.png' % locals()
+    filename = 'plots/plot.%(base_filename)s.dist.png' % locals()
     func(data, filename)
 
     for size in config:
-        filename = 'plot.%(base_filename)s.app_count:%(size)s.dist.png' % locals()
+        filename = 'plots/plot.%(base_filename)s.app_count:%(size)s.dist.png' % locals()
         func(data[data['app_count'] == size], filename)
     
     for app in apps:
-        filename = 'plot.%(base_filename)s.app:%(app)s.dist.png' % locals()
+        filename = 'plots/plot.%(base_filename)s.app:%(app)s.dist.png' % locals()
         func(data[data[app] > 0], filename)
 
 def curve_plot(data, metric, fraction, label, filename):
@@ -100,7 +100,7 @@ def curve_plot(data, metric, fraction, label, filename):
     plt.savefig(filename)
     plt.close('all')
 
-def curve_plotting(configurations, data, apps):
+def curve_plotting(configurations, data, apps, counts):
     """
     Plot learning curves based on training set size
         configurations:
@@ -108,12 +108,12 @@ def curve_plotting(configurations, data, apps):
         apps:
     """
     # For now, trim to only include situations with equal fractions per co-location count
-    for i in range(0, len(sizes) - 1):
-        size_a = sizes[i]
-        size_b = sizes[i + 1]
+    for i in range(0, len(counts) - 1):
+        size_a = counts[i]
+        size_b = counts[i + 1]
         data = data[data['%(size_a)d_fraction' % locals()] == data['%(size_b)d_fraction' % locals()]]       
     for metric in ['mean_error', 'median_error', 'p95_error', 'std']:
-        filename = 'metric:%(metric)s.learning_curve.png' % locals()
+        filename = 'plots/metric:%(metric)s.learning_curve.png' % locals()
         fraction='2_fraction'
         label = metric
         curve_plot(data, metric, fraction, label, filename)
@@ -244,10 +244,11 @@ def evaluate(data, bubble_sizes, apps, configuration):
 
 def save_model(data, f, configuration, rep):
     for i in range(0, data.shape[0]):
-        observed = data.irow(i)[bubble_type]
-        predicted = data.irow(i)['pred_bubble']
-        naive_sum = data.irow(i)['naive_sum_bubble']
-        app_names = data.irow(i)['apps']
+        tmp = data.iloc[i]
+        observed = tmp[bubble_type]
+        predicted = tmp['pred_bubble']
+        naive_sum = tmp['naive_sum_bubble']
+        app_names = tmp['apps']
         config = ','.join([str(key) + ':' + str(item) for key, item in configuration.items()])
         f.write('%(config)s %(app_names)s %(rep)d %(observed)f %(predicted)f %(naive_sum)f\n' % locals())
 
@@ -258,7 +259,7 @@ def build_predictions(data, bubble_sizes, apps, configurations, output_filename)
     # Save output for later use
     with open(output_filename, 'w') as f:
         f.write('config app_names rep observed predicted naive_sum\n')
-        idxs = {apps[i]: i for i in range(len(apps))
+        idxs = {apps[i]: i for i in range(len(apps))}
         reps = 10
         for configuration in configurations:
             for rep in range(1, reps+1):
@@ -270,28 +271,26 @@ def build_predictions(data, bubble_sizes, apps, configurations, output_filename)
                 data['naive_sum_bubble'] = naive_sum
                 save_model(data, f, configuration, rep)
 
-def build_error_distributions(data, bubble_sizes, apps, configurations, output_filename):
+def build_error_distributions(data, bubble_sizes, apps, configurations):
     """
     Build and plot a distribution of bubble prediction error over a range of sampling configurations
     """
-        idxs = {apps[i]: i for i in range(len(apps))}
-        for configuration in configurations:
-            sol, pred, stats = evaluate(data, bubble_sizes, apps, configuration)
-            data['pred_bubble'] = pred
-        
-            # Build naive sum estimate
-            naive_sum = np.zeros(len(data))
-            for app in idxs:
-                naive_sum += bubble_sizes[app] * data[app]
-            data['naive_sum_bubble'] = naive_sum
-            dist_plotting(configuration, data, apps)
-            print_evaluation(configuration, data, apps)
+    idxs = {apps[i]: i for i in range(len(apps))}
+    for configuration in configurations:
+        sol, pred, stats = evaluate(data, bubble_sizes, apps, configuration)
+        data['pred_bubble'] = pred
+        naive_sum = np.zeros(len(data))
+        for app in idxs:
+            naive_sum += bubble_sizes[app] * data[app]
+        data['naive_sum_bubble'] = naive_sum
+        dist_plotting(configuration, data, apps)
+        print_evaluation(configuration, data, apps)
 
-def build_learning_curves(data, bubble_sizes, apps, configurations):
+def build_learning_curves(data, bubble_sizes, apps, configurations, counts):
 
     idxs = {apps[i]: i for i in range(len(apps))}
     # Dictionary to hold error data for learning curves
-    error_data = {'%(size)d_fraction' % locals(): [] for size in sizes}
+    error_data = {'%(count)d_fraction' % locals(): [] for count in counts}
     error_data['rep'] = []
     error_data['type'] = []
     metrics = ['mean_error', 'median_error', 'p95_error', 'std']
@@ -321,12 +320,12 @@ def build_learning_curves(data, bubble_sizes, apps, configurations):
                 for metric in metrics:
                     error_data[metric].append(stats['%(prefix)s.%(metric)s' % locals()])
                 error_data['rep'].append(rep)
-                for size in sizes:
-                    key = '%(size)d_fraction' % locals()
+                for count in counts:
+                    key = '%(count)d_fraction' % locals()
                     error_data[key].append(stats[key])
 
     error_data = pd.DataFrame(error_data)
-    curve_plotting(configurations, error_data, apps)
+    curve_plotting(configurations, error_data, apps, counts)
 
 def build_configurations(counts, fractions):
     # Create fraction configurations
@@ -355,12 +354,17 @@ def main(output_filename):
     fractions = [0.05, 0.1, 0.2]
     counts = [2, 3]
     configurations = build_configurations(counts, fractions)
-    build_error_distributions(data, bubble_sizes, apps, configurations, output_filename)  
+    build_predictions(data, bubble_sizes, apps, configurations, output_filename)
+
+    fractions = [0.05, 0.1, 0.2]
+    counts = [2, 3]
+    configurations = build_configurations(counts, fractions)
+    build_error_distributions(data, bubble_sizes, apps, configurations)
 
     fractions = [0.01, 0.025, 0.05, 0.1, 0.2, 0.3]
     counts = [2, 3]
     configurations = build_configurations(counts, fractions)
-    build_learning_curves(data, bubble_sizes, apps, configurations)     
+    build_learning_curves(data, bubble_sizes, apps, configurations, counts)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:

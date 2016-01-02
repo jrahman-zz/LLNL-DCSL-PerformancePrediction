@@ -10,11 +10,15 @@ def load_sensitivity_curves(filename):
     curves = None
     def copy_curve(curve):
         return lambda x: curve.predict([x])[0]
+    def copy_percent(curve, base_value):
+        return lambda x: (curve.predict([x])[0] - base_value) / base_value
     with open(filename, 'r') as f:
         curves = pickle.load(f)
     for qos_app in curves:
-        for metric in curves[qos_app]
-            curves[qos_app][metric] = copy_curve(curves[qos_app][metric])
+        for metric in curves[qos_app]:
+            curve, base_value = curves[qos_app][metric]
+            res = (copy_curve(curve), copy_percent(curve, base_value))
+            curves[qos_app][metric] = res
     return curves
 
 def read_experiment_list():
@@ -90,7 +94,10 @@ def parse_row(row):
     return parsed
 
 def read_contention_data(filename):
-    """ Format is
+    """
+        Read multi-batch application experiment data from the file
+
+        Format is
         '(suite bmark cores)+ rep mean_ipc mean_bubble median_ipc median_bubble' 
     """
 

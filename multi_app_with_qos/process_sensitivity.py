@@ -59,17 +59,20 @@ def build_curves(data, filename):
         qos_app, metric = key.split('-')
         if qos_app not in curves:
             curves[qos_app] = dict()
+        group.sort_values('bubble_size_kb')
         x = group['bubble_size_kb']
         y = group['value']
-        start = y[y.idxmin()]
-        end = y[y.idxmax()]
-        if start < end:
+        low = y.idxmin()
+        high = y.idxmax()
+        if low < high:
             increasing = True
+            base_value = y[low]
         else:
             increasing = False
+            base_value = y[high]
         curve = IsotonicRegression(increasing=increasing)
         curve.fit(x, y)
-        curves[qos_app][metric] = curve
+        curves[qos_app][metric] = (curve, base_value)
 
     with open(filename, 'w') as f:
         pickle.dump(curves, f, pickle.HIGHEST_PROTOCOL)

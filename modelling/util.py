@@ -11,7 +11,7 @@ def load_sensitivity_curves(filename):
     def copy_curve(curve):
         return lambda x: curve.predict([x])[0]
     def copy_percent(curve, base_value):
-        return lambda x: (curve.predict([x])[0] - base_value) / base_value
+        return lambda x:  100 *(curve.predict([x])[0] - base_value) / base_value
     with open(filename, 'r') as f:
         curves = pickle.load(f)
     for qos_app in curves:

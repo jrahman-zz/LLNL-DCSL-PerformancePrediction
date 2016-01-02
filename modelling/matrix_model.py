@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 import itertools
+import sys
 import util
 
 """
@@ -43,12 +44,23 @@ App.     A  B  C  D  E  F       A  B  C  D  E  F
 The system is non-square, so an exact solution is not possible
 so in turn we attempt to find a solution with minimum error
 
+***** Input Files *****
+    - experiment_data
+        Data obtained from multi_app_contention experiments
+        Format: (suite bmark cores)+ rep mean_ipc mean_bubble median_ipc median_bubble
+    - single_buble_sizes
+        Data obtained from single_app_contention experiments
+        Format: mean median mean+std mean-std readable_name suite name cores
+
+***** Output Files *****
+    - sys.argv[1]
+        Prediction data for different application combinations
+        Format: config app_names observed prediction naive_sum
+
 """
 
  # Meta information
 bubble_type = 'mean_bubble'
-sample_fractions = [0.01, 0.025, 0.05, 0.1, 0.2, 0.3]
-sizes = [2, 3]
 
 def dist_plot(naive_data, pred_data, naive_label, pred_label, filename):
     sns.distplot(naive_data, kde=True, rug=False, label=naive_label, axlabel='100*(prediction - ObservedBubble)/ObservedBubble')
@@ -166,7 +178,6 @@ def create_model(data, bubble_sizes, apps, configuration):
 
     equation_matrix = npmat.zeros((rows, columns))
     rhs = npmat.zeros((rows, 1))
-    naive_sum = npmat.zeros((rows, 1))
     i = 0
     for size in samples:
         sample = samples[size]
@@ -174,7 +185,6 @@ def create_model(data, bubble_sizes, apps, configuration):
             rhs[i, 0] = sample['mean_bubble'][idx]
             for app in applications.split('.'):
                 equation_matrix[i, idxs[app]] += 1
-                naive_sum[i,0] += bubble_sizes[app]
             i += 1
 
     final_equation_matrix = equation_matrix * bubble_matrix
@@ -197,7 +207,10 @@ def create_model(data, bubble_sizes, apps, configuration):
                 }
 
 def evaluate(data, bubble_sizes, apps, configuration):
-    
+    """
+    Evaluation the accuracy of buble size predictions
+    against the observer values from the experiments
+    """ 
     idxs = {apps[i]: i for i in range(len(apps))}
 
     sol, train_stats = create_model(data, bubble_sizes, apps, configuration)
@@ -229,20 +242,50 @@ def evaluate(data, bubble_sizes, apps, configuration):
     test_stats.update(train_stats)
     return sol, pred, test_stats
 
-def build_error_distributions(data, bubble_sizes, apps, configurations):
-    
-    idxs = {apps[i]: i for i in range(len(apps))}
-    for configuration in configurations:
-        sol, pred, stats = evaluate(data, bubble_sizes, apps, configuration)
-        data['pred_bubble'] = pred
+def save_model(data, f, configuration, rep):
+    for i in range(0, data.shape[0]):
+        observed = data.irow(i)[bubble_type]
+        predicted = data.irow(i)['pred_bubble']
+        naive_sum = data.irow(i)['naive_sum_bubble']
+        app_names = data.irow(i)['apps']
+        config = ','.join([str(key) + ':' + str(item) for key, item in configuration.items()])
+        f.write('%(config)s %(app_names)s %(rep)d %(observed)f %(predicted)f %(naive_sum)f\n' % locals())
+
+def build_predictions(data, bubble_sizes, apps, configurations, output_filename):
+    """
+    Create and save predictions for a range of sampling configurtaions
+    """
+    # Save output for later use
+    with open(output_filename, 'w') as f:
+        f.write('config app_names rep observed predicted naive_sum\n')
+        idxs = {apps[i]: i for i in range(len(apps))
+        reps = 10
+        for configuration in configurations:
+            for rep in range(1, reps+1):
+                sol, pred, stats = evaluate(data, bubble_sizes, apps, configuration)
+                data['pred_bubble'] = pred
+                naive_sum = np.zeros(len(data))
+                for app in idxs:
+                    naive_sum += bubble_sizes[app] * data[app]
+                data['naive_sum_bubble'] = naive_sum
+                save_model(data, f, configuration, rep)
+
+def build_error_distributions(data, bubble_sizes, apps, configurations, output_filename):
+    """
+    Build and plot a distribution of bubble prediction error over a range of sampling configurations
+    """
+        idxs = {apps[i]: i for i in range(len(apps))}
+        for configuration in configurations:
+            sol, pred, stats = evaluate(data, bubble_sizes, apps, configuration)
+            data['pred_bubble'] = pred
         
-        # Build naive sum estimate
-        naive_sum = np.zeros(len(data))
-        for app in idxs:
-            naive_sum += bubble_sizes[app] * data[app]
-        data['naive_sum_bubble'] = naive_sum
-        dist_plotting(configuration, data, apps)
-        print_evaluation(configuration, data, apps)
+            # Build naive sum estimate
+            naive_sum = np.zeros(len(data))
+            for app in idxs:
+                naive_sum += bubble_sizes[app] * data[app]
+            data['naive_sum_bubble'] = naive_sum
+            dist_plotting(configuration, data, apps)
+            print_evaluation(configuration, data, apps)
 
 def build_learning_curves(data, bubble_sizes, apps, configurations):
 
@@ -285,13 +328,15 @@ def build_learning_curves(data, bubble_sizes, apps, configurations):
     error_data = pd.DataFrame(error_data)
     curve_plotting(configurations, error_data, apps)
 
-def main():
- 
+def build_configurations(counts, fractions):
     # Create fraction configurations
-    fracs = [sample_fractions for i in range(len(sizes))]
-    fractions = itertools.product(*fracs)
-    configurations = [{sizes[i]: tup[i] for i in range(len(sizes))} for tup in fractions]
-    
+    fracs = [fractions for i in range(len(counts))]
+    products = itertools.product(*fracs)
+    configurations = [{counts[i]: tup[i] for i in range(len(counts))} for tup in products]
+    return configurations
+
+def main(output_filename):
+       
     # Raw Data
     bubble_sizes, none = util.read_single_app_bubbles('single_bubble_sizes')
     data = util.read_contention_data('experiment_data')
@@ -301,17 +346,25 @@ def main():
     for app_set in data['apps']:
         apps += [app for app in app_set.split('.')]
     apps = list(set(apps))
- 
-    # Pre-NaN filter count
-    count = len(data)
     
     # Filter NaNs out
+    count = len(data)
     data = pd.DataFrame(data[data[bubble_type] == data[bubble_type]])
     print('Filtered %d NaN rows' %(count - len(data)))
 
-    build_error_distributions(data, bubble_sizes, apps, configurations)  
- 
+    fractions = [0.05, 0.1, 0.2]
+    counts = [2, 3]
+    configurations = build_configurations(counts, fractions)
+    build_error_distributions(data, bubble_sizes, apps, configurations, output_filename)  
+
+    fractions = [0.01, 0.025, 0.05, 0.1, 0.2, 0.3]
+    counts = [2, 3]
+    configurations = build_configurations(counts, fractions)
     build_learning_curves(data, bubble_sizes, apps, configurations)     
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) < 2:
+        print('Error: matrix_model.py output_filename')
+        sys.exit(1)
+    output_filename = sys.argv[1]
+    main(output_filename)

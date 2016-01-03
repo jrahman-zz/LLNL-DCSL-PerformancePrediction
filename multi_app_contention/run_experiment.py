@@ -20,8 +20,8 @@ def self_pin(core):
     cmd = ['taskset', '-p', '-c', str(core), str(os.getpid())]
     subprocess.check_call(cmd)
 
-def base_command(cores):
-    return ['setsid', 'taskset', '-c', ','.join(map(lambda s: str(s), cores))]
+def base_command(cores, numa_node):
+    return ['setsid', 'taskset', '-c', ','.join(map(lambda s: str(s), cores)), 'numactl', '-m', str(numa_node)]
 
 def kill_process_group(proc):
     if proc.poll() is None:
@@ -77,7 +77,7 @@ def run_thread(func):
 
 @run_thread
 def run_spec(bmark, cores):
-    cmd = base_command(cores)
+    cmd = base_command(cores, 0)
     cmd += ['runspec', '--nobuild', '--config', 'research_config', '--action', 'onlyrun', '--size', 'ref', bmark]
     logging.info('Starting %(bmark)s' % locals())
     return subprocess.Popen(cmd)
@@ -85,7 +85,7 @@ def run_spec(bmark, cores):
 @run_thread
 def run_parsec(bmark, cores):
     core_count = len(cores)
-    cmd = base_command(cores)
+    cmd = base_command(cores, 0)
     cmd += ['parsecmgmt', '-a', 'run', '-i', 'native', '-n', str(core_count), '-p', bmark]
     logging.info('Starting %(bmark)s' % locals())
     return subprocess.Popen(cmd)
@@ -94,7 +94,7 @@ def run_reporter(output_path, pid_file, cores):
     logging.info('Starting reporter...')
     cores = ",".join(map(lambda s: str(s), cores))
     cmd = '../bin/time 2> "%(output_path)s" ' % locals()
-    cmd += '| 3>>"%(output_path)s" taskset -c %(cores)s ' % locals()  # subrata cores => comma seperated list of cores
+    cmd += '| 3>>"%(output_path)s" taskset -c %(cores)s numactl -m 0 ' % locals()  # subrata cores => comma seperated list of cores
     cmd += '/usr/bin/perf stat -I 1000 -D 15000 -e cycles,instructions --append --log-fd=3 -x " " '
     cmd += '../bin/reporter 1> %(pid_file)s' % locals() #subrata : call the script that would run the interactive application. Before running "run_reporter" prepare mongoDB by loading it and shutdown . and call script shoud start it
     return subprocess.Popen(cmd, shell=True)

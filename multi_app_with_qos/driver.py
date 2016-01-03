@@ -11,8 +11,8 @@ def kill_process_group(proc):
         logging.info('Killing process group: %(pgroup)s' % locals())
         subprocess.check_call('kill -9 -%(pgroup)s' % locals(), shell=True)
 
-def base_command(cores):
-    return ['setsid', 'taskset', '-c', ','.join(map(lambda s: str(s), cores))]
+def base_command(cores, numa_node):
+    return ['setsid', 'taskset', '-c', ','.join(map(lambda s: str(s), cores)), 'numactl', '-m', str(numa_node)]
 
 def run_driver(output_base, qos_app, qos_pid, driver_cores, driver_params):
     """
@@ -27,7 +27,7 @@ def run_driver(output_base, qos_app, qos_pid, driver_cores, driver_params):
     cmd += '| 3>>"%(perf_output_path)s" ' % locals()
     cmd += '/usr/bin/perf stat -I 1000 -D 4000 -e cycles,instructions --append --log-fd=3 -x " " '
     cmd += '-p %(qos_pid)s ' % locals()  # subrata start collecting data on the existing pid of the qos app.i
-    perf_cmd = ['setsid', 'sh', '-c', cmd]
+    perf_cmd = ['setsid', 'taskset', '-c', '8,9,10,11,12,13,14,14', 'numactl', '-m', '1', 'sh', '-c', cmd]
     logging.info('Perf: ' + str(perf_cmd))
 
     # Context manager will control the lifetime of the process
@@ -38,7 +38,7 @@ def run_driver(output_base, qos_app, qos_pid, driver_cores, driver_params):
         # but the driverhas not started yet
 
         # subrata: now start the driver (e.g. ycsb, which would drive qosApp, i.e. mongoDB .. 
-        driver_cmd = base_command(driver_cores)
+        driver_cmd = base_command(driver_cores, 1)
         driver_cmd += ['sh', 'apps/%(qos_app)s/run_driver.sh' % locals(), driver_params, driver_output_path]
         logging.info('Driver: ' + str(driver_cmd))
         # Subrata: during QoS run, we will wait till the end of the run. We have already created the benchmarks threads. After this driver run finishes we will kill all
@@ -64,7 +64,7 @@ def start_and_load_qos(qos_app, qos_data_dir, qos_cores, driver_params):
     """
 
     # NOTE: The start.sh script will write the PID into '%(qos_data_dir)s/app.pid'
-    qoscmd = base_command(qos_cores)
+    qoscmd = base_command(qos_cores, 0)
     qoscmd += ['sh', 'apps/%(qos_app)s/start.sh' % locals(), qos_data_dir]
 
     logging.info('Starting %(qos_app)s' % locals())

@@ -23,8 +23,8 @@ def self_pin(core):
     cmd = ['taskset', '-p', '-c', str(core), str(os.getpid())]
     subprocess.check_call(cmd)
 
-def base_command(cores):
-    return ['setsid', 'taskset', '-c', ','.join(map(lambda s: str(s), cores))]
+def base_command(cores, numa_node):
+    return ['setsid', 'taskset', '-c', ','.join(map(lambda s: str(s), cores)), 'numactl', '-m', str(numa_node)]
 
 # 
 procs = dict()
@@ -76,7 +76,7 @@ def add_slot():
 
 @run_thread
 def run_spec(bmark, cores):
-    cmd = base_command(cores)
+    cmd = base_command(cores, 0)
     cmd += ['runspec', '--nosetprocgroup', '--nobuild', '--config', 'research_config', '--action', 'onlyrun', '--size', 'ref', bmark]
     logging.info('Starting %(bmark)s' % locals())
     return subprocess.Popen(cmd)
@@ -84,7 +84,7 @@ def run_spec(bmark, cores):
 @run_thread
 def run_parsec(bmark, cores):
     core_count = len(cores)
-    cmd = base_command(cores)
+    cmd = base_command(cores, 0)
     cmd += ['parsecmgmt', '-a', 'run', '-i', 'native', '-n', str(core_count), '-p', bmark]
     logging.info('Starting %(bmark)s' % locals())
     return subprocess.Popen(cmd)

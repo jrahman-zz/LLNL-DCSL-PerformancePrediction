@@ -15,11 +15,11 @@ QOS_CORES=[0,1]
 
 SIZES = [256, 512, 1024, 2048, 3072, 4096, 6144, 8192, 12288, 16384, 18000, 21000, 24576, 32768, 49152, 65536]
 
-def base_command(cores):
-    return ['setsid', 'taskset', '-c', ','.join(map(lambda s: str(s), cores))]
+def base_command(cores, numa_node):
+    return ['setsid', 'taskset', '-c', ','.join(map(lambda s: str(s), cores)), 'numactl', '-m', str(numa_node)]
 
 def run_bubble(bubble_size):
-    cmd = base_command(range(MAX_CORE-2,MAX_CORE))
+    cmd = base_command(range(MAX_CORE-2,MAX_CORE), 0)
     cmd += ['../bin/bubble', str(bubble_size)]
     return subprocess.Popen(cmd)
 

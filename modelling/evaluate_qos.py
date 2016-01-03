@@ -109,7 +109,13 @@ def evaluate_qos():
     
     metric = 'UPDATE.99thPercentileLatency(us)'
     threshold = 10 # 10% qos threshold
+    dumped = False # Dump a single snapshot of the data
     for config in configs:
+
+        conf = {pair.split(':')[0]: pair.split(':')[1] for pair in config.split(',')}
+        if len(set(conf.values())) != 1:
+            continue
+
         predictions = configs[config]
         count = len(raw_data)
         raw_data['available'] = raw_data.apply(lambda x: data_available(x, curves, predictions), axis=1)
@@ -122,15 +128,18 @@ def evaluate_qos():
 
         # Determine degradation vs. baseline
         data['value_degradation'] = 100 * data['value']/data['base_value']
-        data['violation'] = np.zeros(len(data))
-        data[np.abs(data['value_degradation'] - 100) > threshold]['violation'] = 1
+        data['violation'] = np.abs(data['value_degradation'] - 100) > threshold
 
         data['naive_error'] = 100 * (data['naive_pred'] - data['value']) / data['value']
         data['observed_error'] = 100 * (data['observed_pred'] - data['value']) / data['value']
         data['model_error'] = 100 * (data['model_pred'] - data['value']) / data['value']
 
         filtered = data[data['metric'] == metric]
+        if not dumped:
+            filtered.to_csv('eval.data.csv')
+            dumped = True
         print '**** With config %s ****' % (config)
+        
         qos_violations = np.sum(data['violation'])
         print 'With config: %s there were %d qos_violations' % (config, qos_violations)
         filename = 'plots/' + '_'.join(['ObservedError', metric, config]) + '.png'

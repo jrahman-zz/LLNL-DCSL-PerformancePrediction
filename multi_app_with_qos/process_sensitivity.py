@@ -59,12 +59,12 @@ def build_curves(data, filename):
         qos_app, metric = key.split('-')
         if qos_app not in curves:
             curves[qos_app] = dict()
-        group.sort_values('bubble_size_kb')
-        x = group['bubble_size_kb']
-        y = group['value']
+        g = group.sort_values('bubble_size_kb')
+        x = g['bubble_size_kb']
+        y = g['value']
         low = y.idxmin()
         high = y.idxmax()
-        if low < high:
+        if x[low] < x[high]:
             increasing = True
             base_value = y[low]
         else:

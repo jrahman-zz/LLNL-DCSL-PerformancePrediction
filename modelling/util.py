@@ -4,20 +4,21 @@ import pandas as pd
 import numpy as np
 import pickle
 
-# interpolate.interp1d(x, y, kind=1)
+def load_metrics(filename):
+    return pd.read_csv(filename)
 
 def load_sensitivity_curves(filename):
     curves = None
     def copy_curve(curve):
         return lambda x: curve.predict([x])[0]
-    def copy_percent(curve, base_value):
-        return lambda x:  100 *(curve.predict([x])[0] - base_value) / base_value
+    def copy_base_value(value):
+        return value
     with open(filename, 'r') as f:
         curves = pickle.load(f)
     for qos_app in curves:
         for metric in curves[qos_app]:
             curve, base_value = curves[qos_app][metric]
-            res = (copy_curve(curve), copy_percent(curve, base_value))
+            res = (copy_curve(curve), copy_base_value(base_value))
             curves[qos_app][metric] = res
     return curves
 

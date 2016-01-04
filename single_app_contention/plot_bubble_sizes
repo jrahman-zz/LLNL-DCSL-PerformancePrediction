@@ -5,7 +5,7 @@ set auto x
 set yrange [0:12288]
 set ylabel "Bubble Size (KB)"
 set format y "%f"
-set xtics rotate out
+set xtics rotate by 45
 set xlabel "Benchmark"
 set style histogram errorbars gap 2 lw 1
 set style data histograms

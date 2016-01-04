@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Need Python version with SciKit Learn installed
+PYTHON="~/py27/bin/python"
+
 #
 # INPUT: suite bmark rep cores
 #
@@ -16,12 +19,12 @@ REPORTER_CORE=7
 function run_parsec() {
 	BMARK=$1
 	CORES=$2
-	taskset -c 0-`expr ${CORES} - 1` parsecmgmt -a run -i native -n "${CORES}" -p "${BMARK}" &> "${EXPERIMENT_LOG}"
+	numactl -m 0 taskset -c 0-`expr ${CORES} - 1` parsecmgmt -a run -i native -n "${CORES}" -p "${BMARK}" &> "${EXPERIMENT_LOG}"
 }
 
 function run_spec() {
 	BMARK=$1
-	taskset -c 0 runspec --nobuild --config research_config --action onlyrun --size ref "${BMARK}" &> "${EXPERIMENT_LOG}"
+	numactl -m 0 taskset -c 0 runspec --nobuild --config research_config --action onlyrun --size ref "${BMARK}" &> "${EXPERIMENT_LOG}"
 }
 
 if [ $# -ne 4 ]; then
@@ -48,7 +51,7 @@ EXPERIMENT_LOG="logs/${EXPERIMENT_NAME}.log"
 # Skip the first 15 seconds of performance counter data since that is unpacking inputs, etc
 # Intervals of 1 seconds for the outputs
 #
-../bin/time 2> "${OUTPUT_NAME}" | 3>>"${OUTPUT_NAME}" taskset -c ${REPORTER_CORE} perf stat -I 1000 -D 15000 -e cycles,instructions --append --log-fd=3 -x ' ' ../bin/reporter 1> "${PID_FILE}" &
+../bin/time 2> "${OUTPUT_NAME}" | 3>>"${OUTPUT_NAME}" numactl -m 0 taskset -c ${REPORTER_CORE} perf stat -I 1000 -D 15000 -e cycles,instructions --append --log-fd=3 -x ' ' ../bin/reporter 1> "${PID_FILE}" &
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start perf and reporter"
     exit 1
@@ -77,7 +80,7 @@ kill `cat "${PID_FILE}"`
 rm "${PID_FILE}"
 
 # Perform processing out the output data
-../processing/process_perf.py "data/${EXPERIMENT_NAME}.reporter" "${OUTPUT_NAME}" &>> "${EXPERIMENT_LOG}"
+"${PYTHON}" ../processing/process_perf.py "data/${EXPERIMENT_NAME}.reporter" "${OUTPUT_NAME}" &>> "${EXPERIMENT_LOG}"
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to process timeseries"
 	exit 3
@@ -85,25 +88,25 @@ fi
 
 # Compute both the mean and median of the timeseries IPC
 # values to determine the different values have
-MEAN_IPC=`../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.reporter.ipc" "mean" 2>> "${EXPERIMENT_LOG}"`
+MEAN_IPC=`"${PYTHON}" ../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.reporter.ipc" "mean" 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to average timeseries"
 	exit 4
 fi
 
-MEDIAN_IPC=`../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.reporter.ipc" "median" 2>> "${EXPERIMENT_LOG}"`
+MEDIAN_IPC=`"${PYTHON}" ../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.reporter.ipc" "median" 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
     echo "Error: Failed to average timeseries"
     exit 5
 fi
 
 REPORTER_CURVE="../data/reporter_curve.bubble_size.ipc.medians"
-BUBBLE_MEAN=`../processing/estimate_bubble.py ${REPORTER_CURVE} ${MEAN_IPC} 2>> "${EXPERIMENT_LOG}"`
+BUBBLE_MEAN=`"${PYTHON}" ../processing/estimate_bubble.py ${REPORTER_CURVE} ${MEAN_IPC} 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to estimate bubble size"
 	exit 6
 fi
-BUBBLE_MEDIAN=`../processing/estimate_bubble.py ${REPORTER_CURVE} ${MEDIAN_IPC} 2>> "${EXPERIMENT_LOG}"`
+BUBBLE_MEDIAN=`"${PYTHON}" ../processing/estimate_bubble.py ${REPORTER_CURVE} ${MEDIAN_IPC} 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to estimate bubble size"
 	exit 7

@@ -18,7 +18,7 @@ struct params {
   int bubbles;
 };
 
-#define NUM_THREADS 1
+#define NUM_THREADS 2
 
 volatile unsigned int footprint = MIN_FOOTPRINT;
 volatile unsigned int keep_running = 1;
@@ -27,7 +27,7 @@ void thread_main(void *param) {
   register char main_thread = (int)param == 0;
   register unsigned lfsr = time(0);
   register unsigned int fp = 0;
-  int i;
+  long int i;
   while (keep_running) {   
     if (fp != footprint && main_thread != 0) {
        struct timespec tv;
@@ -36,31 +36,31 @@ void thread_main(void *param) {
     }
     fp = footprint;
     char* first_chunk  = data_chunk;
-    char* second_chunk = data_chunk + fp/8;
-    char* third_chunk = data_chunk + fp/4;
-    char* fourth_chunk = data_chunk + 3*fp/8;
-    char* fifth_chunk = data_chunk + fp/2;
-    char* sixth_chunk = data_chunk + 5*fp/8;
-    char* seventh_chunk = data_chunk + 3*fp/8;
-    char* eighth_chunk = data_chunk + 7*fp/8;
-    for (i = 0; i < ((fp >> 3) - CACHE_LINE_SIZE); i += CACHE_LINE_SIZE) {
+    char* second_chunk = data_chunk + fp/4;
+    char* third_chunk = data_chunk + fp/2;
+    char* fourth_chunk = data_chunk + 3*fp/4;
+    //char* fifth_chunk = data_chunk + fp/2;
+    //char* sixth_chunk = data_chunk + 5*fp/8;
+    //char* seventh_chunk = data_chunk + 3*fp/8;
+    //char* eighth_chunk = data_chunk + 7*fp/8;
+    for (i = 0; i < (fp >> 2); i += CACHE_LINE_SIZE) {
       first_chunk[i]++;
       second_chunk[i]++;
       third_chunk[i]++;
       fourth_chunk[i]++;
-      fifth_chunk[i]++;
-      sixth_chunk[i]++;
-      seventh_chunk[i]++;
-      eighth_chunk[i]++;
-      data_chunk[RAND % fp]++;
-      first_chunk[i + CACHE_LINE_SIZE]++;
-      second_chunk[i + CACHE_LINE_SIZE]++;
-      third_chunk[i + CACHE_LINE_SIZE]++;
-      fourth_chunk[i + CACHE_LINE_SIZE]++;
-      fifth_chunk[i + CACHE_LINE_SIZE]++;
-      sixth_chunk[i + CACHE_LINE_SIZE]++;
-      seventh_chunk[i + CACHE_LINE_SIZE]++;
-      eighth_chunk[i + CACHE_LINE_SIZE]++;
+      //fifth_chunk[i]++;
+      //sixth_chunk[i]++;
+      //seventh_chunk[i]++;
+      //eighth_chunk[i]++;
+      //data_chunk[RAND % fp]++;
+      //first_chunk[i + CACHE_LINE_SIZE]++;
+      //second_chunk[i + CACHE_LINE_SIZE]++;
+      //third_chunk[i + CACHE_LINE_SIZE]++;
+      //fourth_chunk[i + CACHE_LINE_SIZE]++;
+      //fifth_chunk[i + CACHE_LINE_SIZE]++;
+      //sixth_chunk[i + CACHE_LINE_SIZE]++;
+      //seventh_chunk[i + CACHE_LINE_SIZE]++;
+      //eighth_chunk[i + CACHE_LINE_SIZE]++;
     }
   }
   return 0;

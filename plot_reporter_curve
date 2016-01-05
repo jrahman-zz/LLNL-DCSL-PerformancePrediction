@@ -1,7 +1,7 @@
 #!/usr/local/bin/gnuplot
 
-set terminal pdf
-set output 'reporter_curve.pdf'
+set terminal png
+set output 'reporter_curve.png'
 
 set ylabel 'IPC'
 set xlabel 'Bubble Size (KB)'

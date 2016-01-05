@@ -31,11 +31,13 @@ def read_single_app_bubbles(filename):
     """
     Read the list of procesed bubble sizes 
     The format of the file is
-    'mean median mean+std mean-std readable_name suite name cores'
+    'mean meanstd median meadianstd p95 p95std p99 p99std readable_name suite name cores'
     single_app_contention/process.sh generates this file from raw_data
     """
     means = dict()
     medians = dict()
+    p95 = dict()
+    p99 = dict()
     with open(filename, 'r') as f:
         for line in f:
             values = line.strip().split()
@@ -43,18 +45,24 @@ def read_single_app_bubbles(filename):
             bmark_name = values[6]
             key = '_'.join([bmark_suite, bmark_name])
             means[key] = float(values[0])
-            medians[key] = float(values[1])
-    return means, medians
+            medians[key] = float(values[2])
+            p95[key] = float(values[4])
+            p99[key] = float(value[6])
+    return means, medians, p95, p99
 
 def parse_row(row):
     parsed = dict()
-    parsed['mean_ipc'] = float(row[-4])
-    parsed['median_ipc'] = float(row[-2])
-    parsed['mean_bubble'] = float(row[-3])
-    parsed['median_bubble'] = float(row[-1])
-    rep = row[-5]
+    parsed['mean_ipc'] = float(row[-8])
+    parsed['median_ipc'] = float(row[-6])
+    parsed['p95_ipc'] = float(row[-4])
+    parsed['p99_ipc'] = float(row[-2])
+    parsed['mean_bubble'] = float(row[-7])
+    parsed['median_bubble'] = float(row[-5])
+    parsed['p95_bubble'] = float(row[-3])
+    parsed['p99_bubble'] = float(row[-1])
+    rep = row[-9]
     parsed['rep'] = int(rep)
-    apps = row[0:-5]
+    apps = row[0:-9]
     app_list = []
     for i in range(int(len(apps) / 3)):
         suite = apps[3*i]
@@ -77,7 +85,7 @@ def parse_row(row):
 
 def read_data(filename):
     """ Format is
-        '(suite bmark cores)+ rep mean_ipc mean_bubble median_ipc median_bubble' 
+        '(suite bmark cores)+ rep mean_ipc mean_bubble median_ipc median_bubble p95_ipc p95_bubble p99_ipc p99_bubble' 
     """
 
     data = dict()

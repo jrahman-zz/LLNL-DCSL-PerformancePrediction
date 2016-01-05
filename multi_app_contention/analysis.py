@@ -10,9 +10,9 @@ import matplotlib.pyplot as plt
 
 def read_data():
     bubble_file = '../single_app_contention/processed_data'
-    mean_bubbles, median_bubbles = util.read_single_app_bubbles(bubble_file)
+    mean, median, p95, p99 = util.read_single_app_bubbles(bubble_file)
     multi_app_data = util.read_data('new_output')
-    return mean_bubbles, median_bubbles, multi_app_data
+    return mean, median, p95, p99, multi_app_data
 
 def summary(prefix, data):
     print('%s mean: %f' % (prefix, data.mean()))
@@ -42,7 +42,7 @@ def plot(data, label, filename):
 
 
 if __name__ == '__main__':
-    mean_bubbles, median_bubbles, data = read_data()
+    mean_bubbles, median_bubbles, p95_bubbles, p99_bubbles, data = read_data()
 
     print('--------With NaNs--------')
     count_summary(data)

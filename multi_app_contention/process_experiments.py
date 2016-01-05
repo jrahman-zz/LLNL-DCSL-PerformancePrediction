@@ -16,6 +16,12 @@ def mean_timeseries(path):
 def median_timeseries(path):
     return float(subprocess.check_output(['../processing/average_timeseries.py', path, 'median']))
 
+def p99_timeseries(path):
+    return float(subprocess.check_output(['../processing/average_timeseries.py', path, '99th']))
+
+def p95_timeseries(path):
+    return float(subprocess.check_output(['../processing/average_timeseries.py', path, '95th']))
+
 def estimate_bubble(ipc):
     reporter_curve = '../data/reporter_curve.bubble_size.ipc.medians'
     val = subprocess.check_output(['../processing/estimate_bubble.py', reporter_curve, str(ipc)])

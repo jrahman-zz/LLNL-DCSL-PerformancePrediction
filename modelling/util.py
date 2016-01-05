@@ -67,13 +67,17 @@ def read_single_app_bubbles(filename):
 
 def parse_row(row):
     parsed = dict()
-    parsed['mean_ipc'] = float(row[-4])
-    parsed['median_ipc'] = float(row[-2])
-    parsed['mean_bubble'] = float(row[-3])
-    parsed['median_bubble'] = float(row[-1])
-    rep = row[-5]
+    parsed['mean_ipc'] = float(row[-8])
+    parsed['median_ipc'] = float(row[-6])
+    parsed['p95_ipc'] = float(row[-4])
+    parsed['p99_ipc'] = float(row[-2])
+    parsed['mean_bubble'] = float(row[-7])
+    parsed['median_bubble'] = float(row[-5])
+    parsed['p95_bubble'] = float(row[-3])
+    parsed['p99_bubble'] = float(row[-1])
+    rep = row[-9]
     parsed['rep'] = int(rep)
-    apps = row[0:-5]
+    apps = row[0:-9]
     app_list = []
     for i in range(int(len(apps) / 3)):
         suite = apps[3*i]
@@ -99,7 +103,7 @@ def read_contention_data(filename):
         Read multi-batch application experiment data from the file
 
         Format is
-        '(suite bmark cores)+ rep mean_ipc mean_bubble median_ipc median_bubble' 
+        '(suite bmark cores)+ rep mean_ipc mean_bubble median_ipc median_bubble p95_ipc p95_bubble p99_ipc p99_bubble' 
     """
 
     data = dict()
@@ -119,8 +123,12 @@ def read_contention_data(filename):
     data['app_count'] = np.zeros(lines)
     data['mean_ipc'] = np.zeros(lines)
     data['median_ipc'] = np.zeros(lines)
+    data['p95_ipc'] = np.zeros(lines)
+    data['p99_ipc'] = np.zeros(lines)
     data['mean_bubble'] = np.zeros(lines)
     data['median_bubble'] = np.zeros(lines)
+    data['p95_bubble'] = np.zeros(lines)
+    data['p99_bubble'] = np.zeros(lines)
     data['rep'] = ['' for i in range(lines)]
 
     # Populate application counts

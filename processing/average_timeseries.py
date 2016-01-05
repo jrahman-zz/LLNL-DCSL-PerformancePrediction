@@ -14,8 +14,12 @@ def read_timeseries(filename):
 def average_timeseries(timeseries, type):
     if type == 'median':
         return np.median(list(timeseries.values()))
-    else:
+    elif type == 'mean':
         return np.mean(list(timeseries.values()))
+    elif type == '99th':
+        return np.percentile(list(timeseries.values()), 1)
+    elif type == '95th':
+        return np.percentile(list(timeseries.values()), 5)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:

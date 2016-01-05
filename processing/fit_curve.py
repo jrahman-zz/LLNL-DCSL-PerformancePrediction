@@ -6,7 +6,7 @@ import numpy as np
 import sys
 import utils
 
-from sklearn.IsotonicRegression import IsotonicRegression
+from sklearn.isotonic import IsotonicRegression
 
 #
 # Fit a curve to the bubble_size-ipc curve

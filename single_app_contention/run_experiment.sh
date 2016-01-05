@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Need Python version with SciKit Learn installed
-PYTHON="~/py27/bin/python"
+PYTHON="${HOME}/py27/bin/python"
 
 #
 # INPUT: suite bmark rep cores
@@ -80,7 +80,7 @@ kill `cat "${PID_FILE}"`
 rm "${PID_FILE}"
 
 # Perform processing out the output data
-"${PYTHON}" ../processing/process_perf.py "data/${EXPERIMENT_NAME}.reporter" "${OUTPUT_NAME}" &>> "${EXPERIMENT_LOG}"
+../processing/process_perf.py "data/${EXPERIMENT_NAME}.reporter" "${OUTPUT_NAME}" &>> "${EXPERIMENT_LOG}"
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to process timeseries"
 	exit 3
@@ -88,31 +88,54 @@ fi
 
 # Compute both the mean and median of the timeseries IPC
 # values to determine the different values have
-MEAN_IPC=`"${PYTHON}" ../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.reporter.ipc" "mean" 2>> "${EXPERIMENT_LOG}"`
+MEAN_IPC=`../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.reporter.ipc" "mean" 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to average timeseries"
 	exit 4
 fi
 
-MEDIAN_IPC=`"${PYTHON}" ../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.reporter.ipc" "median" 2>> "${EXPERIMENT_LOG}"`
+MEDIAN_IPC=`../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.reporter.ipc" "median" 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
     echo "Error: Failed to average timeseries"
     exit 5
+fi
+
+P95_IPC=`../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.reporter.ipc" "95th" 2>> "${EXPERIMENT_LOG}"`
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to average timeseries"
+    exit 6
+fi
+
+P99_IPC=`../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.reporter.ipc" "99th" 2>> "${EXPERIMENT_LOG}"`
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to average timeseries"
+    exit 7
 fi
 
 REPORTER_CURVE="../data/reporter_curve.bubble_size.ipc.medians"
 BUBBLE_MEAN=`"${PYTHON}" ../processing/estimate_bubble.py ${REPORTER_CURVE} ${MEAN_IPC} 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to estimate bubble size"
-	exit 6
+	exit 8
 fi
 BUBBLE_MEDIAN=`"${PYTHON}" ../processing/estimate_bubble.py ${REPORTER_CURVE} ${MEDIAN_IPC} 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to estimate bubble size"
-	exit 7
+	exit 9
+fi
+BUBBLE_P95=`"${PYTHON}" ../processing/estimate_bubble.py ${REPORTER_CURVE} ${P95_IPC} 2>> "${EXPERIMENT_LOG}"`
+if [ $? -ne 0 ]; then
+	echo "Error: Failed to estimate bubble size"
+	exit 9
+fi
+BUBBLE_P99=`"${PYTHON}" ../processing/estimate_bubble.py ${REPORTER_CURVE} ${P99_IPC} 2>> "${EXPERIMENT_LOG}"`
+if [ $? -ne 0 ]; then
+	echo "Error: Failed to estimate bubble size"
+	exit 9
 fi
 
+
 # Output final result over stdout
-echo "0 ${MEAN_IPC} ${BUBBLE_MEAN} ${MEDIAN_IPC} ${BUBBLE_MEDIAN}"
+echo "0 ${MEAN_IPC} ${BUBBLE_MEAN} ${MEDIAN_IPC} ${BUBBLE_MEDIAN} ${P95_IPC} ${BUBBLE_P95} ${P99_IPC} ${BUBBLE_P99}"
 
 exit 0

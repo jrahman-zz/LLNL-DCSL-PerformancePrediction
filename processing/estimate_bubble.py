@@ -17,7 +17,7 @@ import utils
 def estimate_bubble(filename, ipc):
     (sizes, ipcs) = utils.read_bubble_size(filename)
     curve = fit_curve.fit_curve(sizes, ipcs)
-    target_function = lambda x: curve(x) - ipc
+    target_function = lambda x: curve.predict([x])[0] - ipc
     return optimize.bisect(target_function, min(sizes), max(sizes))
  
 if __name__ == '__main__':

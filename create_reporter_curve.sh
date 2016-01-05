@@ -15,7 +15,7 @@ BINARY_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)/bin
 
 # Launch the reporter in the background
 # Intervals of 500 milliseconds for the outputs
-"${BINARY_DIR}/time" 2> "${OUTPUT_NAME}" | 3>>"${OUTPUT_NAME}" taskset -c "${REPORTER_CORE}" perf stat -I 500 -D 100 -e cycles,instructions --log-fd=3 -x ' ' "${BINARY_DIR}/reporter" 1> "${EXPERIMENT_NAME}.pid" &
+"${BINARY_DIR}/time" 2> "${OUTPUT_NAME}" | 3>>"${OUTPUT_NAME}" numactl -m 0 taskset -c "${REPORTER_CORE}" perf stat -I 500 -D 100 -e cycles,instructions --log-fd=3 -x ' ' "${BINARY_DIR}/reporter" 1> "${EXPERIMENT_NAME}.pid" &
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start perf and reporter"
     exit 1
@@ -33,7 +33,7 @@ BUBBLE_PERF_COUNTERS="data/${EXPERIMENT_NAME}.bubble.perf_counters"
 # The perf util output will contain relative offsets that will be added to the absolute
 # initial timestamp and the post-processing script will perform registration between
 # the reporter timestamps and the bubble timestamps
-"${BINARY_DIR}/time" 2> "${BUBBLE_PERF_COUNTERS}" && 3>> "${BUBBLE_PERF_COUNTERS}" taskset -c "${BUBBLE_CORE}" perf stat --log-fd=3 -e instructions,cycles -I ${MEASUREMENT_INTERVAL} -D ${DELAY} "${BINARY_DIR}"/bubble 1.25 "${BUBBLE_INTERVAL}" "${BUBBLE_LOOPS}" |& tee "${BUBBLE_SIZE_FILE}"
+"${BINARY_DIR}/time" 2> "${BUBBLE_PERF_COUNTERS}" && 3>> "${BUBBLE_PERF_COUNTERS}" numactl -m 0 taskset -c "${BUBBLE_CORE}" perf stat --log-fd=3 -e instructions,cycles -I ${MEASUREMENT_INTERVAL} -D ${DELAY} "${BINARY_DIR}"/bubble 1.25 "${BUBBLE_INTERVAL}" "${BUBBLE_LOOPS}" |& tee "${BUBBLE_SIZE_FILE}"
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to run bubble"
 	exit 2
@@ -50,7 +50,7 @@ if [ $? -ne 0 ]; then
 	exit 3
 fi
 
-# Create a mesure of the bubble-size on the bubble IPC
+# Create a measure of the bubble-size on the bubble IPC
 ./processing/process_bubble.py "data/${EXPERIMENT_NAME}.bubble" "${BUBBLE_SIZE_FILE}" "${BUBBLE_PERF_COUNTERS}" 0.2
 if [ $? -ne 0 ]; then
     echo "Error: Failed to process the bubble for the bubble process"

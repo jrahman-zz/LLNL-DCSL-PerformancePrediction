@@ -10,4 +10,4 @@ ABS_OUTPUT_PATH=`echo "$(cd "$(dirname "${OUTPUT_PATH}")"; pwd)/$(basename "${OU
 # Filter irrelevant output we don't care about
 PATTERN="\[OVERALL\]|\[CLEANUP\]|\[READ\]|\[UPDATE\]"
 echo "**** Running Memgached with YCSB **** with workload = ${WORKLOAD}"
-/usr/apps/python2.7.10/bin/python ${YCSB_DIR}/bin/ycsb run memcached -s -target 27750 -threads 8 -P "${YCSB_DIR}/workloads/${WORKLOAD}" -p recordcount=500000 -p operationcount=3000000 -p "memcached.hosts=127.0.0.1" 2>&1 | egrep "${PATTERN}" > ${ABS_OUTPUT_PATH}
+usr/apps/python2.7.10/bin/python ${YCSB_DIR}/bin/ycsb run memcached -s -target 27750 -threads 2 -P "${YCSB_DIR}/workloads/${WORKLOAD}" -p recordcount=500000 -p operationcount=3000000 -p "memcached.hosts=127.0.0.1" 2>&1 | egrep "${PATTERN}" > ${ABS_OUTPUT_PATH}

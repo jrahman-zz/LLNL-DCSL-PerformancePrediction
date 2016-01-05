@@ -126,12 +126,12 @@ fi
 BUBBLE_P95=`"${PYTHON}" ../processing/estimate_bubble.py ${REPORTER_CURVE} ${P95_IPC} 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to estimate bubble size"
-	exit 9
+	exit 10
 fi
 BUBBLE_P99=`"${PYTHON}" ../processing/estimate_bubble.py ${REPORTER_CURVE} ${P99_IPC} 2>> "${EXPERIMENT_LOG}"`
 if [ $? -ne 0 ]; then
 	echo "Error: Failed to estimate bubble size"
-	exit 9
+	exit 11
 fi
 
 

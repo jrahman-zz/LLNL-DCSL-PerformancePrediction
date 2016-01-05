@@ -2,7 +2,7 @@
 
 if [ $# -ne 2 ]; then
 	echo "Error: Invalid number of parameters"
-	echo "generate_experiment_list.sh REP CORES"
+	echo "create_experiment.sh REP CORES"
 	exit 1
 fi
 

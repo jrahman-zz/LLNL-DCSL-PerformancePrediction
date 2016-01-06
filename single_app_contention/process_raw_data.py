@@ -44,7 +44,7 @@ def output(data):
         medianstd = np.std(median[bmark])
         p95std = np.std(p95[bmark])
         p99std = np.std(p99[bmark])
-        print("%(dmean)f %(meanstd)f %(dmedian)f %(medianstd)f %(dp95)f %(p95std)f %(dp99)f %(p99std)f %(name)s %(bmark_suite)s %(bmark_name)s %(bmark_cores)s" % locals())
+        print("%(dmean)f %(dmedian)f %dp95)f %(dp99)f %(meanstd)f %(medianstd)fi %(p95std)f %(p99std)f %(name)s %(bmark_suite)s %(bmark_name)s %(bmark_cores)s" % locals())
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:

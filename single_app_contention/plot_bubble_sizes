@@ -13,8 +13,8 @@ set style fill solid border
 
 set terminal pdf
 set output 'bubble_size.pdf'
-plot 'processed_data' using 1:4:3:xticlabels(5) title 'Bubble Size'
+plot 'processed_data' using 1:4:3:xticlabels(9) title 'Bubble Size'
 
-legend = 'mean median'
+legend = 'mean median p95 p99'
 set style histogram clustered
-plot for [COL=1:2] 'processed_data' using COL:xticlabels(5) title word(legend, COL)
+plot for [COL=1:4] 'processed_data' using COL:xticlabels(9) title word(legend, (COL + 1)/2)

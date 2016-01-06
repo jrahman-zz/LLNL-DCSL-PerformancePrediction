@@ -56,9 +56,15 @@ def write_complete_experiment(file, experiment):
     rep =  int(experiment[2])
     cores = int(experiment[3])
     time = float(experiment[4])
-    avg_ipc = float(experiment[5])
-    bubble = float(experiment[6])
-    entry = "%(suite)s %(bmark)s %(rep)d %(cores)d %(time)f %(avg_ipc)f %(bubble)f\n" % locals()
+    mean_ipc = float(experiment[5])
+    mean_bubble = float(experiment[6])
+    median_ipc = float(experiment[7])
+    median_bubble = float(experiment[8])
+    p95_ipc = float(experiment[9])
+    p95_bubble = float(experiment[10])
+    p99_ipc = float(experiment[11])
+    p99_bubble = float(experiment[12])
+    entry = "%(suite)s %(bmark)s %(rep)d %(cores)d %(time)f %(mean_ipc)f %(mean_bubble)f %(median_ipc)f %(median_bubble)f %(p95_ipc)f %(p95_bubble)f %(p99_ipc)f %(p99_bubble)f\n" % locals()
     file.write(entry)
     file.flush()
 
@@ -68,12 +74,7 @@ def run_experiment(experiment):
     print "Running command: " + str(cmd)
     output = subprocess.check_output(cmd)
     values = output.split()
-    time = values[0]
-    avg_ipc = values[1]
-    bubble = values[2]
-    experiment.append(time)
-    experiment.append(avg_ipc)
-    experiment.append(bubble)
+    experiment += values    
     return experiment
 
 def main():

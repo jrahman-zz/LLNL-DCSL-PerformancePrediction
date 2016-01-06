@@ -36,22 +36,18 @@ void thread_main(void *param) {
     }
     fp = footprint;
     char* first_chunk  = data_chunk;
-    char* second_chunk = data_chunk + fp/4;
-    char* third_chunk = data_chunk + fp/2;
-    char* fourth_chunk = data_chunk + 3*fp/4;
-    //char* fifth_chunk = data_chunk + fp/2;
-    //char* sixth_chunk = data_chunk + 5*fp/8;
-    //char* seventh_chunk = data_chunk + 3*fp/8;
-    //char* eighth_chunk = data_chunk + 7*fp/8;
-    for (i = 0; i < (fp >> 2); i += CACHE_LINE_SIZE) {
-      first_chunk[i]++;
-      second_chunk[i]++;
-      third_chunk[i]++;
-      fourth_chunk[i]++;
-      //fifth_chunk[i]++;
-      //sixth_chunk[i]++;
-      //seventh_chunk[i]++;
-      //eighth_chunk[i]++;
+    char* second_chunk = data_chunk + fp/8;
+    char* third_chunk = data_chunk + fp/4;
+    char* fourth_chunk = data_chunk + 3*fp/8;
+    char* fifth_chunk = data_chunk + fp/2;
+    char* sixth_chunk = data_chunk + 5*fp/8;
+    char* seventh_chunk = data_chunk + 3*fp/4;
+    char* eighth_chunk = data_chunk + 7*fp/8;
+    for (i = 0; i < (fp >> 3); i += CACHE_LINE_SIZE) {
+      first_chunk[i] = fifth_chunk[i] + 1;
+      second_chunk[i] = sixth_chunk[i] + 1;
+      third_chunk[i] = seventh_chunk[i] + 1;
+      fourth_chunk[i] = eighth_chunk[i] + 1;
       //data_chunk[RAND % fp]++;
       //first_chunk[i + CACHE_LINE_SIZE]++;
       //second_chunk[i + CACHE_LINE_SIZE]++;

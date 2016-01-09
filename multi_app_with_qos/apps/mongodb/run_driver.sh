@@ -10,4 +10,4 @@ OUTPUT_PATH=$2
 PATTERN="\[OVERALL\]|\[CLEANUP\]|\[READ\]|\[UPDATE\]"
 
 echo "**** Running MongoDB with YCSB **** with workload = ${WORKLOAD}"
-/usr/apps/python2.7.10/bin/python ${YCSB_DIR}/bin/ycsb run mongodb -s -target 21300 -threads 2 -P "${YCSB_DIR}/workloads/${WORKLOAD}" -p recordcount=500000 -p operationcount=5000000 2> /dev/null | egrep "${PATTERN}" > ${OUTPUT_PATH}
+/usr/apps/python2.7.10/bin/python ${YCSB_DIR}/bin/ycsb run mongodb -s -target 28200 -threads 4 -P "${YCSB_DIR}/workloads/${WORKLOAD}" -p recordcount=500000 -p operationcount=5000000 2> /dev/null | egrep "${PATTERN}" > ${OUTPUT_PATH}

@@ -23,7 +23,7 @@ def p95_timeseries(path):
     return float(subprocess.check_output(['../processing/average_timeseries.py', path, '95th']))
 
 def estimate_bubble(ipc):
-    reporter_curve = '../data/reporter_curve.bubble_size.ipc.medians'
+    reporter_curve = '../data/reporter_curve.bubble_size.ipc'
     val = subprocess.check_output(['../processing/estimate_bubble.py', reporter_curve, str(ipc)])
     return float(val)
 
@@ -56,6 +56,26 @@ def process_experiment(experiment):
     except Exception as e:
         logging.exception('Exception: %s' % (str(e)))
 
+    p95_ipc = 'NaN'
+    p95_bubble = 'NaN'
+    try:
+        p95_ipc = p95_timeseries(experiment_name + '.ipc')
+        p95_bubble = estimate_bubble(p95_ipc) / 1024.0
+    except subprocess.CalledProcessError as e:
+        logging.exception('Error: %s' % (e.output))
+    except Exception as e:
+        logging.exception('Exception: %s' % (str(e)))
+   
+    p99_ipc = 'NaN'
+    p99_bubble = 'NaN'
+    try:
+        p99_ipc = p99_timeseries(experiment_name + '.ipc')
+        p99_bubble = estimate_bubble(p99_ipc) / 1024.0
+    except subprocess.CalledProcessError as e:
+        logging.exception('Error: %s' % (e.output))
+    except Exception as e:
+        logging.exception('Exception: %s' % (str(e)))
+
     rep = experiment['rep']
     apps = []
     for app in experiment['apps']:
@@ -63,7 +83,7 @@ def process_experiment(experiment):
         apps.append(app['bmark'])
         apps.append(app['cores'])
     apps = ' '.join(apps)
-    res = '%(apps)s %(rep)s %(mean_ipc)s %(mean_bubble)s %(median_ipc)s %(median_bubble)s' % locals()
+    res = '%(apps)s %(rep)s %(mean_ipc)s %(mean_bubble)s %(median_ipc)s %(median_bubble)s %(p95_ipc)s %(p95_bubble)s %(p99_ipc) %(p99_bubble)s' % locals()
     logging.info('Processed %(experiment_name)s' % locals())
     return res
 

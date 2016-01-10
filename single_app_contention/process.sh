@@ -5,7 +5,7 @@
 #
 
 cat experiment_list.* > experiment_list
-./process_experiments.sh experiment_list > raw_data
+srun -n1 -N1 -c16 -ppdebug sh -c "cat experiment_list | xargs -n1 -d'\n' -P4 process_experiments.sh" > raw_data
 if [ $? -ne 0 ]; then
     echo "Error: Failed to process experiments"
     exit 1

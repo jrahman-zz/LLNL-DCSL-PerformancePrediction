@@ -30,7 +30,7 @@ def read_data(filename):
                 
 
 def output(data):
-    mean, median, p95, p995 = data
+    mean, median, p95, p99 = data
     for bmark in mean.keys():
         name = bmark[0]
         bmark_suite = bmark[1]
@@ -44,7 +44,7 @@ def output(data):
         medianstd = np.std(median[bmark])
         p95std = np.std(p95[bmark])
         p99std = np.std(p99[bmark])
-        print("%(dmean)f %(dmedian)f %dp95)f %(dp99)f %(meanstd)f %(medianstd)fi %(p95std)f %(p99std)f %(name)s %(bmark_suite)s %(bmark_name)s %(bmark_cores)s" % locals())
+        print("%(dmean)f %(dmedian)f %(dp95)f %(dp99)f %(meanstd)f %(medianstd)f %(p95std)f %(p99std)f %(name)s %(bmark_suite)s %(bmark_name)s %(bmark_cores)s" % locals())
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:

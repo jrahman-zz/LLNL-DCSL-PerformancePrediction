@@ -17,7 +17,7 @@ if [ $? -ne 0 ]; then
     exit 2
 fi
 
-./plot_bubble_sizes
+./plot_bubble_sizes.py
 if [ $? -ne 0 ]; then
     echo "Error: Failed to plot bubble sizes"
     exit 3

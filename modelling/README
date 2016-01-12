@@ -1,7 +1,12 @@
 
+SCRIPTS:
+    matrix_model.py - Builds and performs contention metric prediction evaluation
+                        Saves predicted QoS metrics in file named by the first parameter
+    evaluate_qos.py - Reads the eval.data.csv file that should be produced 
+                        by *_model.py based on metric_data
 
 FILES:
-    bubble_sizes - File containing processed_data from single_app_contention
+    single_app_bubbles - File containing processed_data from single_app_contention
                     Product of the single_app_contention set of experiments
     experiment_data - File containing contention data for multiple applications
                         with reporter to determine observed bubble size
@@ -9,3 +14,5 @@ FILES:
     metric_data - File containing QoS metrics from QoS applications co-located
                     with batch applications
                     Product of the multi_app_with_qos set of experiments
+    eval.data.csv - File containing QoS model predictions of the entire metric_data set
+                    Designed to be processed by evaluate_qos.py

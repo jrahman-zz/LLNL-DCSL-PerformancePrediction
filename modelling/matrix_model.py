@@ -47,7 +47,7 @@ so in turn we attempt to find a solution with minimum error
 ***** Input Files *****
     - experiment_data
         Data obtained from multi_app_contention experiments
-        Format: (suite bmark cores)+ rep mean_ipc mean_bubble median_ipc median_bubble
+        Format: (suite bmark cores)+ rep mean_ipc mean_bubble median_ipc median_bubble p95_ipc p95_bubble p99_ipc p99_bubble
     - single_buble_sizes
         Data obtained from single_app_contention experiments
         Format: mean median mean+std mean-std readable_name suite name cores
@@ -60,7 +60,38 @@ so in turn we attempt to find a solution with minimum error
 """
 
  # Meta information
-bubble_type = 'mean_bubble'
+bubble_type = 'p95_bubble'
+
+def bar_plot(data, x, y, hue, label, filename):
+    g = sns.FacetGrid(data, col='app_count', hue='type')
+    def func(data, **kwargs):
+        sns.barplot(x='', y='', data=data, **kwargs)
+    g.map(func)
+    plt.legend()
+    plt.xlabel('')
+    plt.ylabel('relative error (%)')
+    plt.title(label)
+    plt.savefig(filename)
+    plt.close('all')
+
+def bar_plotting(config, data, apps):
+    
+    c = pd.DataFrame(data)
+    data = pd.DataFrame(data)
+
+    data['type'] = 'model'
+    data['value'] = data['model_error']
+    del data['naive_error']
+    del data['model_error']
+    c['type'] = 'naive'
+    c['value'] = c['naive_error']
+    del c['model_error']
+    del c['naive_error']
+    data.append(c)
+
+    base_filename = '.'.join(['%s:%s' % str(s)])
+
+    bar_plot(data)
 
 def dist_plot(naive_data, pred_data, naive_label, pred_label, filename):
     sns.distplot(naive_data, kde=True, rug=False, label=naive_label, axlabel='100*(prediction - ObservedBubble)/ObservedBubble')
@@ -96,6 +127,7 @@ def curve_plot(data, metric, fraction, label, filename):
     d = data.sort(fraction)
     sns.pointplot(data=d, estimator=np.median, y=metric, x=fraction, hue='type', join=True, markers=['^', 'D', 'o'])
     plt.ylabel(label)
+    plt.xlabel('sampled fraction')
     plt.legend()
     plt.savefig(filename)
     plt.close('all')
@@ -284,6 +316,7 @@ def build_error_distributions(data, bubble_sizes, apps, configurations):
             naive_sum += bubble_sizes[app] * data[app]
         data['naive_sum_bubble'] = naive_sum
         dist_plotting(configuration, data, apps)
+        bar_plotting(configuration, data, apps)
         print_evaluation(configuration, data, apps)
 
 def build_learning_curves(data, bubble_sizes, apps, configurations, counts):
@@ -337,7 +370,7 @@ def build_configurations(counts, fractions):
 def main(output_filename):
        
     # Raw Data
-    bubble_sizes, none = util.read_single_app_bubbles('single_bubble_sizes')
+    bubble_sizes = util.read_single_app_bubbles('single_bubble_sizes')[bubble_type]
     data = util.read_contention_data('experiment_data')
 
     # Get set of applications in use

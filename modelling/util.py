@@ -55,15 +55,24 @@ def read_single_app_bubbles(filename):
     """
     means = dict()
     medians = dict()
+    p95 = dict()
+    p99 = dict()
     with open(filename, 'r') as f:
         for line in f:
             values = line.strip().split()
-            bmark_suite = values[5]
-            bmark_name = values[6]
+            bmark_suite = values[-3]
+            bmark_name = values[-2]
             key = '_'.join([bmark_suite, bmark_name])
             means[key] = float(values[0])
             medians[key] = float(values[1])
-    return means, medians
+            p95[key] = float(values[2])
+            p99[key] = float(values[3])
+    return  {
+                'mean_bubble': means,
+                'median_bubble': medians,
+                'p95_bubble': p95,
+                'p99_bubble': p99
+            }
 
 def parse_row(row):
     parsed = dict()
@@ -113,8 +122,6 @@ def read_contention_data(filename):
     with open(filename, 'r') as f:
         for line in f:
             lines += 1
-
-    apps = read_manifest()
 
     # Build empty dict will all required keys...
     app_count = 0

@@ -61,6 +61,8 @@ so in turn we attempt to find a solution with minimum error
 
  # Meta information
 bubble_type = 'p95_bubble'
+#bubble_type = 'median_bubble'
+#bubble_type = 'mean_bubble'
 
 def bar_plot(data, x, y, hue, label, filename):
     g = sns.FacetGrid(data, col='app_count', hue='type')
@@ -69,9 +71,10 @@ def bar_plot(data, x, y, hue, label, filename):
     g.map(func)
     plt.legend()
     plt.xlabel('')
-    plt.ylabel('relative error (%)')
-    plt.title(label)
-    plt.savefig(filename)
+    plt.ylabel('prediction error (%)', fontsize=18)
+    plt.title(label, fontsize=18)
+    plt.tight_layout()
+    plt.savefig(filename, bbox_inches='tight')
     plt.close('all')
 
 def bar_plotting(config, data, apps):
@@ -79,11 +82,11 @@ def bar_plotting(config, data, apps):
     c = pd.DataFrame(data)
     data = pd.DataFrame(data)
 
-    data['type'] = 'model'
+    data['type'] = 'Bubble-Plus'
     data['value'] = data['model_error']
     del data['naive_error']
     del data['model_error']
-    c['type'] = 'naive'
+    c['type'] = 'Multi-Bubble-Up'
     c['value'] = c['naive_error']
     del c['model_error']
     del c['naive_error']
@@ -94,10 +97,14 @@ def bar_plotting(config, data, apps):
     bar_plot(data)
 
 def dist_plot(naive_data, pred_data, naive_label, pred_label, filename):
-    sns.distplot(naive_data, kde=True, rug=False, label=naive_label, axlabel='100*(prediction - ObservedBubble)/ObservedBubble')
-    sns.distplot(pred_data, kde=True, rug=False, label=pred_label, axlabel='100*(prediction - ObservedBubble)/ObservedBubble')
-    plt.legend()
-    plt.savefig(filename)
+    sns.distplot(naive_data, kde=True, rug=False, label=naive_label, axlabel='prediction error (%)')
+    sns.distplot(pred_data, kde=True, rug=False, label=pred_label, axlabel='prediction error (%)')
+    plt.legend(fontsize=18)
+    plt.xlabel('prediction error (%)', fontsize=18)
+    plt.ylabel('fraction of co-locations', fontsize=18)
+    plt.title('Error Distribution', fontsize=18)
+    plt.tight_layout()
+    plt.savefig(filename, bbox_inches='tight')
     plt.close('all')
 
 def dist_plotting(config, data, apps):
@@ -109,9 +116,9 @@ def dist_plotting(config, data, apps):
         d['pred_error'] = 100 * (d['pred_bubble'] - d[bubble_type]) / d[bubble_type]
         f = d[(d['naive_error'] < cutoff) & (d['naive_error'] > -cutoff)]
         g = d[(d['pred_error'] < cutoff) & (d['pred_error'] > -cutoff)]
-        dist_plot(f['naive_error'], g['pred_error'], 'Naive Error', 'Model Error', filename)
+        dist_plot(f['naive_error'], g['pred_error'], 'Multi-Bubble-Up', 'Bubble-Plus', filename)
 
-    base_filename = '.'.join(['%s:%s' % (str(s), str(fraction)) for s, fraction in config.items()])
+    base_filename = '.'.join(['%s_%s' % (str(s), str(fraction)) for s, fraction in config.items()])
     filename = 'plots/plot.%(base_filename)s.dist.png' % locals()
     func(data, filename)
 
@@ -123,13 +130,34 @@ def dist_plotting(config, data, apps):
         filename = 'plots/plot.%(base_filename)s.app:%(app)s.dist.png' % locals()
         func(data[data[app] > 0], filename)
 
+def application_plotting(config, data):
+    filename = '.'.join(['%s:%s' % (str(s), str(fraction)) for s, fraction in config.items()])
+    filename = 'plots/' + filename + '.app_count.png'
+    d = pd.DataFrame(data)
+    f = pd.DataFrame(d)
+    d['value'] = np.abs(100 * (d['pred_bubble'] - d[bubble_type]) / d[bubble_type])
+    d['type'] = 'Bubble-Plus'
+    f['value'] = np.abs(100 * (f['naive_sum_bubble'] - f[bubble_type]) / f[bubble_type])
+    f['type'] = 'Multi-Bubble-Up'
+    d.append(f)
+    d.sort('app_count')
+    sns.pointplot(data=d, estimator=np.median, y='value', x='app_count', hue='type', join=True, markers=['^', 'D'])
+    plt.legend(fontsize=18)
+    plt.ylabel('prediction error (%)', fontsize=18)
+    plt.xlabel('Workload Count', fontsize=18)
+    plt.tight_layout()
+    plt.savefig(filename, bbox_inches='tight')
+    plt.close('all')
+
 def curve_plot(data, metric, fraction, label, filename):
     d = data.sort(fraction)
     sns.pointplot(data=d, estimator=np.median, y=metric, x=fraction, hue='type', join=True, markers=['^', 'D', 'o'])
-    plt.ylabel(label)
-    plt.xlabel('sampled fraction')
-    plt.legend()
-    plt.savefig(filename)
+    plt.legend(fontsize=18)
+    plt.ylabel(label, fontsize=18)
+    plt.xlabel('sampled fraction', fontsize=18)
+    plt.legend(fontsize=18)
+    plt.tight_layout()
+    plt.savefig(filename, bbox_inches='tight')
     plt.close('all')
 
 def curve_plotting(configurations, data, apps, counts):
@@ -143,12 +171,13 @@ def curve_plotting(configurations, data, apps, counts):
     for i in range(0, len(counts) - 1):
         size_a = counts[i]
         size_b = counts[i + 1]
-        data = data[data['%(size_a)d_fraction' % locals()] == data['%(size_b)d_fraction' % locals()]]       
-    for metric in ['mean_error', 'median_error', 'p95_error', 'std']:
-        filename = 'plots/metric:%(metric)s.learning_curve.png' % locals()
+        data = data[data['%(size_a)d_fraction' % locals()] == data['%(size_b)d_fraction' % locals()]]
+
+    metrics = {'mean_error': 'Mean prediction error (%)', 'median_error': 'Median prediction error (%)', 'p95_error': '95th percentile prediction error (%)', 'std': 'Standard deviation'}
+    for metric in metrics:
+        filename = 'plots/metric_%(metric)s.learning_curve.png' % locals()
         fraction='2_fraction'
-        label = metric
-        curve_plot(data, metric, fraction, label, filename)
+        curve_plot(data, metric, fraction, metrics[metric], filename)
 
 def print_evaluation(config, data, apps):
     config_prefix = ':'.join(['%(key)d=%(value)f' % locals() for key, value in config.items()])
@@ -194,7 +223,7 @@ def create_model(data, bubble_sizes, apps, configuration):
     # Stratified sampling
     samples = dict()
     for size in configuration:
-        grouped = data.groupby('apps', as_index=False).agg({bubble_type: np.mean})
+        grouped = data[data['app_count'] == int(size)].groupby('apps', as_index=False).agg({bubble_type: np.mean})
         samples[size] = grouped.sample(frac=configuration[size])
 
     size = sum([len(sample) for sample in samples.values()])
@@ -214,7 +243,7 @@ def create_model(data, bubble_sizes, apps, configuration):
     for size in samples:
         sample = samples[size]
         for idx, applications in sample['apps'].iteritems():
-            rhs[i, 0] = sample['mean_bubble'][idx]
+            rhs[i, 0] = sample[bubble_type][idx]
             for app in applications.split('.'):
                 equation_matrix[i, idxs[app]] += 1
             i += 1
@@ -301,7 +330,7 @@ def build_predictions(data, bubble_sizes, apps, configurations, output_filename)
                 for app in idxs:
                     naive_sum += bubble_sizes[app] * data[app]
                 data['naive_sum_bubble'] = naive_sum
-                save_model(data, f, configuration, rep)
+                #save_model(data, f, configuration, rep)
 
 def build_error_distributions(data, bubble_sizes, apps, configurations):
     """
@@ -316,8 +345,14 @@ def build_error_distributions(data, bubble_sizes, apps, configurations):
             naive_sum += bubble_sizes[app] * data[app]
         data['naive_sum_bubble'] = naive_sum
         dist_plotting(configuration, data, apps)
-        bar_plotting(configuration, data, apps)
+        #bar_plotting(configuration, data, apps)
+        application_plotting(configuration, data)
         print_evaluation(configuration, data, apps)
+        data['pred_error'] = 100 * (data['pred_bubble'] - data[bubble_type]) / data[bubble_type]
+        data['model_error'] = 100 * (data['naive_sum_bubble'] - data[bubble_type]) / data[bubble_type]
+        filename = '.'.join(['%(key)s_%(value)s' % locals() for key, value in configuration.items()])
+        filename = 'errors.' + filename + '.csv'
+        data.to_csv(filename, header=True)
 
 def build_learning_curves(data, bubble_sizes, apps, configurations, counts):
 
@@ -345,11 +380,13 @@ def build_learning_curves(data, bubble_sizes, apps, configurations, counts):
     reps = 50
     for configuration in configurations:
         print('Building for config: ' + str(configuration))
+        names = {'test': 'Bubble-Plus', 'naive_sum': 'Multi-Bubble-Up'}
         for rep in range(reps):
             sol, pred, stats = evaluate(data, bubble_sizes, apps, configuration)
             stats.update(naive_stats)
-            for prefix in ['test', 'train', 'naive_sum']:
-                error_data['type'].append(prefix)
+            
+            for prefix in ['test', 'naive_sum']:
+                error_data['type'].append(names[prefix])
                 for metric in metrics:
                     error_data[metric].append(stats['%(prefix)s.%(metric)s' % locals()])
                 error_data['rep'].append(rep)
@@ -394,7 +431,7 @@ def main(output_filename):
     configurations = build_configurations(counts, fractions)
     build_error_distributions(data, bubble_sizes, apps, configurations)
 
-    fractions = [0.01, 0.025, 0.05, 0.1, 0.2, 0.3]
+    fractions = [0.005, 0.01, 0.025, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3]
     counts = [2, 3]
     configurations = build_configurations(counts, fractions)
     build_learning_curves(data, bubble_sizes, apps, configurations, counts)
@@ -403,5 +440,11 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         print('Error: matrix_model.py output_filename')
         sys.exit(1)
+    
+    font = {'family' : 'normal',
+        'weight' : 'bold',
+        'size'   : 26}
+    matplotlib.rc('font', **font) 
+    sns.set_palette(sns.cubehelix_palette(start=2.9, n_colors=3, rot=-2, light=0.65, dark=0.35, reverse=True))
     output_filename = sys.argv[1]
     main(output_filename)

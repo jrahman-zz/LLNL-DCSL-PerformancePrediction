@@ -7,6 +7,11 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+import logging
+import subprocess
+import sys
+import multiprocessing
+
 suites = ['spec_fp', 'spec_int', 'parsec']
 
 def read_data(filename):
@@ -22,45 +27,81 @@ def read_data(filename):
             values = line.strip().split()
             times[idx] = float(values[0])
             ipc[idx] = float(values[1])
+            idx += 1
     return times, ipc
 
 def get_apps(suites):
     apps = []
     for suite in suites:
-        with open('manifest/%(suite)s_benchmarks' % locals(), 'r') as f:
+        with open('manifests/%(suite)s_benchmarks' % locals(), 'r') as f:
             for line in f:
                 apps.append((suite, line.strip()))
     return apps
 
 def estimate_bubble(filename, ipc):
-    return float(subprocess.check_output(['../processing/estimate_bubble.py', filename, ipc])) / 1024.0
+    try:
+        return float(subprocess.check_output('${HOME}/py27/bin/python ../processing/estimate_bubble.py %(filename)s %(ipc)f 2> /dev/null' % locals(), shell=True)) / 1024.0
+    except:
+        return float('nan')
 
+def func(bmark):
+    
+    font = {'family' : 'normal',
+        'weight' : 'bold',
+        'size'   : 26}
+    matplotlib.rc('font', **font)
+    sns.set_palette('colorblind')
 
-def main():
-    apps = get_apps(suites)
-    for suite, app in apps:
-        filename = 'data/%(suite)s.%(app)s.1.reporter.ipc' % locals()
+    suite, app = bmark
+    reporter_curve = '../data/reporter_curve.bubble_size.ipc.medians'
+    filename = 'data/%(suite)s.%(app)s.1.reporter.ipc' % locals()
+    logging.info('Processing %s', filename)
+    try:
         times, ipc = read_data(filename)
-        times -= np.min(times) # Normalize to 0
-        bubble_sizes = np.zeros(len(times))
-        for i in range(len(times)):
-            bubble_sizes[i] = estimate_bubble(filename, ipc[i])
+        times = times - np.min(times) # Normalize to 0
+    except:
+        return
+    bubble_sizes = []
+    bubbles = np.zeros(len(times))
+    for i in range(len(times)):
+        #if i % 50 == 0:
+        #    logging.info('Estimated %d of %d bubbles', i, len(times))
+        bubble_size = estimate_bubble(reporter_curve, ipc[i])
+        bubbles[i] = bubble_size
+        if bubble_size == bubble_size: # NaN check
+            bubble_sizes.append(bubble_size)
+    bubble_sizes = np.array(bubble_sizes)
+    
+    try:
         p99 = np.percentile(bubble_sizes, 99) * np.ones(len(times))
         p95 = np.percentile(bubble_sizes, 95) * np.ones(len(times))
         median = np.median(bubble_sizes) * np.ones(len(times))
         mean = np.mean(bubble_sizes) * np.ones(len(times))
-        plt.plot(times, bubble_sizes, '-', times, p99, '^-', times, p95, 'o-', times, mean, 'v-', times, median, '*-')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Contention Score (Bubble Size [KB])')
-        plt.legend(['Bubble Sizes', 'p99', 'p95', 'mean', 'median'])
-        plt.savefig('plots/%(suite)s.%(app)s.bubble_size.png' % locals())
-        plt.close('all')
-        plt.plot(times, ipc, '-')
-        plt.xlabel('Time (s)')
-        plt.ylabel('IPC')
-        plt.legend(['IPC'])
-        plt.savefig('plots/%(soutes.%(app)s.ipc.png' % locals())
-        plt.close('all')
+    except:
+        return
+    mark_dist = int(float(len(times)) / float(20)) + 1
+    plt.plot(times, bubbles, '-', times, p99, '^-', times, p95, 'o-', times, mean, 'v-', times, median, '*-', markevery=mark_dist)
+    plt.xlabel('Time (s)', fontsize=18)
+    plt.ylabel('Contention Score (Bubble Size [KB])', fontsize=18)
+    plt.legend(['Bubble Sizes', 'p99', 'p95', 'mean', 'median'], fontsize=18)
+    plt.tight_layout()
+    plt.savefig('plots/%(suite)s.%(app)s.bubble_size.png' % locals(), bbox_inches='tight')
+    plt.close('all')
+    
+    plt.plot(times, ipc, '-', markevery=mark_dist)
+    plt.xlabel('Time (s)', fontsize=18)
+    plt.ylabel('IPC', fontsize=18)
+    plt.legend(['IPC'], fontsize=18)
+    plt.tight_layout()
+    plt.savefig('plots/%(suite)s.%(app)s.ipc.png' % locals(), bbox_inches='tight')
+    plt.close('all')
+
+def main(workers):
+    
+    apps = get_apps(suites) 
+    pool = multiprocessing.Pool(workers)
+    pool.map(func, apps)
 
 if __name__ == '__main__':
-    pass
+    logging.basicConfig(level=logging.INFO)
+    main(int(sys.argv[1]))

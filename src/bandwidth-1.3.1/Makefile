@@ -55,11 +55,15 @@ bandwidth-arm32:  main.c routines-arm-32bit.asm BMP32.a BMPGraphing32.a
 	${ARM_AS} routines-arm-generic-32bit.asm -mcpu=xscale -o routines-arm-generic-32bit.o
 	${ARM_CC} routines-arm-generic-32bit.o ${SRC} ${CFLAGS} BMP32.a -lm BMPGraphing32.a -o bandwidth32 -o bandwidth-arm32
 
+SEQ := $(shell seq 100000 100000 1000000) 
+SEQ2 := $(foreach v,$(SEQ),$(shell printf '%07d' $(v)))
 cachemisses64:	cache-misses.c gen-asm.py
-	${PYTHON} gen-asm.py > cachemisses64.asm
-	${AS} -f elf64 cachemisses64.asm -o cachemisses64.o
-	${CC} ${CFLAGS} -m64 -c cache-misses.c
-	${LD} -m64 cachemisses64.o cache-misses.o -o cachemisses64
+	for I in ${SEQ2} ; do \
+		${PYTHON} gen-asm.py $$I > cachemisses64.asm ; \
+		${AS} -f elf64 cachemisses64.asm -o cachemisses64.o ; \
+		${CC} ${CFLAGS} -m64 -c cache-misses.c ; \
+		${LD} -m64 cachemisses64.o cache-misses.o -o cachemisses64_$$I ; \
+	done
 
 bandwidth64:	main.c routines-x86-64bit.asm BMP64.a BMPGraphing64.a
 	${AS} -f elf64 routines-x86-64bit.asm -o routines-x86-64bit.o

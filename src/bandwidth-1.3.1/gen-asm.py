@@ -1,3 +1,4 @@
+import sys
 from random import shuffle
 
 print 'bits 64'
@@ -21,7 +22,7 @@ print 'CacheMisses:'
 print '_CacheMisses:'
 print '        mov    rax, [rdi]'
 
-s = 1000000
+s = int(sys.argv[1])
 x = [i for i in range(s)]
 shuffle(x)
 for i in x:

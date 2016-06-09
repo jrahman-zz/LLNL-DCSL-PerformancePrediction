@@ -21,7 +21,8 @@ print 'CacheMisses:'
 print '_CacheMisses:'
 print '        mov    rax, [rdi]'
 
-x = [i for i in range(1000000)]
+s = 1000000
+x = [i for i in range(s)]
 shuffle(x)
 for i in x:
   print '        mov    rax, [' + str(i*64) + '+rdi]'

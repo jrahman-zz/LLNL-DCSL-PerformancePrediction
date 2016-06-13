@@ -1,10 +1,12 @@
-#!/usr/apps/python3.4.2/bin/python3
+#!/usr/bin/env python
+##!/usr/apps/python3.4.2/bin/python3
 
 import numpy as np
 import pandas as pd
 
 import pickle
 import sys
+import os
 import subprocess
 import logging
 
@@ -17,13 +19,26 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 def process_perf(experiment_name, input_file):
+    #input_file = "/home/mitra4/work/scheduling_work/LLNL-DCSL-PerformancePrediction/multi_app_with_qos/" + input_file
+    #experiment_name = "./" + experiment_name
+    #print experiment_name, input_file
+    #processFile = "/home/mitra4/work/scheduling_work/LLNL-DCSL-PerformancePrediction/processing/process_perf.py"
     subprocess.check_call(['../processing/process_perf.py', experiment_name, input_file])
+    #subprocess.check_call([processFile, experiment_name, input_file], shell=True)
+    #cmd = processFile + " " + experiment_name + " " + input_file
+    #os.system(cmd)
 
 def mean_timeseries(path):
-    return float(subprocess.check_output(['../processing/average_timeseries.py', path, 'mean']).decode('utf-8').strip())
+    val = subprocess.check_output(['../processing/average_timeseries.py', path, 'mean']).decode('utf-8').strip()
+    #print "Received val: ", val
+    f_val = float(val)
+    return f_val
 
 def median_timeseries(path):
-    return float(subprocess.check_output(['../processing/average_timeseries.py', path, 'median']).decode('utf-8').strip())
+    val = subprocess.check_output(['../processing/average_timeseries.py', path, 'median']).decode('utf-8').strip()
+    #print "Received val: ", val
+    f_val = float(val)
+    return f_val
 
 def get_mean_ipc(path):
     process_perf('tmp_exp', path)

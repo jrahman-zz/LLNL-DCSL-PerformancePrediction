@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 
 import sys
 
@@ -11,12 +11,13 @@ def RepresentsInt(s):
 
 # Returns IPC and IPS as indexed by time
 def process_perf(f):
+    #print f
     allLines = []
     for l in f.readlines():
 	    l = l.strip()
 	    allLines.append(l)
     numLines = len(allLines)
-    print "Number of lines in perf file: ", numLines
+    #print "Number of lines in perf file: ", numLines
     #start_time = float(f.readline().strip())
     start_time = float(allLines[0])
     cycles = dict()
@@ -77,9 +78,14 @@ def process_perf(f):
         ips[absolute_time] = float(instructions[time]) / float(time - prev_time)
         ipc[absolute_time] = float(instructions[time]) / float(cycles[time])
         prev_time = time
+    
+    #print "Number of perf record pairs found : ", len(cycles), len(instructions)
     return (ips, ipc)
 
 if __name__ == '__main__':
+
+    #print "process_perf.py called"
+
     if sys.argv[1] == '--help':
         print('process.py experiement perf_file')
         sys.exit(0)
@@ -87,11 +93,12 @@ if __name__ == '__main__':
         print('Error: Incorrect argument count')
         sys.exit(1)
 
+
     experiment = sys.argv[1]
     perf_filename = sys.argv[2]
     with open(perf_filename, 'r') as f:
         (ips, ipc) = process_perf(f)
-    
+
     with open(experiment + ".ipc", 'w') as ipc_f, open(experiment + ".ips", 'w') as ips_f:
         times = sorted(ipc.keys())
         for time in times:

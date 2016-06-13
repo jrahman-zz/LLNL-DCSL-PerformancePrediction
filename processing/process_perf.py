@@ -33,7 +33,14 @@ def process_perf(f):
         values_cyc = line_cyc.strip().split()
         values_inst = line_inst.strip().split()
 
+        if(len(values_cyc) != len(values_inst)):
+                #Looks like one of the counters were not properly read leading to few extra white charecters left in the line
+                i = i +1
+                continue
+
 	if((values_cyc[2] != 'cycles') or (values_inst[2] != 'instructions')):
+                print line_cyc
+		print line_inst
         	raise Exception('Parsing error in .perf file: Some timesteps missing either cycles or instructions')
 	
 	if(values_cyc[0] != values_inst[0] ):

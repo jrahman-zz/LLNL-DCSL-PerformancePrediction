@@ -47,7 +47,7 @@ def run_driver(output_base, qos_app, qos_pid, driver_cores, driver_params):
         # Sanity check to ensure perf measurement is still working
         if perf_proc.poll() is not None:
             perf_proc = None
-            raise Exeception('Performance counters not measured')
+            raise Exception('Performance counters not measured')
     finally:
         if perf_proc is not None:
             kill_process_group(perf_proc)

@@ -95,6 +95,8 @@ def process_sensitivity(filename):
     data = {'key': [], 'qos_app': [], 'bubble_size_kb': [], 'metric': [], 'rep': [], 'value': []}
     for data_point in data_points:
         if data_point['type'] == 'driver':
+	    # subrata 6/13/2016: I will focus on the IPC for QoS. Hence continuing the "driver"/latency related data
+            continue
             if data_point['driver'] == 'ycsb':
                 metrics = util.parse_ycsb(data_point['file'])
             elif data_point['driver'] == 'ab':
@@ -107,7 +109,8 @@ def process_sensitivity(filename):
                 data['rep'].append(data_point['rep'])
                 data['value'].append(metrics[metric])
         elif data_point['type'] == 'perf':
-            continue
+	    # subrata 6/13/2016: I will focus on the IPC for QoS. 	
+            #continue
             mean_ipc = get_mean_ipc(data_point['file'])
             data['key'].append(data_point['qos_app'] + "-IPC")
             data['qos_app'].append(data_point['qos_app'])

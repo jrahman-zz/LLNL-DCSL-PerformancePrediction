@@ -40,9 +40,11 @@ def process_perf(f):
                 continue
 
 	if((values_cyc[2] != 'cycles') or (values_inst[2] != 'instructions')):
-                print line_cyc
-		print line_inst
-        	raise Exception('Parsing error in .perf file: Some timesteps missing either cycles or instructions')
+		i = i +1
+                continue
+                #print line_cyc
+		#print line_inst
+        	#raise Exception('Parsing error in .perf file: Some timesteps missing either cycles or instructions')
 	
 	if(values_cyc[0] != values_inst[0] ):
         	raise Exception('Parsing error in .perf file: Timestamps of instructions and cycles did not match')

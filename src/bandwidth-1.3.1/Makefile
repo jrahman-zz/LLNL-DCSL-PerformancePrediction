@@ -56,12 +56,11 @@ bandwidth-arm32:  main.c routines-arm-32bit.asm BMP32.a BMPGraphing32.a
 	${ARM_CC} routines-arm-generic-32bit.o ${SRC} ${CFLAGS} BMP32.a -lm BMPGraphing32.a -o bandwidth32 -o bandwidth-arm32
 
 SEQ := $(shell seq 100000 100000 1000000) 
-SEQ2 := $(foreach v,$(SEQ),$(shell printf '%07d' $(v)))
 cachemisses64:	cache-misses.c gen-asm.py
-	for I in ${SEQ2} ; do \
+	for I in ${SEQ} ; do \
 		${PYTHON} gen-asm.py $$I > cachemisses64.asm ; \
 		${AS} -f elf64 cachemisses64.asm -o cachemisses64.o ; \
-		${CC} ${CFLAGS} -m64 -c cache-misses.c ; \
+		${CC} ${CFLAGS} -m64 -D NUM_CACHE_LINES=$$I -c cache-misses.c ; \
 		${LD} -m64 cachemisses64.o cache-misses.o -o cachemisses64_$$I ; \
 	done
 

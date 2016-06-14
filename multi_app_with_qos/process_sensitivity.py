@@ -40,9 +40,16 @@ def median_timeseries(path):
     f_val = float(val)
     return f_val
 
+def ninetyfifth_timeseries(path):
+    val = subprocess.check_output(['../processing/average_timeseries.py', path, '95th']).decode('utf-8').strip()
+    #print "Received val: ", val
+    f_val = float(val)
+    return f_val
+
 def get_mean_ipc(path):
     process_perf('tmp_exp', path)
-    return mean_timeseries('tmp_exp.ipc')
+    #return mean_timeseries('tmp_exp.ipc')
+    return ninetyfifth_timeseries('tmp_exp.ipc')
 
 def read_filelist(directory):
     data_points = []
@@ -95,7 +102,8 @@ def build_curves(data, filename):
     
 def plot_curves(data, curves):
     for level, group in data.groupby('key'):
-        d = group.sort('bubble_size_kb')
+        #d = group.sort('bubble_size_kb')
+        d = group.sort_values('bubble_size_kb')
         sns.pointplot(data=d, estimator=np.median, y='value', x='bubble_size_kb', join=True)
         locs, labels = plt.xticks()
         plt.setp(labels, rotation=45)

@@ -9,6 +9,7 @@ import sys
 import os
 import subprocess
 import logging
+import csv
 
 import util
 from sklearn.isotonic import IsotonicRegression
@@ -113,6 +114,18 @@ def plot_curves(data, curves):
         plt.savefig(level + '.png')
         plt.close()
 
+def dump_sensitivity_data(data):
+     for key, group in data.groupby('key', sort=False):
+        qos_app, metric = key.split('-')
+     	fname = qos_app + "_curve.bubble_size.ipc"
+        g = group.sort_values('bubble_size_kb')
+        x = g['bubble_size_kb']
+        y = g['value']
+
+        with open(fname, 'w') as f:
+          writer = csv.writer(f, delimiter=' ')
+          writer.writerows(zip(x,y))
+
 def process_sensitivity(filename):
     data_points = read_filelist('sensitivity_data')
     data = {'key': [], 'qos_app': [], 'bubble_size_kb': [], 'metric': [], 'rep': [], 'value': []}
@@ -143,7 +156,8 @@ def process_sensitivity(filename):
             data['value'].append(mean_ipc)
  
     data = pd.DataFrame(data)
-    
+   
+    dump_sensitivity_data(data) 
     curves = build_curves(data, filename)
     plot_curves(data, curves)
  

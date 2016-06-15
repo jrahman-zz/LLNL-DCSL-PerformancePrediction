@@ -8,12 +8,13 @@ def read_experiment_list():
     with open('completed_experiments', 'r') as f:
         for line in f:
             values = line.strip().split()
-            experiment = {'apps': [], 'rep': values[-1], 'output': values[-2]}
+	    experiment = {'apps': [], 'rep': values[-1], 'output': values[-2], 'qos_workload': values[-3], 'qos_name': values[-4]}
             for i in range(int((len(values) - 2)/3)):
                 experiment['apps'].append({
                     'suite': values[3*i],
                     'bmark': values[3*i+1],
                     'cores': values[3*i+2]
+		 
                 })
             experiments.append(experiment)
     return experiments
@@ -111,7 +112,8 @@ def read_data(filename):
 
 def apps_to_experiment_name(apps, rep):
     output = '.'.join(["%s_%s_%s" % (app['suite'], app['bmark'], app['cores']) for app in apps])
-    output = str(len(apps)) + '_' + output + '_' + str(rep)
+    #output = str(len(apps)) + '_' + output + '_' + str(rep)
+    output = str(len(apps)) + '.' + output + '.' + str(rep)
     return output
 
 def parse_ab(path):

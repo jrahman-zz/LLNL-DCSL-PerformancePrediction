@@ -49,8 +49,8 @@ def ninetyfifth_timeseries(path):
 
 def get_mean_ipc(path):
     process_perf('tmp_exp', path)
-    #return mean_timeseries('tmp_exp.ipc')
-    return ninetyfifth_timeseries('tmp_exp.ipc')
+    return mean_timeseries('tmp_exp.ipc')
+    #return ninetyfifth_timeseries('tmp_exp.ipc')
 
 def read_filelist(directory):
     data_points = []

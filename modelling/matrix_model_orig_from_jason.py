@@ -120,20 +120,20 @@ def dist_plotting(config, data, apps):
         dist_plot(f['naive_error'], g['pred_error'], 'Multi-Bubble-Up', 'Bubble-Plus', filename)
 
     base_filename = '.'.join(['%s_%s' % (str(s), str(fraction)) for s, fraction in config.items()])
-    filename = 'plots_new/plot.%(base_filename)s.dist.png' % locals()
+    filename = 'plots/plot.%(base_filename)s.dist.png' % locals()
     func(data, filename)
 
     for size in config:
-        filename = 'plots_new/plot.%(base_filename)s.app_count:%(size)s.dist.png' % locals()
+        filename = 'plots/plot.%(base_filename)s.app_count:%(size)s.dist.png' % locals()
         func(data[data['app_count'] == size], filename)
     
     for app in apps:
-        filename = 'plots_new/plot.%(base_filename)s.app:%(app)s.dist.png' % locals()
+        filename = 'plots/plot.%(base_filename)s.app:%(app)s.dist.png' % locals()
         func(data[data[app] > 0], filename)
 
 def application_plotting(config, data):
     filename = '.'.join(['%s:%s' % (str(s), str(fraction)) for s, fraction in config.items()])
-    filename = 'plots_new/' + filename + '.app_count.png'
+    filename = 'plots/' + filename + '.app_count.png'
     d = pd.DataFrame(data)
     f = pd.DataFrame(d)
     d['value'] = np.abs(100 * (d['pred_bubble'] - d[bubble_type]) / d[bubble_type])
@@ -177,7 +177,7 @@ def curve_plotting(configurations, data, apps, counts):
 
     metrics = {'mean_error': 'Mean prediction error (%)', 'median_error': 'Median prediction error (%)', 'p95_error': '95th percentile prediction error (%)', 'std': 'Standard deviation'}
     for metric in metrics:
-        filename = 'plots_new/metric_%(metric)s.learning_curve.png' % locals()
+        filename = 'plots/metric_%(metric)s.learning_curve.png' % locals()
         fraction='2_fraction'
         curve_plot(data, metric, fraction, metrics[metric], filename)
 
@@ -224,9 +224,7 @@ def create_model(data, bubble_sizes, apps, configuration):
     idxs = {apps[i]: i for i in range(len(apps))}
     # Stratified sampling
     samples = dict()
-    print configuration
     for size in configuration:
-	print size
         grouped = data[data['app_count'] == int(size)].groupby('apps', as_index=False).agg({bubble_type: np.mean})
         samples[size] = grouped.sample(frac=configuration[size])
 
@@ -426,23 +424,17 @@ def main(output_filename):
     print('Filtered %d NaN rows' %(count - len(data)))
 
     fractions = [0.05, 0.1, 0.2]
-    #Subrata try for 2 apps now
-    counts = [2]
-    #counts = [2, 3]
+    counts = [2, 3]
     configurations = build_configurations(counts, fractions)
     build_predictions(data, bubble_sizes, apps, configurations, output_filename)
 
     fractions = [0.05, 0.1, 0.2]
-    #Subrata try for 2 apps now
-    counts = [2]
-    #counts = [2, 3]
+    counts = [2, 3]
     configurations = build_configurations(counts, fractions)
     build_error_distributions(data, bubble_sizes, apps, configurations)
 
     fractions = [0.005, 0.01, 0.025, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3]
-    #Subrata try for 2 apps now
-    counts = [2]
-    #counts = [2, 3]
+    counts = [2, 3]
     configurations = build_configurations(counts, fractions)
     build_learning_curves(data, bubble_sizes, apps, configurations, counts)
 

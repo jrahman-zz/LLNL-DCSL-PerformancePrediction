@@ -5,9 +5,9 @@
 #
 
 REPS=$1
-CORES=2
+CORES=$2
 
-echo "Launching ${REPS} reps..." 1>&2
+echo "Launching ${REPS} reps with cores ${CORES}..." 1>&2
 
 JOBS=""
 for REP in `seq 1 ${REPS}`; do

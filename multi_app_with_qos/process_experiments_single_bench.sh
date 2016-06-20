@@ -6,11 +6,16 @@
 
 SUITE=`echo "${1}" | cut -d ' ' -f 1`
 BENCHMARK=`echo "${1}" | cut -d ' ' -f 2`
-REP=`echo "${1}" | cut -d ' ' -f 3`
-CORES=`echo "${1}" | cut -d ' ' -f 4`
+CORES=`echo "${1}" | cut -d ' ' -f 3`
+QOS_NAME=`echo "${1}" | cut -d ' ' -f 4`
+WORKLOAD_NAME=`echo "${1}" | cut -d ' ' -f 5`
+OUTPUTDATA=`echo "${1}" | cut -d ' ' -f 6`
+REP=`echo "${1}" | cut -d ' ' -f 7`
 
-EXPERIMENT_NAME="${SUITE}.${BENCHMARK}.${REP}.reporter"
-FILE="data/${EXPERIMENT_NAME}.perf_counters"
+#EXPERIMENT_NAME="${SUITE}.${BENCHMARK}.${REP}.reporter"
+EXPERIMENT_NAME="${QOS_NAME}.${CORE}.${SUITE}.${BENCHMARK}.${REP}.reporter"
+#FILE="data/${EXPERIMENT_NAME}.perf_counters"
+FILE="${OUTPUTDATA}.perf"
 if [ ! -r "${FILE}" ]; then
     echo "Error: Cannot find ${FILE}" 1>&2
     exit 1
@@ -25,7 +30,7 @@ if [ $? -ne 0 ]; then
 fi
 
 #REPORTER_CURVE="../data/reporter_curve.bubble_size.ipc"
-REPORTER_CURVE="../data/redis_curve.bubble_size.ipc"
+REPORTER_CURVE="../data/${QOS_NAME}_curve.bubble_size.ipc"
 PYTHON="${HOME}/py271/bin/python"
 
 MEAN_IPC=`../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.ipc" "mean"`

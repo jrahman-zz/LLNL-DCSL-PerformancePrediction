@@ -1,20 +1,20 @@
 #!/bin/bash
 
-/usr/apps/python2.7.1/bin/virtualenv ~/py27
+/usr/apps/python2.7.1/bin/virtualenv ~/py271
 
-~/py27/bin/pip install Flask
+~/py271/bin/pip install Flask
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install Flask"
     exit 1
 fi
 
-~/py27/bin/pip install numpy
+~/py271/bin/pip install 'numpy>1.7.0'
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install numyp"
     exit 2
 fi
 
-~/py27/bin/pip install pandas
+~/py271/bin/pip install pandas
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install pandas"
     exit 3
@@ -25,7 +25,7 @@ if [ $? -ne 0 ]; then
     exit 4
 fi
 cd matplotlib
-~/py27/bin/python setup.py install
+~/py271/bin/python setup.py install
 if [ $? -ne 0 ]; then
     cd ..
     rm -rf matplotlib
@@ -34,12 +34,17 @@ fi
 cd ..
 rm -rf matplotlib
 
-~/py27/bin/pip install scipy
+~/py271/bin/pip install scipy
 if [ $? -ne 0 ]; then
     exit 6
 fi
 
-~/py27/bin/pip install seaborn
+~/py271/bin/pip install seaborn
+if [ $? -ne 0 ]; then
+    exit 7
+fi
+
+~/py271/bin/pip install scikit-learn
 if [ $? -ne 0 ]; then
     exit 7
 fi

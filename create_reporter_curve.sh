@@ -15,7 +15,9 @@ BINARY_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)/bin
 
 # Launch the reporter in the background
 # Intervals of 500 milliseconds for the outputs
-"${BINARY_DIR}/time" 2> "${OUTPUT_NAME}" | 3>>"${OUTPUT_NAME}" numactl -m 0 taskset -c "${REPORTER_CORE}" perf stat -I 500 -D 100 -e cycles,instructions --log-fd=3 -x ' ' "${BINARY_DIR}/reporter" 1> "${EXPERIMENT_NAME}.pid" &
+#"${BINARY_DIR}/time" 2> "${OUTPUT_NAME}" | 3>>"${OUTPUT_NAME}" numactl -m 0 taskset -c "${REPORTER_CORE}" perf stat -I 500 -D 100 -e cycles,instructions --log-fd=3 -x ' ' "${BINARY_DIR}/reporter" 1> "${EXPERIMENT_NAME}.pid" &
+#subrata: trying change the stat frequency from 500 to 1000
+"${BINARY_DIR}/time" 2> "${OUTPUT_NAME}" | 3>>"${OUTPUT_NAME}" numactl -m 0 taskset -c "${REPORTER_CORE}" perf stat -I 1000 -D 100 -e cycles,instructions --log-fd=3 -x ' ' "${BINARY_DIR}/reporter" 1> "${EXPERIMENT_NAME}.pid" &
 if [ $? -ne 0 ]; then
     echo "Error: Failed to start perf and reporter"
     exit 1

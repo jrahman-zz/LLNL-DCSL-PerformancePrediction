@@ -88,7 +88,7 @@ def process_experiment(experiment):
         apps.append(app['bmark'])
         apps.append(app['cores'])
     apps = ' '.join(apps)
-    res = '%(apps)s %(rep)s %(mean_ipc)s %(mean_bubble)s %(median_ipc)s %(median_bubble)s %(p95_ipc)s %(p95_bubble)s %(p99_ipc) %(p99_bubble)s' % locals()
+    res = '%(apps)s %(rep)s %(mean_ipc)s %(mean_bubble)s %(median_ipc)s %(median_bubble)s %(p95_ipc)s %(p95_bubble)s %(p99_ipc)s %(p99_bubble)s' % locals()
     logging.info('Processed %(experiment_name)s' % locals())
     return res
 

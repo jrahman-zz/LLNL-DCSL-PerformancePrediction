@@ -13,9 +13,11 @@ import requests
 
 import driver
 
-def ensure_data_dir():
+def ensure_data_dir(qos_app):
+    dataDirName = 'data/%(qos_app)s' % locals()	
     # Ensure that the data directory is created
-    subprocess.check_call(['mkdir', '-p', 'data'])
+    subprocess.check_call(['mkdir', '-p', dataDirName])
+    #subprocess.check_call(['mkdir', '-p', 'data'])
 
 def self_pin(core):
     # Pin the python process to another socket to ensure
@@ -142,7 +144,7 @@ def run_experiment(params, output_base, rep):
         qos_data_dir = driver.create_qos_app_directory()
         qos_proc, qos_pid = driver.start_and_load_qos(qos_app, qos_data_dir, qos_cores, driver_params)
 
-        ensure_data_dir()
+        ensure_data_dir(qos_app)
 
         experiment = ".".join(['%(suite)s_%(bmark)s_%(cores)d' % locals() for suite, bmark, cores in applications])
 

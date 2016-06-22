@@ -25,9 +25,9 @@ def p95_timeseries(path):
     return float(subprocess.check_output(['../processing/average_timeseries.py', path, '95th']))
 
 def estimate_bubble(ipc, qos_name):
-    reporter_curve = '../data/reporter_curve.bubble_size.ipc'
+    #reporter_curve = '../data/reporter_curve.bubble_size.ipc'
     # subrata: we should use the following qos specific curve instead
-    #reporter_curve = '../data/' + qos_name + '_curve.bubble_size.ipc'
+    reporter_curve = '../data/' + qos_name + '_curve.bubble_size.ipc'
     val = subprocess.check_output(['../processing/estimate_bubble.py', reporter_curve, str(ipc)])
     return float(val)
 
@@ -35,7 +35,8 @@ def process_experiment(experiment):
     qos_name = experiment['qos_name']
     experiment_name = qos_name + '.' + util.apps_to_experiment_name(experiment['apps'], experiment['rep'])
     logging.info('Processing %(experiment_name)s...' % locals())
-    experiment_name = 'data/' + experiment_name
+    experiment_name = 'data/' + qos_name + '/' + experiment_name
+    #experiment_name = 'data/' + experiment_name
     reporter_output = experiment['output'] + '.perf'
 
     # Process PERF output into timeseries data

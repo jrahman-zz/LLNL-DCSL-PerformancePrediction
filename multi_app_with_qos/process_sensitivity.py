@@ -117,7 +117,7 @@ def plot_curves(data, curves):
 def dump_sensitivity_data(data):
      for key, group in data.groupby('key', sort=False):
         qos_app, metric = key.split('-')
-     	fname = qos_app + "_curve.bubble_size.ipc"
+        fname = qos_app + "_curve.bubble_size.ipc"
         g = group.sort_values('bubble_size_kb')
         x = g['bubble_size_kb']
         y = g['value']
@@ -126,12 +126,13 @@ def dump_sensitivity_data(data):
           writer = csv.writer(f, delimiter=' ')
           writer.writerows(zip(x,y))
 
-def process_sensitivity(filename):
-    data_points = read_filelist('sensitivity_data')
+def process_sensitivity(filename, qos_app_name):
+    dataDirName = 'sensitivity_data/%(qos_app_name)s' % locals()
+    data_points = read_filelist(dataDirName)
     data = {'key': [], 'qos_app': [], 'bubble_size_kb': [], 'metric': [], 'rep': [], 'value': []}
     for data_point in data_points:
         if data_point['type'] == 'driver':
-	    # subrata 6/13/2016: I will focus on the IPC for QoS. Hence continuing the "driver"/latency related data
+         # subrata 6/13/2016: I will focus on the IPC for QoS. Hence continuing the "driver"/latency related data
             continue
             if data_point['driver'] == 'ycsb':
                 metrics = util.parse_ycsb(data_point['file'])
@@ -145,7 +146,7 @@ def process_sensitivity(filename):
                 data['rep'].append(data_point['rep'])
                 data['value'].append(metrics[metric])
         elif data_point['type'] == 'perf':
-	    # subrata 6/13/2016: I will focus on the IPC for QoS. 	
+       # subrata 6/13/2016: I will focus on the IPC for QoS. 
             #continue
             mean_ipc = get_mean_ipc(data_point['file'])
             data['key'].append(data_point['qos_app'] + "-IPC")
@@ -163,6 +164,6 @@ def process_sensitivity(filename):
  
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Error: usage process_sensitivity.py OUTPUT_FILENAME")
+        print("Error: usage process_sensitivity.py qos_app_name OUTPUT_FILENAME")
         sys.exit(1)
-    process_sensitivity(sys.argv[1])
+    process_sensitivity(sys.argv[1], sys.argv[2])

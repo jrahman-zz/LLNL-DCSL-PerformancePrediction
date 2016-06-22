@@ -28,7 +28,7 @@ def read_applications(cores):
     return applications
 
 def create_output_path(app_count, apps, qos_app, rep):
-    path = 'data/'
+    path = 'data/'  + qos_app + '/'
     path += '.'.join([qos_app, str(app_count), apps])
     path += '.%(rep)d' % locals()
     return path

@@ -13,7 +13,8 @@ MAX_CORE=7
 DRIVER_CORES=[8,9,10,11,12,13,14,15]
 QOS_CORES=[0,1]
 
-SIZES = [256, 512, 1024, 2048, 3072, 4096, 6144, 8192, 12288, 16384, 18000, 21000, 24576, 32768, 49152, 65536]
+#SIZES = [256, 512, 1024, 2048, 3072, 4096, 6144, 8192, 12288, 16384, 18000, 21000, 24576, 32768, 49152, 65536]
+SIZES = [0]
 
 def base_command(cores, numa_node):
     return ['setsid', 'taskset', '-c', ','.join(map(lambda s: str(s), cores)), 'numactl', '-m', str(numa_node)]
@@ -33,15 +34,15 @@ def main(qos_app, driver_params, rep):
     global SIZES
     self_pin(MAX_CORE+1)
     for size in SIZES:
-        dumpDirName = 'sensitivity_data/%(qos_app)s' % locals()
+        dumpDirName = 'standalone_data/%(qos_app)s' % locals()
         dumpDirName = 'mkdir -p ' + dumpDirName
-        os.system(dumpDirName)
-        output_base = 'sensitivity_data/%(qos_app)s/%(qos_app)s.%(size)d.%(rep)s' % locals()
+        os.system(dumpDirName)        
+        output_base = 'standalone_data/%(qos_app)s/%(qos_app)s.%(size)d.%(rep)s' % locals()
         qos_data_dir = None
         bubble_proc = None
         qos_pid = None
         try:
-            bubble_proc = run_bubble(size)
+            #bubble_proc = run_bubble(size)
             qos_data_dir = driver.create_qos_app_directory()
             qos_proc, qos_pid = driver.start_and_load_qos(qos_app, qos_data_dir, QOS_CORES, driver_params)
             driver.run_driver(output_base, qos_app, qos_pid, DRIVER_CORES, driver_params)

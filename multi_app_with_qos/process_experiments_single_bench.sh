@@ -23,7 +23,7 @@ fi
 
 echo "Processing ${FILE}..." 1>&2
 
-../processing/process_perf.py "data/${EXPERIMENT_NAME}" "${FILE}"
+../processing/process_perf.py "data/${QOS_NAME}/${EXPERIMENT_NAME}" "${FILE}"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to process ${FILE}" 1>&2
     exit 2
@@ -33,7 +33,7 @@ fi
 REPORTER_CURVE="../data/${QOS_NAME}_curve.bubble_size.ipc"
 PYTHON="${HOME}/py271/bin/python"
 
-MEAN_IPC=`../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.ipc" "mean"`
+MEAN_IPC=`../processing/average_timeseries.py "data/${QOS_NAME}/${EXPERIMENT_NAME}.ipc" "mean"`
 if [ $? -ne 0 ]; then
     echo "Error: Failed to average ${EXPERIMENT_NAME}.ipc - ${MEAN_IPC}" 1>&2
     MEAN_IPC='NaN'
@@ -47,7 +47,7 @@ else
     fi
 fi
 
-MEDIAN_IPC=`../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.ipc" "median"`
+MEDIAN_IPC=`../processing/average_timeseries.py "data/${QOS_NAME}/${EXPERIMENT_NAME}.ipc" "median"`
 if [ $? -ne 0 ]; then
     echo "Error: Failed to average ${EXPERIMENT_NAME}.ipc - ${MEDIAN_IPC}" 1>&2
     MEDIAN_IPC='NaN'
@@ -61,7 +61,7 @@ else
     fi
 fi
 
-P95_IPC=`../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.ipc" "95th"`
+P95_IPC=`../processing/average_timeseries.py "data/${QOS_NAME}/${EXPERIMENT_NAME}.ipc" "95th"`
 if [ $? -ne 0 ]; then
     echo "Error: Failed to average ${EXPERIMENT_NAME}.ipc - ${P95_IPC}" 1>&2
     P95_IPC='NaN'
@@ -74,7 +74,7 @@ else
     fi
 fi
 
-P99_IPC=`../processing/average_timeseries.py "data/${EXPERIMENT_NAME}.ipc" "99th"`
+P99_IPC=`../processing/average_timeseries.py "data/${QOS_NAME}/${EXPERIMENT_NAME}.ipc" "99th"`
 if [ $? -ne 0 ]; then
     echo "Error: Failed to average ${EXPERIMENT_NAME}.ipc - ${MEDIAN_IPC}" 1>&2
     P99_IPC='NaN'

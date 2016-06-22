@@ -14,6 +14,8 @@ int main(int argc, char **argv) {
 	printf("chunk size: %d\n", SIZE);
 	char *chunk = malloc(SIZE);
 	memset(chunk, 0, SIZE);
-	CacheMisses(chunk);
+	while (1) {
+		CacheMisses(chunk);
+	}
 	return 0;
 }

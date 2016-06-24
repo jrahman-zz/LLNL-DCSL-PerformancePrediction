@@ -51,7 +51,7 @@ so in turn we attempt to find a solution with minimum error
         Format: (suite bmark cores)+ rep mean_ipc mean_bubble median_ipc median_bubble p95_ipc p95_bubble p99_ipc p99_bubble
     - single_buble_sizes
         Data obtained from single_app_contention experiments
-        Format: mean median mean+std mean-std readable_name suite name cores
+        Format: mean median p95 p99 readable_name suite name cores
 
 ***** Output Files *****
     - sys.argv[1]
@@ -220,13 +220,12 @@ def print_evaluation(config, data, apps):
 
 
 def create_model(data, bubble_sizes, apps, configuration):
-   
     idxs = {apps[i]: i for i in range(len(apps))}
     # Stratified sampling
     samples = dict()
-    print configuration
+    #print configuration
     for size in configuration:
-	print size
+	#print size
         grouped = data[data['app_count'] == int(size)].groupby('apps', as_index=False).agg({bubble_type: np.mean})
         samples[size] = grouped.sample(frac=configuration[size])
 
@@ -252,11 +251,15 @@ def create_model(data, bubble_sizes, apps, configuration):
                 equation_matrix[i, idxs[app]] += 1
             i += 1
 
+    print equation_matrix
+    
+
     final_equation_matrix = equation_matrix * bubble_matrix
     
     # Find least squares solution to over-determined system
     sol, residuals, rank, s = npla.lstsq(final_equation_matrix, rhs)
-    
+   
+    print sol
     diff = 100 * (final_equation_matrix * sol - rhs) / rhs
     residual_rmse = np.sqrt(diff.T * diff / columns)
     p95_error = np.percentile(np.abs(diff), 95)
@@ -308,6 +311,7 @@ def evaluate(data, bubble_sizes, apps, configuration):
     return sol, pred, test_stats
 
 def save_model(data, f, configuration, rep):
+    #subrata: this file will be our master reference while searching for best co-location strategy
     for i in range(0, data.shape[0]):
         tmp = data.iloc[i]
         observed = tmp[bubble_type]
@@ -326,6 +330,8 @@ def build_predictions(data, bubble_sizes, apps, configurations, output_filename)
         f.write('config app_names rep observed predicted naive_sum\n')
         idxs = {apps[i]: i for i in range(len(apps))}
         reps = 10
+	#subrata: not sure why 10 repetions are needed. It seems they calculate the same value. Making it just one
+        #reps = 1
         for configuration in configurations:
             for rep in range(1, reps+1):
                 sol, pred, stats = evaluate(data, bubble_sizes, apps, configuration)
@@ -334,7 +340,8 @@ def build_predictions(data, bubble_sizes, apps, configurations, output_filename)
                 for app in idxs:
                     naive_sum += bubble_sizes[app] * data[app]
                 data['naive_sum_bubble'] = naive_sum
-                #save_model(data, f, configuration, rep)
+		#subrata: this file will be our master reference while searching for best co-location strategy
+                save_model(data, f, configuration, rep)
 
 def build_error_distributions(data, bubble_sizes, apps, configurations):
     """
@@ -425,19 +432,25 @@ def main(output_filename):
     data = pd.DataFrame(data[data[bubble_type] == data[bubble_type]])
     print('Filtered %d NaN rows' %(count - len(data)))
 
+    #print data 
     fractions = [0.05, 0.1, 0.2]
+    #fractions = [1.0]
     #Subrata try for 2 apps now
     counts = [2]
     #counts = [2, 3]
     configurations = build_configurations(counts, fractions)
     build_predictions(data, bubble_sizes, apps, configurations, output_filename)
 
+    return
     fractions = [0.05, 0.1, 0.2]
+    #fractions = [0.1]
     #Subrata try for 2 apps now
     counts = [2]
     #counts = [2, 3]
     configurations = build_configurations(counts, fractions)
     build_error_distributions(data, bubble_sizes, apps, configurations)
+    print "Mean error from Bubble-Plus :", np.mean(data['pred_error'])
+    print "Mean error from Multi-Bubble-Up :", np.mean(data['model_error'])
 
     fractions = [0.005, 0.01, 0.025, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3]
     #Subrata try for 2 apps now

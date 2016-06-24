@@ -15,8 +15,10 @@ import driver
 
 def ensure_data_dir(qos_app):
     dataDirName = 'data/%(qos_app)s' % locals()	
+    dataDirName_single_batch = 'single_batch_data/%(qos_app)s' % locals()	
     # Ensure that the data directory is created
     subprocess.check_call(['mkdir', '-p', dataDirName])
+    subprocess.check_call(['mkdir', '-p', dataDirName_single_batch])
     #subprocess.check_call(['mkdir', '-p', 'data'])
 
 def self_pin(core):

@@ -107,6 +107,6 @@ def process_sensitivity(qos_app_name):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Error: usage process_sensitivity.py qos_app_name")
+	    print("Error: usage find_colocation_possibilities.py qos_app_name qos-policy(a number:e.g. 99, 95, 90 etc.)")
         sys.exit(1)
-    process_sensitivity(sys.argv[1])
+    find_colocation_possibilities(sys.argv[1], sys.argv[2])

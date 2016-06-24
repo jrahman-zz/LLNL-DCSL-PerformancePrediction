@@ -126,7 +126,7 @@ def dump_sensitivity_data(data):
           writer = csv.writer(f, delimiter=' ')
           writer.writerows(zip(x,y))
 
-def process_sensitivity(filename, qos_app_name):
+def process_sensitivity(qos_app_name, filename):
     dataDirName = 'sensitivity_data/%(qos_app_name)s' % locals()
     data_points = read_filelist(dataDirName)
     data = {'key': [], 'qos_app': [], 'bubble_size_kb': [], 'metric': [], 'rep': [], 'value': []}

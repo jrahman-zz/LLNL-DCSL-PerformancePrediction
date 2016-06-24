@@ -40,6 +40,7 @@ def read_experiment_list():
 def read_manifest():
     apps = []
     suites = ['parsec', 'spec_fp', 'spec_int']
+    #suites = ['S1', 'S2']
     for suite in suites:
         with open('manifest/%(suite)s' % locals(), 'r') as f:
             for line in f:
@@ -50,7 +51,8 @@ def read_single_app_bubbles(filename):
     """
     Read the list of procesed bubble sizes 
     The format of the file is
-    'mean median mean+std mean-std readable_name suite name cores'
+    #'mean median mean+std mean-std readable_name suite name cores'
+    'mean median p95 p99 readable_name suite name cores'
     single_app_contention/process.sh generates this file from raw_data
     """
     means = dict()

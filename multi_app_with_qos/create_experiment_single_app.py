@@ -28,7 +28,7 @@ def read_applications(cores):
     return applications
 
 def create_output_path(app_count, apps, qos_app, rep):
-    path = 'data/' +  qos_app + '/'
+    path = 'single_batch_data/' +  qos_app + '/'
     path += '.'.join([qos_app, str(app_count), apps])
     path += '.%(rep)d' % locals()
     return path
@@ -80,8 +80,8 @@ def main(reps, cores, maxapps):
 #
 
 if __name__ == '__main__':
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 3:
         print("Error: Invalid number of parameters")
-        print("create_experiments.py REPS CORES MAXAPPS")
+        print("create_experiment_single_app.py REPS CORES")
         sys.exit(1)
-    main(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]))
+    main(int(sys.argv[1]), int(sys.argv[2]), 1)

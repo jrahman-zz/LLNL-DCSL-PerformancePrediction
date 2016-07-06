@@ -109,6 +109,8 @@ def generateDumpDir(apps, qos_app_name, rep):
 
 	return output
 
+def calculate_average_utilization():
+
 def parse_selection_create_exp(selected_df_model, qos_app_name, qos_workload, totalRep):
         numCores = 1
 	for rep in range(totalRep):

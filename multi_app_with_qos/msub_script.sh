@@ -7,4 +7,4 @@
 
 OUTPUT_PATH="./job_out-%j-%2t.out"
 cd "${PWD}"
-srun -o ${OUTPUT_PATH} -n1 -N1 -c16 ./process_experiments.py 12 > processed_experiments
+srun -o ${OUTPUT_PATH} -n1 -N1 -c16 ./process_experiments.py 14 > processed_experiments_mongodb_july19

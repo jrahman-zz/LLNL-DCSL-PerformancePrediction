@@ -82,7 +82,7 @@ def calculate_bubble_size(qos_standalone, qos_policy_frac, qos_app_name):
 
 	corresponding_bubble_size = float(float(val)/1024.0)
 
-	print "Effective bubbler size = ", corresponding_bubble_size
+	print "Effective degraded IPC = ", degraded_qos_ipc, " Effective bubbler size = ", corresponding_bubble_size
 
 	return corresponding_bubble_size
 
@@ -95,23 +95,44 @@ def read_colocation_prediction_file(colocation_prediction_file):
 	return df
 
 def get_colocations(df,predicted_column, required_bubble_size):
-	selected_df = df.loc[(df[predicted_column] <= required_bubble_size) & (df['config'] != '')]
+	#selected_df = df.loc[(df[predicted_column] <= required_bubble_size) & (df['config'] != '')]
+	selected_df = df.loc[(df[predicted_column] <= required_bubble_size) & (df['config'] == '2:0.1,3:0.1')]
 	#selected_df = df[df.predicted_column < required_bubble_size]
 	#print selected_df
 	return selected_df
 
-def generateDumpDir(apps, qos_app_name, rep):
+def generateDumpDir(apps, qos_app_name, rep, qos_policy):
         numCores = 1
 	numApps = len(apps)
-        output = "data_qos_predicted/" + qos_app_name + "/" + qos_app_name + "." + str(numApps)
+        output = "data_qos_predicted/" + qos_app_name + "/" + str(qos_policy) + "/" + qos_app_name + "." + str(numApps)
         for app in apps:
-	       output = output + "." + app + "_" + str(numCores) + "." + rep + " " + rep 		
+	       output = output + "." + app + "_" + str(numCores)		
+	output = output + "." + rep + " " + rep 		
 
 	return output
 
-def calculate_average_utilization():
+def calculate_average_utilization(selected_df_model, number_of_machines):
+	total_available_cores = 8 * number_of_machines  # assuming each machines has 2 sockets and each socket has 8 cores (True for Cab) 
+	coresUsed = 0
+	total_num_apps_instance = 0
+	avg_utilization = float(2/8.0)
+	for index, row in selected_df_model.iterrows():
+                app_combination = row['app_names']
+                apps = app_combination.split('.')
+                numApps = len(apps)
+		#total_num_apps_instance = total_num_apps_instance + numApps
+		#coresUsed = coresUsed + 2 * numApps # each app takes 2 cores
+		avg_utilization = avg_utilization + float(2*numApps/8.0)
+	#end for
+	try:
+		avg_utilization = avg_utilization/len(selected_df_model.index)
+	except ZeroDivisionError:
+		avg_utilization = 2/8.0
+	#return (total_available_cores, coresUsed, total_num_apps_instance)
+	return avg_utilization
 
-def parse_selection_create_exp(selected_df_model, qos_app_name, qos_workload, totalRep):
+
+def parse_selection_create_exp(selected_df_model, qos_app_name, qos_workload, totalRep, qos_policy):
         numCores = 1
 	for rep in range(totalRep):
 	       for index, row in selected_df_model.iterrows():
@@ -126,7 +147,7 @@ def parse_selection_create_exp(selected_df_model, qos_app_name, qos_workload, to
 			   exp_line = exp_line + bmark + ' ' + theApp + ' ' +  str(numCores) + ' '
 		       #end for
 
-		       qos_data_dir = generateDumpDir(apps,qos_app_name, str(rep))
+		       qos_data_dir = generateDumpDir(apps,qos_app_name, str(rep), qos_policy)
 		       exp_line = exp_line + qos_app_name + ' ' + qos_workload + ' ' + qos_data_dir
 		       print exp_line
 
@@ -148,15 +169,24 @@ def find_colocation_possibilities(qos_app_name, qos_policy):
 	selected_df_model = get_colocations(df,predicted_column_name, required_bubble_size)
 	selected_df_naive_sum = get_colocations(df,naive_sum_column_name, required_bubble_size)
 
-	#print selected_df_model
-        qos_workload = find_qos_workload(qos_app_name)
+	print "Number of records our model: ", len(selected_df_model.index)
+	print "Number of records naive sum: ", len(selected_df_naive_sum.index)
+
+	number_of_machines = 100
+	utilization_model= calculate_average_utilization(selected_df_model, number_of_machines)
+	utilization_naive_sum = calculate_average_utilization(selected_df_naive_sum, number_of_machines)
+	print "For Our Model: utilization: " , utilization_model    
+	print "For Naive sum: utilization: ", utilization_naive_sum      
+
+	qos_workload = find_qos_workload(qos_app_name)
+	qos_workload = 'workloadb'
         if(qos_workload == ""):
 		print "Error: No QoS app workload found"
 		sys.exit(1)
 
-	number_of_exp_repetitions = 10
+	number_of_exp_repetitions = 2
         
-	parse_selection_create_exp(selected_df_model, qos_app_name, qos_workload, number_of_exp_repetitions)
+	parse_selection_create_exp(selected_df_model, qos_app_name, qos_workload, number_of_exp_repetitions,qos_policy)
         
 if __name__ == '__main__':
     if len(sys.argv) < 2:

@@ -40,7 +40,7 @@ def process_experiment(experiment):
     reporter_output = experiment['output'] + '.perf'
 
     # Process PERF output into timeseries data
-    process_perf(experiment_name, reporter_output)
+    #process_perf(experiment_name, reporter_output)
 
     mean_ipc = 'NaN'
     mean_bubble = 'NaN'
@@ -91,6 +91,7 @@ def process_experiment(experiment):
     apps = ' '.join(apps)
     res = '%(apps)s %(rep)s %(mean_ipc)s %(mean_bubble)s %(median_ipc)s %(median_bubble)s %(p95_ipc)s %(p95_bubble)s %(p99_ipc)s %(p99_bubble)s' % locals()
     logging.info('Processed %(experiment_name)s' % locals())
+    logging.info('%(res)s' % locals())
     return res
 
 def process(experiment):
